@@ -59,4 +59,5 @@ out/
 .mvn/wrapper/maven-wrapper.jar
 
 application.properties
+application.yml
 
