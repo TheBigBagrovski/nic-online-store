@@ -39,26 +39,24 @@ public class CartService {
         cartRepository.save(cart);
     }
 
-//    @Transactional
-//    public void incProductInCart(Long productId, String email) {
-//        User user = userRepository.findByEmail(email).get();
-//        Cart cart = cartRepository.findByUser(user).get();
-//        Product product = productRepository.findById(productId).get();
-//        Map<Product, Integer> items = cart.getItems();
-//        items.put(product, items.get(product) + 1);
-//        cart.setItems(items);
-//        cartRepository.save(cart);
-//    }
-//
-//    @Transactional
-//    public void decProductInCart(Long productId, String email) {
-//        User user = userRepository.findByEmail(email).get();
-//        Cart cart = cartRepository.findByUser(user).get();
-//        Product product = productRepository.findById(productId).get();
-//        Map<Product, Integer> items = cart.getItems();
-//        items.put(product, items.get(product) - 1);
-//        cart.setItems(items);
-//        cartRepository.save(cart);
-//    }
+    @Transactional
+    public void changeProductQuantityInCart(Long productId, boolean inc) {
+        User user = userService.getCurrentAuthorizedUser();
+        Cart cart = cartRepository.findByUser(user).get();
+        Product product = productRepository.findById(productId).get();
+        Map<Product, Integer> items = cart.getItems();
+        int productInCartQuantity = items.get(product);
+        if (inc) {
+            int productQuantity = product.getQuantity();
+            if (productQuantity > productInCartQuantity) { // товары в корзинах пользователей не влияют на остатки (в будущем будут заказы), но 1 юзер не может иметь в корзине больше товара чем на складе
+                items.put(product, productInCartQuantity + 1); // todo(): как реализовать механизм остатков - товары в корзине, незаказанные влияют на остаток на складе?
+            }
+        } else {
+            if (productInCartQuantity == 1) items.remove(product);
+            else items.put(product, productInCartQuantity - 1);
+        }
+        cart.setItems(items);
+        cartRepository.save(cart);
+    }
 
 }

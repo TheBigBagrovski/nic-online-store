@@ -45,9 +45,7 @@ public class AuthController {
 
     @GetMapping("/show-user")
     public ResponseEntity<String> showUserInfo() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println(auth.getAuthorities());
-        return new ResponseEntity<>(auth.getName(), HttpStatus.OK);
+        return new ResponseEntity<>(userService.getCurrentAuthorizedUser().getEmail(), HttpStatus.OK);
     }
 
     @PostMapping("/register")
