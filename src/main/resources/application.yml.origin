@@ -14,3 +14,10 @@ spring:
     properties:
       hibernate:
         show_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+jwt_secret:
+product_images_path: images/product-images/
+review_images_path: images/review-images/
+max_images_in_review: 5
+max_review_image_size: 10485760

@@ -1,11 +1,11 @@
-package nic.project.onlinestore.util;
+package nic.project.onlinestore.dto;
 
-public class CatalogErrorResponse {
+public class ErrorResponse {
 
     private String message;
     private long timestamp;
 
-    public CatalogErrorResponse(String message, long timestamp) {
+    public ErrorResponse(String message, long timestamp) {
         this.message = message;
         this.timestamp = timestamp;
     }

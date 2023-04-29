@@ -1,14 +1,17 @@
 package nic.project.onlinestore.models;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.HashMap;
 import java.util.Map;
 
 @Data
 @Entity
 @Table(name = "cart")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Cart {
 
     @Id
@@ -23,6 +26,6 @@ public class Cart {
     @CollectionTable(name = "cart_items", joinColumns = @JoinColumn(name = "cart_id"))
     @MapKeyJoinColumn(name = "product_id")
     @Column(name = "quantity")
-    private Map<Product, Integer> items = new HashMap<>();
+    private Map<Product, Integer> items;
 
 }

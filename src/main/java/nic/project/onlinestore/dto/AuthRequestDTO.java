@@ -1,14 +1,12 @@
 package nic.project.onlinestore.dto;
 
 import lombok.Data;
-import nic.project.onlinestore.models.Role;
-
 
 @Data
-public class UserDTO {
+public class AuthRequestDTO {
 
     private String email;
 
-    private Role role;
+    private String password;
 
 }

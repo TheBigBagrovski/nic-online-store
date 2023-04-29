@@ -1,9 +1,10 @@
-package nic.project.onlinestore.config;
+package nic.project.onlinestore.security;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import nic.project.onlinestore.security.JWTUtil;
-import nic.project.onlinestore.security.UserDetailsImpl;
+import nic.project.onlinestore.models.UserDetailsImpl;
 import nic.project.onlinestore.services.UserDetailsServiceImpl;
+import nic.project.onlinestore.exception.EmailNotFoundException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -47,6 +48,9 @@ public class JWTFilter extends OncePerRequestFilter {
                     }
                 } catch (JWTVerificationException e) {
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid JWT token");
+                } catch (EmailNotFoundException e) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+                    return;
                 }
             }
         }

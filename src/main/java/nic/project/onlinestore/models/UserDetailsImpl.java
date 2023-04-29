@@ -1,9 +1,5 @@
-package nic.project.onlinestore.security;
+package nic.project.onlinestore.models;
 
-import nic.project.onlinestore.models.User;
-import nic.project.onlinestore.util.Role;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;

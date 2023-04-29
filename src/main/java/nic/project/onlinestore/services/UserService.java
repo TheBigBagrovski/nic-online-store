@@ -1,7 +1,7 @@
 package nic.project.onlinestore.services;
 
 import nic.project.onlinestore.models.Cart;
-import nic.project.onlinestore.util.Role;
+import nic.project.onlinestore.models.Role;
 import nic.project.onlinestore.models.User;
 import nic.project.onlinestore.repositories.CartRepository;
 import nic.project.onlinestore.repositories.UserRepository;
@@ -43,7 +43,7 @@ public class UserService {
         user.setRole(Role.ROLE_USER);
         Cart cart = new Cart();
         cart.setUser(user);
-        user.setCart(cart);
+//        user.setCart(cart);
         cartRepository.save(cart);
         userRepository.save(user);
     }

@@ -1,19 +1,19 @@
 package nic.project.onlinestore.models;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.Path;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import java.awt.*;
 import java.util.List;
 
 @Data
 @Entity
 @Table(name = "product")
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Product {
@@ -27,10 +27,12 @@ public class Product {
     @Column(nullable = false)
     private String name;
 
+    private String description;
+
     @OneToMany(cascade = CascadeType.ALL)
     private List<ProductImage> productImages;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany( cascade = CascadeType.ALL)
     @JoinTable(name = "product_categories", joinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "category_id", referencedColumnName = "id"))
     private List<Category> categories;

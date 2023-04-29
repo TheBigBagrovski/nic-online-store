@@ -9,17 +9,15 @@ import javax.persistence.*;
 
 @Data
 @Entity
-@Table(name = "product_image")
+@Table(name = "review_image")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductImage {
+public class ReviewImage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String path;
 
     private String name;
 

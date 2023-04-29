@@ -1,17 +1,18 @@
 package nic.project.onlinestore.models;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import nic.project.onlinestore.util.Role;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 @Entity
 @Table(name = "users")
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
 
     @Id
@@ -30,11 +31,5 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private Role role;
-
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Cart cart;
-
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Order> orders = new ArrayList<>();
 
 }

@@ -2,6 +2,7 @@ package nic.project.onlinestore.services;
 
 import nic.project.onlinestore.models.Category;
 import nic.project.onlinestore.repositories.CategoryRepository;
+import nic.project.onlinestore.exception.CategoryNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,8 +21,10 @@ public class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
-    public Optional<Category> findById(Long id) {
-        return categoryRepository.findById(id);
+    public Category findById(Long id) {
+        Optional<Category> category =  categoryRepository.findById(id);
+        if (!category.isPresent()) throw new CategoryNotFoundException("Категория не найдена");
+        return categoryRepository.findById(id).get();
     }
 
     public List<Category> findChildCategories(Category category) {

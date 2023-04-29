@@ -1,4 +1,4 @@
-package nic.project.onlinestore.util;
+package nic.project.onlinestore.models;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;

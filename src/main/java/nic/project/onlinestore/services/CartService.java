@@ -1,11 +1,12 @@
 package nic.project.onlinestore.services;
 
+import nic.project.onlinestore.exception.ProductInCartException;
+import nic.project.onlinestore.exception.ProductNotFoundException;
 import nic.project.onlinestore.models.Cart;
 import nic.project.onlinestore.models.Product;
 import nic.project.onlinestore.models.User;
 import nic.project.onlinestore.repositories.CartRepository;
 import nic.project.onlinestore.repositories.ProductRepository;
-import nic.project.onlinestore.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,14 +18,12 @@ public class CartService {
 
     private final CartRepository cartRepository;
     private final ProductRepository productRepository;
-    private final UserRepository userRepository;
     private final UserService userService;
 
     @Autowired
-    public CartService(CartRepository cartRepository, ProductRepository productRepository, UserRepository userRepository, UserService userService) {
+    public CartService(CartRepository cartRepository, ProductRepository productRepository, UserService userService) {
         this.cartRepository = cartRepository;
         this.productRepository = productRepository;
-        this.userRepository = userRepository;
         this.userService = userService;
     }
 
@@ -34,9 +33,12 @@ public class CartService {
         Cart cart = cartRepository.findByUser(user).get();
         Product product = productRepository.findById(productId).get();
         Map<Product, Integer> items = cart.getItems();
-        items.put(product, 1);
-        cart.setItems(items);
-        cartRepository.save(cart);
+        if (items.containsKey(product)) throw new ProductInCartException("Товар уже находится в корзине");
+        else {
+            items.put(product, 1);
+            cart.setItems(items);
+            cartRepository.save(cart);
+        }
     }
 
     @Transactional
@@ -45,11 +47,12 @@ public class CartService {
         Cart cart = cartRepository.findByUser(user).get();
         Product product = productRepository.findById(productId).get();
         Map<Product, Integer> items = cart.getItems();
-        int productInCartQuantity = items.get(product);
+        Integer productInCartQuantity = items.get(product);
+        if (productInCartQuantity == null) throw new ProductNotFoundException("Данного продукта нет в корзине");
         if (inc) {
             int productQuantity = product.getQuantity();
             if (productQuantity > productInCartQuantity) { // товары в корзинах пользователей не влияют на остатки (в будущем будут заказы), но 1 юзер не может иметь в корзине больше товара чем на складе
-                items.put(product, productInCartQuantity + 1); // todo(): как реализовать механизм остатков - товары в корзине, незаказанные влияют на остаток на складе?
+                items.put(product, productInCartQuantity + 1); // todo(): нужна система заказов - товары вычтаются из склада при заказе
             }
         } else {
             if (productInCartQuantity == 1) items.remove(product);

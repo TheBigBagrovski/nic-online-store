@@ -3,8 +3,8 @@ package nic.project.onlinestore.dto;
 import lombok.Data;
 
 @Data
-public class CategoryDTO {
+public class RatingDTO {
 
-    private String name;
+    private Integer value;
 
 }
