@@ -1,7 +1,7 @@
 package nic.project.onlinestore.config;
 
 import nic.project.onlinestore.security.JWTFilter;
-import nic.project.onlinestore.services.UserDetailsServiceImpl;
+import nic.project.onlinestore.services.user.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

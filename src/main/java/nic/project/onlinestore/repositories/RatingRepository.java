@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface RatingRepository extends JpaRepository<Rating, Long> {
 
-    Rating findByUserAndProduct(User user, Product product);
+    Rating findRatingByUserAndProduct(User user, Product product);
 
     @Modifying
     @Query("UPDATE Rating r SET r.value = ?2 WHERE r.id = ?1")

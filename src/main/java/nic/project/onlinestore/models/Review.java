@@ -28,7 +28,7 @@ public class Review {
     private LocalDateTime createdAt;
 
     @OneToMany(fetch = FetchType.LAZY)
-    private List<ReviewImage> images;
+    private List<ReviewImage> reviewImages;
 
     @ManyToOne
     @JoinTable(name = "user_reviews", joinColumns = @JoinColumn(name = "review_id", referencedColumnName = "id"),
