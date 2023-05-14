@@ -1,11 +1,11 @@
 package nic.project.onlinestore;
 
-import nic.project.onlinestore.models.Category;
-import nic.project.onlinestore.models.Product;
-import nic.project.onlinestore.models.ProductImage;
-import nic.project.onlinestore.repositories.CategoryRepository;
-import nic.project.onlinestore.repositories.ProductImageRepository;
-import nic.project.onlinestore.repositories.ProductRepository;
+import nic.project.onlinestore.model.Category;
+import nic.project.onlinestore.model.Product;
+import nic.project.onlinestore.model.ProductImage;
+import nic.project.onlinestore.repository.CategoryRepository;
+import nic.project.onlinestore.repository.ProductImageRepository;
+import nic.project.onlinestore.repository.ProductRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;

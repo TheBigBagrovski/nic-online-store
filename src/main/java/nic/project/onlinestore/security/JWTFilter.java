@@ -1,9 +1,9 @@
 package nic.project.onlinestore.security;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import nic.project.onlinestore.models.UserDetailsImpl;
-import nic.project.onlinestore.services.user.UserDetailsServiceImpl;
-import nic.project.onlinestore.exceptions.EmailNotFoundException;
+import nic.project.onlinestore.model.UserDetailsImpl;
+import nic.project.onlinestore.service.user.UserDetailsServiceImpl;
+import nic.project.onlinestore.exception.EmailNotFoundException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
