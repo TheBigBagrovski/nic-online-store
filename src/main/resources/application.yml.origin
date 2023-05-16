@@ -3,8 +3,8 @@ spring:
     generate-unique-name: false
     username:
     password:
-    name:
-    url: jdbc:postgresql://localhost:5432/
+    name: online_store
+    url: jdbc:postgresql://localhost:5432/online_store
     driver-class-name: org.postgresql.Driver
   thymeleaf:
     cache: false
@@ -15,9 +15,13 @@ spring:
       hibernate:
         show_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 50MB
+
 
 jwt_secret:
 product_images_path: images/product-images/
 review_images_path: images/review-images/
 max_images_in_review: 5
-max_review_image_size: 10485760

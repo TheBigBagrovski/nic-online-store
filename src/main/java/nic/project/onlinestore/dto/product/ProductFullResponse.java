@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class ProductFullDTO {
+public class ProductFullResponse {
 
     private String name;
 
@@ -23,7 +23,7 @@ public class ProductFullDTO {
 
     private Double averageRating;
 
-    private List<ReviewDTO> reviews;
+    private List<ReviewResponse> reviews;
 
     private Integer reviewsNumber;
 

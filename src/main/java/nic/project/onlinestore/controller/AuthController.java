@@ -1,8 +1,8 @@
 package nic.project.onlinestore.controller;
 
-import nic.project.onlinestore.dto.auth.AuthRequest;
+import nic.project.onlinestore.dto.auth.LoginRequest;
 import nic.project.onlinestore.dto.auth.RegisterRequest;
-import nic.project.onlinestore.dto.user.UserDTO;
+import nic.project.onlinestore.dto.user.UserResponse;
 import nic.project.onlinestore.service.user.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,7 +26,7 @@ public class AuthController {
     }
 
     @GetMapping("/show-user")
-    public ResponseEntity<UserDTO> showUserInfo() {
+    public ResponseEntity<UserResponse> showUserInfo() {
         return new ResponseEntity<>(authService.getCurrentAuthorizedUserDTO(), HttpStatus.OK);
     }
 
@@ -36,8 +36,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> performLogin(@RequestBody @Valid AuthRequest authRequest) {
-        return new ResponseEntity<>(Collections.singletonMap("jwt-token", authService.login(authRequest)), HttpStatus.OK);
+    public ResponseEntity<Map<String, String>> performLogin(@RequestBody @Valid LoginRequest loginRequest, BindingResult bindingResult) {
+        return new ResponseEntity<>(Collections.singletonMap("jwt-token", authService.login(loginRequest, bindingResult)), HttpStatus.OK);
     }
 
 }

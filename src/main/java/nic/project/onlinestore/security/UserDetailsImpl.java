@@ -1,5 +1,6 @@
-package nic.project.onlinestore.model;
+package nic.project.onlinestore.security;
 
+import nic.project.onlinestore.model.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
@@ -11,6 +12,10 @@ public class UserDetailsImpl implements UserDetails {
 
     public UserDetailsImpl(User user) {
         this.user = user;
+    }
+
+    public User getUser() {
+        return user;
     }
 
     @Override

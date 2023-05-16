@@ -1,5 +1,6 @@
 package nic.project.onlinestore.util;
 
+import lombok.NonNull;
 import nic.project.onlinestore.dto.auth.RegisterRequest;
 import nic.project.onlinestore.model.User;
 import nic.project.onlinestore.repository.UserRepository;
@@ -19,15 +20,15 @@ public class RegisterValidator implements Validator {
     }
 
     @Override
-    public boolean supports(Class<?> clazz) {
+    public boolean supports(@NonNull Class<?> clazz) {
         return User.class.equals(clazz);
     }
 
     @Override
-    public void validate(Object target, Errors errors) {
+    public void validate(@NonNull Object target, @NonNull Errors errors) {
         RegisterRequest registerRequest = (RegisterRequest) target;
         if(!Objects.equals(registerRequest.getPassword(), registerRequest.getMatchingPassword())) {
-            errors.rejectValue("password", "", "Пароли не совпадают");
+            errors.rejectValue("matchingPassword", "", "Пароли не совпадают");
         }
         if (userRepository.findUserByEmail(registerRequest.getEmail()).isPresent()) {
             errors.rejectValue("email", "", "Этот почтовый адрес занят");

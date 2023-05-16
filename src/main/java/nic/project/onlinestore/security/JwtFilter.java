@@ -1,9 +1,8 @@
 package nic.project.onlinestore.security;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import nic.project.onlinestore.model.UserDetailsImpl;
+import lombok.NonNull;
 import nic.project.onlinestore.service.user.UserDetailsServiceImpl;
-import nic.project.onlinestore.exception.EmailNotFoundException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -16,23 +15,26 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component
-public class JWTFilter extends OncePerRequestFilter {
+public class JwtFilter extends OncePerRequestFilter {
+
+    private static final String AUTHORIZATION = "Authorization";
+    private static final String BEARER = "Bearer ";
 
     private final UserDetailsServiceImpl userDetailsServiceImpl;
-    private final JWTUtil jwtUtil;
+    private final JwtUtil jwtUtil;
 
-    public JWTFilter(JWTUtil jwtUtil, UserDetailsServiceImpl userService) {
+    public JwtFilter(JwtUtil jwtUtil, UserDetailsServiceImpl userService) {
         this.userDetailsServiceImpl = userService;
         this.jwtUtil = jwtUtil;
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String authHeader = request.getHeader("Authorization");
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+    protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
+        String authHeader = request.getHeader(AUTHORIZATION);
+        if (authHeader != null && authHeader.startsWith(BEARER)) {
             String jwt = authHeader.substring(7);
             if (jwt.isEmpty())
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid JWT token in Bearer header");
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No JWT token found in Bearer header");
             else {
                 try {
                     String email = jwtUtil.validateTokenAndRetrieveClaim(jwt);
@@ -47,12 +49,11 @@ public class JWTFilter extends OncePerRequestFilter {
                     }
                 } catch (JWTVerificationException e) {
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid JWT token");
-                } catch (EmailNotFoundException e) {
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
                     return;
                 }
             }
         }
         filterChain.doFilter(request, response);
     }
+
 }

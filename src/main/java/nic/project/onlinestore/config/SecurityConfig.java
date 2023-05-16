@@ -1,12 +1,11 @@
 package nic.project.onlinestore.config;
 
-import nic.project.onlinestore.security.JWTFilter;
-import nic.project.onlinestore.service.user.UserDetailsServiceImpl;
+import nic.project.onlinestore.security.JwtAuthEntryPoint;
+import nic.project.onlinestore.security.JwtFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -20,23 +19,24 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @EnableWebMvc
 public class SecurityConfig {
 
-    private final JWTFilter jwtFilter;
-    private final UserDetailsServiceImpl userDetailsServiceImpl;
+    private final JwtFilter jwtFilter;
+    private final JwtAuthEntryPoint authEntryPoint;
 
     @Autowired
-    public SecurityConfig(JWTFilter jwtFilter, UserDetailsServiceImpl userDetailsServiceImpl) {
+    public SecurityConfig(JwtFilter jwtFilter, JwtAuthEntryPoint authEntryPoint) {
         this.jwtFilter = jwtFilter;
-        this.userDetailsServiceImpl = userDetailsServiceImpl;
+        this.authEntryPoint = authEntryPoint;
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
-//                .cors().disable()
+                .exceptionHandling().authenticationEntryPoint(authEntryPoint)
+                .and()
                 .authorizeRequests()
-                .antMatchers("/catalog").hasAnyRole("USER")
-                .antMatchers("/", "/**").permitAll()
+                .antMatchers("/", "/auth/register", "/auth/login").permitAll()
+                .anyRequest().authenticated()
                 .and()
                 .formLogin().loginPage("/login")
                 .and()
@@ -50,11 +50,6 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder getPasswordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsServiceImpl)
-                .passwordEncoder(getPasswordEncoder());
     }
 
     @Bean

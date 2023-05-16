@@ -2,7 +2,7 @@ package nic.project.onlinestore.service.catalog;
 
 import nic.project.onlinestore.model.Category;
 import nic.project.onlinestore.repository.CategoryRepository;
-import nic.project.onlinestore.exception.CategoryNotFoundException;
+import nic.project.onlinestore.exception.exceptions.CategoryNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

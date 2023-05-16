@@ -1,7 +1,7 @@
 package nic.project.onlinestore.service.user;
 
 import nic.project.onlinestore.model.Cart;
-import nic.project.onlinestore.model.Role;
+import nic.project.onlinestore.security.Role;
 import nic.project.onlinestore.model.User;
 import nic.project.onlinestore.repository.CartRepository;
 import nic.project.onlinestore.repository.UserRepository;
@@ -23,10 +23,6 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.cartRepository = cartRepository;
-    }
-
-    public User findUserByEmail(String email) {
-        return userRepository.findUserByEmail(email).get();
     }
 
     @Transactional

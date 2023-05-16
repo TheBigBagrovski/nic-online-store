@@ -1,8 +1,8 @@
 package nic.project.onlinestore.service.user;
 
-import nic.project.onlinestore.exception.EmailNotFoundException;
+import nic.project.onlinestore.exception.exceptions.EmailNotFoundException;
 import nic.project.onlinestore.model.User;
-import nic.project.onlinestore.model.UserDetailsImpl;
+import nic.project.onlinestore.security.UserDetailsImpl;
 import nic.project.onlinestore.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -24,7 +24,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetailsImpl loadUserByUsername(String email) throws UsernameNotFoundException {
         Optional<User> user = userRepository.findUserByEmail(email);
-        if (!user.isPresent()) throw new EmailNotFoundException("Пользователь не найден");
+        if (!user.isPresent()) throw new EmailNotFoundException("Пользователь с таким email не найден");
         return new UserDetailsImpl(user.get());
     }
 

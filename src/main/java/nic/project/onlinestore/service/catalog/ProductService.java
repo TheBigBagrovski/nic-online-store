@@ -1,30 +1,27 @@
 package nic.project.onlinestore.service.catalog;
 
-import nic.project.onlinestore.dto.catalog.CategoriesAndProductsDTO;
-import nic.project.onlinestore.dto.catalog.CategoryDTO;
+import nic.project.onlinestore.dto.catalog.CategoriesAndProductsResponse;
+import nic.project.onlinestore.dto.catalog.CategoryResponse;
 import nic.project.onlinestore.dto.product.ProductImageDTO;
-import nic.project.onlinestore.dto.product.ProductShortDTO;
-import nic.project.onlinestore.dto.product.ProductFullDTO;
-import nic.project.onlinestore.dto.product.ReviewDTO;
-import nic.project.onlinestore.exception.ImageUploadException;
-import nic.project.onlinestore.exception.ProductNotFoundException;
-import nic.project.onlinestore.exception.RatingException;
-import nic.project.onlinestore.exception.ReviewException;
+import nic.project.onlinestore.dto.product.ProductShortResponse;
+import nic.project.onlinestore.dto.product.ProductFullResponse;
+import nic.project.onlinestore.dto.product.ReviewResponse;
+import nic.project.onlinestore.exception.*;
+import nic.project.onlinestore.exception.exceptions.*;
 import nic.project.onlinestore.model.*;
 import nic.project.onlinestore.repository.ProductRepository;
 import nic.project.onlinestore.service.user.AuthService;
+import nic.project.onlinestore.util.FormValidator;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -35,24 +32,23 @@ public class ProductService {
     @Value("${max_images_in_review}")
     private Integer MAX_IMAGES_IN_REVIEW;
 
-    @Value("${max_review_image_size}")
-    private Integer MAX_REVIEW_IMAGE_SIZE;
-
     private final ProductRepository productRepository;
     private final CategoryService categoryService;
     private final AuthService authService;
     private final ModelMapper modelMapper;
     private final RatingService ratingService;
     private final ReviewService reviewService;
+    private final FormValidator formValidator;
 
     @Autowired
-    public ProductService(ProductRepository productRepository, CategoryService categoryService, AuthService authService, ModelMapper modelMapper, RatingService ratingService, ReviewService reviewService) {
+    public ProductService(ProductRepository productRepository, CategoryService categoryService, AuthService authService, ModelMapper modelMapper, RatingService ratingService, ReviewService reviewService, FormValidator formValidator) {
         this.productRepository = productRepository;
         this.categoryService = categoryService;
         this.authService = authService;
         this.modelMapper = modelMapper;
         this.ratingService = ratingService;
         this.reviewService = reviewService;
+        this.formValidator = formValidator;
     }
 
     public Product findProductById(Long id) {
@@ -65,50 +61,51 @@ public class ProductService {
         return productRepository.findByCategoryId(category.getId());
     }
 
-    public CategoriesAndProductsDTO getProductsAndChildCategoriesByCategory(Long categoryId) {
+    public CategoriesAndProductsResponse getProductsAndChildCategoriesByCategory(Long categoryId) {
         Category category = categoryService.findCategoryById(categoryId);
-        List<CategoryDTO> childCategories = categoryService.findChildCategoriesByCategory(category).stream().map(this::convertToCategoryDTO).collect(Collectors.toList());
+        List<CategoryResponse> childCategories = categoryService.findChildCategoriesByCategory(category).stream().map(this::convertToCategoryResponse).collect(Collectors.toList());
         List<Product> products = findProductsByCategory(category);
-        List<ProductShortDTO> productDTOS = new ArrayList<>();
+        List<ProductShortResponse> productDTOS = new ArrayList<>();
         for (Product product : products) {
-            ProductShortDTO productShortDTO = convertToProductDTO(product);
+            ProductShortResponse productShortResponse = convertToProductShortResponse(product);
             List<ProductImage> productProductImages = product.getProductImages();
             if (productProductImages != null && !productProductImages.isEmpty())
-                productShortDTO.setImage(convertToImageDTO(productProductImages.get(0)));
-            productShortDTO.setRatingsNumber(ratingService.findRatingsNumberByProduct(product));
-            productShortDTO.setAverageRating(ratingService.findAverageRatingByProduct(product));
-            productDTOS.add(productShortDTO);
+                productShortResponse.setImage(convertToProductImageDTO(productProductImages.get(0)));
+            productShortResponse.setRatingsNumber(ratingService.findRatingsNumberByProduct(product));
+            productShortResponse.setAverageRating(ratingService.findAverageRatingByProduct(product));
+            productDTOS.add(productShortResponse);
         }
-        CategoriesAndProductsDTO responseBody = new CategoriesAndProductsDTO();
+        CategoriesAndProductsResponse responseBody = new CategoriesAndProductsResponse();
         responseBody.setChildCategories(childCategories);
         responseBody.setProducts(productDTOS);
         return responseBody;
     }
 
-    public ProductFullDTO getProductPage(Long productId) {
+    public ProductFullResponse getProductPage(Long productId) {
         Product product = findProductById(productId);
-        ProductFullDTO productFullDTO = convertToProductFullDTO(product);
-        productFullDTO.setRatingsNumber(ratingService.findRatingsNumberByProduct(product));
-        productFullDTO.setAverageRating(ratingService.findAverageRatingByProduct(product));
+        ProductFullResponse productFullResponse = convertToProductFullDTO(product);
+        productFullResponse.setRatingsNumber(ratingService.findRatingsNumberByProduct(product));
+        productFullResponse.setAverageRating(ratingService.findAverageRatingByProduct(product));
         List<Review> reviewsList = reviewService.findReviewsByProduct(product);
-        List<ReviewDTO> reviewDTOS = new ArrayList<>();
+        List<ReviewResponse> reviewResponses = new ArrayList<>();
         for (Review review : reviewsList) {
-            ReviewDTO reviewDTO = convertToReviewDTO(review);
-            reviewDTO.setAuthor(review.getUser().getEmail());
-            reviewDTOS.add(reviewDTO);
+            ReviewResponse reviewResponse = convertToReviewResponse(review);
+            reviewResponse.setAuthor(review.getUser().getEmail());
+            reviewResponses.add(reviewResponse);
         }
-        productFullDTO.setReviews(reviewDTOS);
-        productFullDTO.setReviewsNumber(reviewsList.size());
-        return productFullDTO;
+        productFullResponse.setReviews(reviewResponses);
+        productFullResponse.setReviewsNumber(reviewsList.size());
+        return productFullResponse;
     }
 
-    public void rateProduct(Long productId, Integer ratingValue) { // TODO(): нужна система заказов - дать возможность оставлять оценки и отзывы только тем, кто заказывал товар
+    public void rateProduct(Long productId, Integer ratingValue, BindingResult bindingResult) { // TODO(): нужна система заказов - дать возможность оставлять оценки и отзывы только тем, кто заказывал товар
+        formValidator.checkFormBindingResult(bindingResult);
         Product product = findProductById(productId);
         User user = authService.getCurrentAuthorizedUser();
         Rating rating = ratingService.findRatingByUserAndProduct(user, product);
         if (rating != null) {
             if (Objects.equals(rating.getValue(), ratingValue))
-                throw new RatingException("Вы уже оценивали этот товар");
+                throw new RatingAlreadyExistsException("Вы уже оценивали этот товар");
             else {
                 ratingService.updateValueById(rating, ratingValue);
                 return;
@@ -117,54 +114,56 @@ public class ProductService {
         ratingService.saveRating(user, product, ratingValue);
     }
 
-    public ReviewDTO getReviewDTOForEditing(Long productId) {
+    public ReviewResponse getReviewDTOForEditing(Long productId) {
         Product product = findProductById(productId);
         User user = authService.getCurrentAuthorizedUser();
         Review review = reviewService.findReviewByUserAndProduct(user, product);
-        return convertToReviewDTO(review);
+        if (review == null) throw new ReviewNotFoundException("Отзыв не найден");
+        return convertToReviewResponse(review);
     }
 
     public void reviewProduct(Long productId, String comment, List<MultipartFile> files) {
-        Product product = findProductById(productId);
-        User user = authService.getCurrentAuthorizedUser();
-        Review review = reviewService.findReviewByUserAndProduct(user, product);
-        if (review != null) throw new ReviewException("Вы уже оставили отзыв на этот товар");
-        validateAndSaveReview(comment, files, user, product);
-    }
-
-    public void editReview(Long productId, String comment, List<MultipartFile> files) {
-        Product product = findProductById(productId);
-        User user = authService.getCurrentAuthorizedUser();
-        Review review = reviewService.findReviewByUserAndProduct(user, product);
-        if (review == null) throw new ReviewException("Отзыв не найден");
-        reviewService.deleteReview(review);
-        validateAndSaveReview(comment, files, user, product);
-    }
-
-    private void validateAndSaveReview(String comment, List<MultipartFile> files, User user, Product product) {
+        validateReview(comment, files);
         comment = new String(comment.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8); // todo() фикс кодировки
-        if (files != null && !files.isEmpty()) checkImageType(files);
+        Product product = findProductById(productId);
+        User user = authService.getCurrentAuthorizedUser();
+        Review review = reviewService.findReviewByUserAndProduct(user, product);
+        if (review != null) throw new ReviewAlreadyExistsException("Вы уже оставили отзыв на этот товар");
         reviewService.saveReview(comment, files, product, user);
     }
 
-    private void checkImageType(List<MultipartFile> files) {
-        for (MultipartFile file : files) {
-            if (file.getContentType() != null) {
-                if (!file.getContentType().startsWith("image"))
-                    throw new ImageUploadException("Загруженный файл не является изображением");
+    public void editReview(Long productId, String comment, List<MultipartFile> files) {
+        validateReview(comment, files);
+        comment = new String(comment.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8); // todo() фикс кодировки
+        Product product = findProductById(productId);
+        User user = authService.getCurrentAuthorizedUser();
+        Review review = reviewService.findReviewByUserAndProduct(user, product);
+        if (review == null) throw new ReviewNotFoundException("Отзыв не найден");
+        reviewService.deleteReview(review);
+        reviewService.saveReview(comment, files, product, user);
+    }
+
+    private void validateReview(String comment, List<MultipartFile> files) {
+        Map<String, String> errors = new HashMap<>();
+        if (comment.length() > 2000) errors.put("comment", "Превышено максимальное число символов (2000)");
+        if (comment.matches("^[ \t\n]*$")) errors.put("comment", "Комментарий не должен быть пустым");
+        if (files != null && !files.isEmpty()) {
+            for (MultipartFile file : files) {
+                if (file.getContentType() != null) {
+                    if (!file.getContentType().startsWith("image"))
+                        errors.put("files", "Загруженный файл не является изображением");
+                }
             }
-            if (file.getSize() > MAX_REVIEW_IMAGE_SIZE) {
-                throw new ImageUploadException("Размер файла превышает 10 Мб");
-            }
+            if (files.size() > MAX_IMAGES_IN_REVIEW) errors.put("files", "Не более 5 изображений");
         }
-        if (files.size() > MAX_IMAGES_IN_REVIEW) throw new ImageUploadException("Не более 5 изображений");
+        if(!errors.isEmpty()) throw new FormException(errors);
     }
 
     public void deleteRating(Long productId) {
         Product product = findProductById(productId);
         User user = authService.getCurrentAuthorizedUser();
         Rating rating = ratingService.findRatingByUserAndProduct(user, product);
-        if (rating == null) throw new RatingException("Вы еще не оценивали этот товар");
+        if (rating == null) throw new RatingNotFoundException("Вы еще не оценивали этот товар");
         ratingService.deleteRating(rating);
     }
 
@@ -172,28 +171,28 @@ public class ProductService {
         Product product = findProductById(productId);
         User user = authService.getCurrentAuthorizedUser();
         Review review = reviewService.findReviewByUserAndProduct(user, product);
-        if (review == null) throw new ReviewException("Отзыв не найден");
+        if (review == null) throw new ReviewNotFoundException("Отзыв не найден");
         reviewService.deleteReview(review);
     }
 
-    private ReviewDTO convertToReviewDTO(Review review) {
-        return modelMapper.map(review, ReviewDTO.class);
+    private ReviewResponse convertToReviewResponse(Review review) {
+        return modelMapper.map(review, ReviewResponse.class);
     }
 
-    private ProductShortDTO convertToProductDTO(Product product) {
-        return modelMapper.map(product, ProductShortDTO.class);
+    private ProductShortResponse convertToProductShortResponse(Product product) {
+        return modelMapper.map(product, ProductShortResponse.class);
     }
 
-    private ProductImageDTO convertToImageDTO(ProductImage image) {
+    private ProductImageDTO convertToProductImageDTO(ProductImage image) {
         return modelMapper.map(image, ProductImageDTO.class);
     }
 
-    private CategoryDTO convertToCategoryDTO(Category category) {
-        return modelMapper.map(category, CategoryDTO.class);
+    private CategoryResponse convertToCategoryResponse(Category category) {
+        return modelMapper.map(category, CategoryResponse.class);
     }
 
-    private ProductFullDTO convertToProductFullDTO(Product product) {
-        return modelMapper.map(product, ProductFullDTO.class);
+    private ProductFullResponse convertToProductFullDTO(Product product) {
+        return modelMapper.map(product, ProductFullResponse.class);
     }
 
 }

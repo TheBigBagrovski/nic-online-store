@@ -20,7 +20,7 @@ public class Category {
     private Long id;
 
     @NotBlank
-    @Size(min = 2, message = "Минимум 2 символа")
+    @Size(min = 2, message = "Минимум 2 символа в названии категории")
     @Column(nullable = false)
     private String name;
 

@@ -19,9 +19,9 @@ public class ProductImage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String path;
+    private String path; // todo - нужен ли путь до изображения, нужно ли сохранять изображения в папке
 
-    private String name;
+    private String name; // todo - ограничения на имя?
 
     private String type;
 

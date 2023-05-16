@@ -3,7 +3,7 @@ package nic.project.onlinestore.dto.catalog;
 import lombok.Data;
 
 @Data
-public class CategoryDTO {
+public class CategoryResponse {
 
     private String name;
 

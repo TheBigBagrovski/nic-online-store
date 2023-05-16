@@ -1,6 +1,6 @@
 package nic.project.onlinestore.util;
 
-import nic.project.onlinestore.exception.ImageUploadException;
+import nic.project.onlinestore.exception.exceptions.ImageUploadException;
 
 import java.io.ByteArrayOutputStream;
 import java.util.zip.Deflater;

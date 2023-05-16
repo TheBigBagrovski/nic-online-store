@@ -1,4 +1,4 @@
-package nic.project.onlinestore.exception;
+package nic.project.onlinestore.exception.exceptions;
 
 public class CategoryNotFoundException extends RuntimeException {
 

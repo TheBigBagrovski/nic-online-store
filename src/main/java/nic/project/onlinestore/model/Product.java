@@ -6,8 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.util.List;
 
 @Data
@@ -23,10 +22,12 @@ public class Product {
     private Long id;
 
     @NotBlank
-    @Size(min = 2, message = "Минимум 2 символа")
+    @Size(max = 255, message = "В названии товара должно быть до 255 символов")
     @Column(nullable = false)
     private String name;
 
+//    @NotBlank
+    @Size(max = 2000, message = "В описании товара должно быть до 2000 символов")
     private String description;
 
     @OneToMany(cascade = CascadeType.ALL)
@@ -37,9 +38,15 @@ public class Product {
             inverseJoinColumns = @JoinColumn(name = "category_id", referencedColumnName = "id"))
     private List<Category> categories;
 
+    @NotNull
+    @Min(value = 0, message = "Минимальная цена - 0 рублей")
+    @Digits(integer = 50, fraction = 10, message = "Некорректное число")
     @Column(nullable = false)
     private Double price;
 
+    @NotNull
+    @Min(value = 0, message = "Минимальное количество - 0")
+    @Digits(integer = 50, fraction = 0, message = "Некорректное число")
     @Column(nullable = false)
     private Integer quantity;
 

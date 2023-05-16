@@ -1,19 +1,19 @@
 package nic.project.onlinestore.controller;
 
-import nic.project.onlinestore.dto.ErrorResponse;
-import nic.project.onlinestore.dto.catalog.CategoriesAndProductsDTO;
-import nic.project.onlinestore.dto.product.ProductShortDTO;
+import nic.project.onlinestore.dto.catalog.CategoriesAndProductsResponse;
+import nic.project.onlinestore.dto.product.ProductFullResponse;
+import nic.project.onlinestore.dto.product.ProductRequest;
 import nic.project.onlinestore.dto.product.RatingDTO;
-import nic.project.onlinestore.dto.product.ProductFullDTO;
-import nic.project.onlinestore.dto.product.ReviewDTO;
-import nic.project.onlinestore.exception.CategoryNotFoundException;
-import nic.project.onlinestore.service.user.CartService;
+import nic.project.onlinestore.dto.product.ReviewResponse;
 import nic.project.onlinestore.service.catalog.ProductService;
+import nic.project.onlinestore.service.user.CartService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -29,30 +29,30 @@ public class CatalogController {
     }
 
     @PostMapping
-    public ResponseEntity<CategoriesAndProductsDTO> getProductsAndChildCategoriesByCategory(@RequestParam(value = "category") Long categoryId) {
+    public ResponseEntity<CategoriesAndProductsResponse> getProductsAndChildCategoriesByCategory(@RequestParam(value = "category") Long categoryId) {
         return new ResponseEntity<>(productService.getProductsAndChildCategoriesByCategory(categoryId), HttpStatus.OK);
     }
 
     @PutMapping
-    public ResponseEntity<Void> addProductToCart(@RequestBody ProductShortDTO productShortDTO) {
-        cartService.addToCart(productShortDTO.getId());
+    public ResponseEntity<Void> addProductToCart(@RequestBody @Valid ProductRequest productRequest, BindingResult bindingResult) {
+        cartService.addToCart(productRequest.getId(), bindingResult);
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping
-    public ResponseEntity<Void> changeProductQuantityInCart(@RequestBody ProductShortDTO productShortDTO, @RequestParam(name = "op") String operation) {
-        cartService.changeProductQuantityInCart(productShortDTO.getId(), operation);
+    public ResponseEntity<Void> changeProductQuantityInCart(@RequestBody @Valid ProductRequest productRequest, BindingResult bindingResult, @RequestParam(name = "op") String operation) {
+        cartService.changeProductQuantityInCart(productRequest.getId(), operation, bindingResult);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("{productId}")
-    public ResponseEntity<ProductFullDTO> getProductPage(@PathVariable Long productId) {
+    public ResponseEntity<ProductFullResponse> getProductPage(@PathVariable Long productId) {
         return new ResponseEntity<>(productService.getProductPage(productId), HttpStatus.OK);
     }
 
     @PostMapping(value = "{productId}/post-rating", produces = "text/plain;charset=UTF-8")
-    public ResponseEntity<?> postRating(@RequestBody RatingDTO ratingDTO, @PathVariable Long productId) {
-        productService.rateProduct(productId, ratingDTO.getValue());
+    public ResponseEntity<?> postRating(@RequestBody @Valid RatingDTO ratingDTO, BindingResult bindingResult, @PathVariable Long productId) {
+        productService.rateProduct(productId, ratingDTO.getValue(), bindingResult);
         return ResponseEntity.ok("Оценка поставлена!");
     }
 
@@ -63,10 +63,9 @@ public class CatalogController {
         productService.reviewProduct(productId, comment, files);
         return ResponseEntity.ok("Ваш отзыв добавлен!");
     }
-    // todo() обработать SizeLimitExceededException (10 мб)
 
     @GetMapping("{productId}/edit-review") // получить содержимое отзыва для редактирования
-    public ResponseEntity<ReviewDTO> getReviewDTOForEditing(@PathVariable Long productId) {
+    public ResponseEntity<ReviewResponse> getReviewDTOForEditing(@PathVariable Long productId) {
         return new ResponseEntity<>(productService.getReviewDTOForEditing(productId), HttpStatus.OK);
     }
 
@@ -88,15 +87,6 @@ public class CatalogController {
     public ResponseEntity<?> deleteReview(@PathVariable Long productId) {
         productService.deleteReview(productId);
         return ResponseEntity.ok("Отзыв удален");
-    }
-
-    @ExceptionHandler
-    private ResponseEntity<ErrorResponse> handleException(CategoryNotFoundException e) {
-        ErrorResponse response = new ErrorResponse(
-                e.getMessage(),
-                System.currentTimeMillis()
-        );
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
 }

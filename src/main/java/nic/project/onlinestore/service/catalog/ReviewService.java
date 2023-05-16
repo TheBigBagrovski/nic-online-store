@@ -1,6 +1,6 @@
 package nic.project.onlinestore.service.catalog;
 
-import nic.project.onlinestore.exception.ImageUploadException;
+import nic.project.onlinestore.exception.exceptions.ImageUploadException;
 import nic.project.onlinestore.model.Product;
 import nic.project.onlinestore.model.Review;
 import nic.project.onlinestore.model.ReviewImage;
