@@ -2,7 +2,7 @@ package nic.project.onlinestore.service.user;
 
 import nic.project.onlinestore.dto.auth.LoginRequest;
 import nic.project.onlinestore.dto.auth.RegisterRequest;
-import nic.project.onlinestore.dto.user.UserResponse;
+import nic.project.onlinestore.dto.user.UserInfoResponse;
 import nic.project.onlinestore.model.User;
 import nic.project.onlinestore.security.JwtUtil;
 import nic.project.onlinestore.util.FormValidator;
@@ -44,7 +44,7 @@ public class AuthService {
         return userDetailsService.loadUserByUsername(auth.getName()).getUser();
     }
 
-    public UserResponse getCurrentAuthorizedUserDTO() {
+    public UserInfoResponse getCurrentAuthorizedUserDTO() {
         return convertToUserDTO(getCurrentAuthorizedUser());
     }
 
@@ -74,8 +74,8 @@ public class AuthService {
         return modelMapper.map(registerRequest, User.class);
     }
 
-    private UserResponse convertToUserDTO(User user) {
-        return modelMapper.map(user, UserResponse.class);
+    private UserInfoResponse convertToUserDTO(User user) {
+        return modelMapper.map(user, UserInfoResponse.class);
     }
 
 }

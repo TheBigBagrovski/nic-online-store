@@ -7,6 +7,7 @@ import nic.project.onlinestore.dto.product.RatingDTO;
 import nic.project.onlinestore.dto.product.ReviewResponse;
 import nic.project.onlinestore.service.catalog.ProductService;
 import nic.project.onlinestore.service.user.CartService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -23,12 +24,13 @@ public class CatalogController {
     private final ProductService productService;
     private final CartService cartService;
 
+    @Autowired
     public CatalogController(ProductService productService, CartService cartService) {
         this.productService = productService;
         this.cartService = cartService;
     }
 
-    @PostMapping
+    @GetMapping
     public ResponseEntity<CategoriesAndProductsResponse> getProductsAndChildCategoriesByCategory(@RequestParam(value = "category") Long categoryId) {
         return new ResponseEntity<>(productService.getProductsAndChildCategoriesByCategory(categoryId), HttpStatus.OK);
     }

@@ -2,7 +2,7 @@ package nic.project.onlinestore.controller;
 
 import nic.project.onlinestore.dto.auth.LoginRequest;
 import nic.project.onlinestore.dto.auth.RegisterRequest;
-import nic.project.onlinestore.dto.user.UserResponse;
+import nic.project.onlinestore.dto.user.UserInfoResponse;
 import nic.project.onlinestore.service.user.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,7 +26,7 @@ public class AuthController {
     }
 
     @GetMapping("/show-user")
-    public ResponseEntity<UserResponse> showUserInfo() {
+    public ResponseEntity<UserInfoResponse> showUserInfo() {
         return new ResponseEntity<>(authService.getCurrentAuthorizedUserDTO(), HttpStatus.OK);
     }
 

@@ -24,7 +24,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
 @Service
 @Transactional
 public class ProductService {
@@ -54,7 +53,7 @@ public class ProductService {
     public Product findProductById(Long id) {
         Optional<Product> product = productRepository.findById(id);
         if (!product.isPresent()) throw new ProductNotFoundException("Товар не найден");
-        return productRepository.findById(id).get();
+        return product.get();
     }
 
     public List<Product> findProductsByCategory(Category category) {
@@ -75,10 +74,10 @@ public class ProductService {
             productShortResponse.setAverageRating(ratingService.findAverageRatingByProduct(product));
             productDTOS.add(productShortResponse);
         }
-        CategoriesAndProductsResponse responseBody = new CategoriesAndProductsResponse();
-        responseBody.setChildCategories(childCategories);
-        responseBody.setProducts(productDTOS);
-        return responseBody;
+        return CategoriesAndProductsResponse.builder()
+                .childCategories(childCategories)
+                .products(productDTOS)
+                .build();
     }
 
     public ProductFullResponse getProductPage(Long productId) {
@@ -156,7 +155,7 @@ public class ProductService {
             }
             if (files.size() > MAX_IMAGES_IN_REVIEW) errors.put("files", "Не более 5 изображений");
         }
-        if(!errors.isEmpty()) throw new FormException(errors);
+        if (!errors.isEmpty()) throw new FormException(errors);
     }
 
     public void deleteRating(Long productId) {
@@ -175,7 +174,7 @@ public class ProductService {
         reviewService.deleteReview(review);
     }
 
-    private ReviewResponse convertToReviewResponse(Review review) {
+    public ReviewResponse convertToReviewResponse(Review review) {
         return modelMapper.map(review, ReviewResponse.class);
     }
 
@@ -191,7 +190,7 @@ public class ProductService {
         return modelMapper.map(category, CategoryResponse.class);
     }
 
-    private ProductFullResponse convertToProductFullDTO(Product product) {
+    public ProductFullResponse convertToProductFullDTO(Product product) {
         return modelMapper.map(product, ProductFullResponse.class);
     }
 

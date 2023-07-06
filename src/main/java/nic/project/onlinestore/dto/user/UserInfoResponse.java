@@ -5,7 +5,7 @@ import nic.project.onlinestore.security.Role;
 
 
 @Data
-public class UserResponse {
+public class UserInfoResponse {
 
     private String email;
 

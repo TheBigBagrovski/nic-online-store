@@ -1,11 +1,13 @@
 package nic.project.onlinestore.dto.auth;
 
+import lombok.Builder;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Data
+@Builder
 public class RegisterRequest {
 
     @NotBlank(message = "Указан пустой email")

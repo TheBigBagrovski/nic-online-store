@@ -24,7 +24,7 @@ public class CategoryService {
     public Category findCategoryById(Long id) {
         Optional<Category> category =  categoryRepository.findById(id);
         if (!category.isPresent()) throw new CategoryNotFoundException("Категория не найдена");
-        return categoryRepository.findById(id).get();
+        return category.get();
     }
 
     public List<Category> findChildCategoriesByCategory(Category category) {
