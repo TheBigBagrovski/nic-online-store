@@ -174,7 +174,7 @@ public class ProductService {
         reviewService.deleteReview(review);
     }
 
-    public ReviewResponse convertToReviewResponse(Review review) {
+    private ReviewResponse convertToReviewResponse(Review review) {
         return modelMapper.map(review, ReviewResponse.class);
     }
 
@@ -190,7 +190,7 @@ public class ProductService {
         return modelMapper.map(category, CategoryResponse.class);
     }
 
-    public ProductFullResponse convertToProductFullDTO(Product product) {
+    private ProductFullResponse convertToProductFullDTO(Product product) {
         return modelMapper.map(product, ProductFullResponse.class);
     }
 

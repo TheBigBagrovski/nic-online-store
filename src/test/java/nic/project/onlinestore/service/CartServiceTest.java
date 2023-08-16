@@ -42,10 +42,10 @@ public class CartServiceTest {
     @InjectMocks
     private CartService cartService;
 
-    @BeforeEach
-    public void setup() {
-        MockitoAnnotations.openMocks(this);
-    }
+//    @BeforeEach
+//    public void setup() {
+//        MockitoAnnotations.openMocks(this);
+//    }
 
     @Test
     public void testAddToCart() {

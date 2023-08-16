@@ -1,13 +1,16 @@
 package nic.project.onlinestore.dto.auth;
 
-import lombok.Builder;
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class RegisterRequest {
 
     @NotBlank(message = "Указан пустой email")
@@ -32,4 +35,12 @@ public class RegisterRequest {
     @Size(max = 255, message = "Максимум 255 символов")
     private String lastname;
 
+    //    @JsonCreator
+//    public RegisterRequest(@JsonProperty("email") String email, @JsonProperty("password") String password, @JsonProperty("matchingPassword") String matchingPassword, @JsonProperty("firstname") String firstname, @JsonProperty("lastname") String lastname) {
+//        this.email = email;
+//        this.password = password;
+//        this.matchingPassword = matchingPassword;
+//        this.firstname = firstname;
+//        this.lastname = lastname;
+//    }
 }

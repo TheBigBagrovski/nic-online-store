@@ -1,12 +1,16 @@
 package nic.project.onlinestore.dto.product;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.*;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ProductRequest {
 
     @NotNull(message = "Пустой id продукта")
@@ -15,7 +19,4 @@ public class ProductRequest {
     @Digits(integer = 20, fraction = 0, message = "Некорректный id товара")
     private Long id;
 
-    public ProductRequest(Long id) {
-        this.id = id;
-    }
 }
