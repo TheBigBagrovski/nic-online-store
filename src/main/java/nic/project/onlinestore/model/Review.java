@@ -32,7 +32,7 @@ public class Review {
     private LocalDateTime createdAt;
 
     @OneToMany(fetch = FetchType.LAZY)
-    private List<ReviewImage> reviewImages;
+    private List<Image> images;
 
     @ManyToOne
     @JoinTable(name = "user_reviews", joinColumns = @JoinColumn(name = "review_id", referencedColumnName = "id"),

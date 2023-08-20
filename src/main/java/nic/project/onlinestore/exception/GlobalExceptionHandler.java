@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
                 e.getMessage(),
                 new Date()
         );
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({ProductAlreadyInCartException.class, RatingAlreadyExistsException.class, ReviewAlreadyExistsException.class})

@@ -108,7 +108,7 @@ public class ProductServiceTest {
                 .id(productId)
                 .name("Name")
                 .description("Description")
-                .productImages(null)
+                .images(null)
                 .categories(null)
                 .price(null)
                 .quantity(null)
@@ -207,14 +207,14 @@ public class ProductServiceTest {
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
         when(reviewService.findReviewByUserAndProduct(user, product)).thenReturn(review);
         assertDoesNotThrow(() -> productService.editReview(productId, comment, files));
-        verify(reviewService).deleteReview(review);
+        verify(reviewService).deleteReview(review, productId, user.getId());
         verify(reviewService).saveReview(comment, files, product, user);
         // ReviewNotFound
         when(authService.getCurrentAuthorizedUser()).thenReturn(user);
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
         when(reviewService.findReviewByUserAndProduct(user, product)).thenReturn(null);
         assertThrows(ReviewNotFoundException.class, () -> productService.editReview(productId, comment, files));
-        verify(reviewService, times(1)).deleteReview(any());
+        verify(reviewService, times(1)).deleteReview(any(), any(), any());
         verify(reviewService, times(1)).saveReview(any(), any(), any(), any());
     }
 
@@ -247,13 +247,13 @@ public class ProductServiceTest {
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
         when(reviewService.findReviewByUserAndProduct(user, product)).thenReturn(review);
         assertDoesNotThrow(() -> productService.deleteReview(productId));
-        verify(reviewService).deleteReview(review);
+        verify(reviewService).deleteReview(review, productId, user.getId());
         // ReviewNotFoundException
         when(authService.getCurrentAuthorizedUser()).thenReturn(user);
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
         when(reviewService.findReviewByUserAndProduct(user, product)).thenReturn(null);
         assertThrows(ReviewNotFoundException.class, () -> productService.deleteReview(productId));
-        verify(reviewService, times(1)).deleteReview(any());
+        verify(reviewService, times(1)).deleteReview(any(), any(), any());
     }
 
 }

@@ -14,6 +14,6 @@ public class ReviewResponse {
 
     private LocalDateTime createdAt;
 
-    private List<ProductImageDTO> images;
+    private List<ImageDTO> images;
 
 }

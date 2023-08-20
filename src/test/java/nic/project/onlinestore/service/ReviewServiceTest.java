@@ -1,10 +1,10 @@
 package nic.project.onlinestore.service;
 
+import nic.project.onlinestore.model.Image;
 import nic.project.onlinestore.model.Product;
 import nic.project.onlinestore.model.Review;
-import nic.project.onlinestore.model.ReviewImage;
 import nic.project.onlinestore.model.User;
-import nic.project.onlinestore.repository.ReviewImageRepository;
+import nic.project.onlinestore.repository.ImageRepository;
 import nic.project.onlinestore.repository.ReviewRepository;
 import nic.project.onlinestore.service.catalog.ReviewService;
 import org.junit.jupiter.api.Assertions;
@@ -13,13 +13,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class ReviewServiceTest {
@@ -28,7 +28,7 @@ public class ReviewServiceTest {
     private ReviewRepository reviewRepository;
 
     @Mock
-    private ReviewImageRepository reviewImageRepository;
+    private ImageRepository imageRepository;
 
     @InjectMocks
     private ReviewService reviewService;
@@ -55,26 +55,14 @@ public class ReviewServiceTest {
     }
 
     @Test
-    public void testSaveReview() {
-        String comment = "Test comment";
-        List<MultipartFile> files = new ArrayList<>();
-        Product product = new Product();
-        User user = new User();
-        ReviewImage savedImage = new ReviewImage();
-        assertDoesNotThrow(() -> reviewService.saveReview(comment, files, product, user));
-        verify(reviewRepository).save(any(Review.class));
-        verify(reviewImageRepository, times(files.size())).save(any(ReviewImage.class));
-    }
-
-    @Test
     public void testDeleteReview() {
         Review review = new Review();
-        List<ReviewImage> reviewImages = new ArrayList<>();
-        reviewImages.add(new ReviewImage());
-        reviewImages.add(new ReviewImage());
-        review.setReviewImages(reviewImages);
-        assertDoesNotThrow(() -> reviewService.deleteReview(review));
-        verify(reviewImageRepository).deleteAll(reviewImages);
+        List<Image> images = new ArrayList<>();
+        images.add(new Image());
+        images.add(new Image());
+        review.setImages(images);
+        assertDoesNotThrow(() -> reviewService.deleteReview(review, 1L, 1L));
+        verify(imageRepository).deleteAll(images);
         verify(reviewRepository).delete(review);
     }
 

@@ -1,7 +1,5 @@
 package nic.project.onlinestore.dto.product;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 @Data
@@ -14,7 +12,7 @@ public class ProductShortResponse {
 
     private String name;
 
-    private ProductImageDTO image;
+    private ImageDTO image;
 
     private Double price;
 

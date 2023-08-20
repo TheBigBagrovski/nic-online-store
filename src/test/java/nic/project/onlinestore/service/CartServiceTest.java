@@ -9,12 +9,10 @@ import nic.project.onlinestore.service.catalog.ProductService;
 import nic.project.onlinestore.service.user.AuthService;
 import nic.project.onlinestore.service.user.CartService;
 import nic.project.onlinestore.util.FormValidator;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.validation.BindingResult;
 
@@ -41,11 +39,6 @@ public class CartServiceTest {
 
     @InjectMocks
     private CartService cartService;
-
-//    @BeforeEach
-//    public void setup() {
-//        MockitoAnnotations.openMocks(this);
-//    }
 
     @Test
     public void testAddToCart() {

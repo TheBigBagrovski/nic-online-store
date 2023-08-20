@@ -1,12 +1,11 @@
 package nic.project.onlinestore.controller;
 
-import nic.project.onlinestore.controller.CatalogController;
 import nic.project.onlinestore.dto.catalog.CategoriesAndProductsResponse;
 import nic.project.onlinestore.dto.product.*;
 import nic.project.onlinestore.exception.FormException;
 import nic.project.onlinestore.exception.exceptions.*;
 import nic.project.onlinestore.repository.CategoryRepository;
-import nic.project.onlinestore.repository.ProductImageRepository;
+import nic.project.onlinestore.repository.ImageRepository;
 import nic.project.onlinestore.repository.ProductRepository;
 import nic.project.onlinestore.security.JwtFilter;
 import nic.project.onlinestore.service.catalog.ProductService;
@@ -47,13 +46,13 @@ class CatalogControllerTest {
     private ProductRepository productRepo;
 
     @Mock
-    private ProductImageRepository productImageRepo;
+    private ImageRepository productImageRepo;
 
     @InjectMocks
     private CatalogController catalogController;
 
     @Test
-    public void testGetProductsAndChildCategoriesByCategory() throws Exception {
+    public void testGetProductsAndChildCategoriesByCategory() {
         Long existingCategoryId = 1L;
         Long nonExistingCategoryId = 2L;
         ProductShortResponse productShortResponse = ProductShortResponse.builder()

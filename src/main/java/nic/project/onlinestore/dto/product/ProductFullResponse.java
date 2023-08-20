@@ -17,7 +17,7 @@ public class ProductFullResponse {
 
     private String description;
 
-    private List<ProductImageDTO> images;
+    private List<ImageDTO> images;
 
     private List<String> categories;
 

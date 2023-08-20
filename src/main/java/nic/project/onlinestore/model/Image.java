@@ -9,22 +9,20 @@ import javax.persistence.*;
 
 @Data
 @Entity
-@Table(name = "product_image")
+@Table(name = "image")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductImage {
+public class Image {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String path; // todo - нужен ли путь до изображения, нужно ли сохранять изображения в папке
+    private String path;
 
     private String name; // todo - ограничения на имя?
 
     private String type;
-
-    private byte[] image;
 
 }

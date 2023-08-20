@@ -1,11 +1,9 @@
 package nic.project.onlinestore.controller;
 
-import nic.project.onlinestore.controller.AuthController;
 import nic.project.onlinestore.dto.auth.LoginRequest;
 import nic.project.onlinestore.dto.auth.RegisterRequest;
 import nic.project.onlinestore.dto.user.UserInfoResponse;
 import nic.project.onlinestore.service.user.AuthService;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

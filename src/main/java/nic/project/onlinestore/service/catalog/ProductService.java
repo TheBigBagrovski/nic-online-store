@@ -2,11 +2,11 @@ package nic.project.onlinestore.service.catalog;
 
 import nic.project.onlinestore.dto.catalog.CategoriesAndProductsResponse;
 import nic.project.onlinestore.dto.catalog.CategoryResponse;
-import nic.project.onlinestore.dto.product.ProductImageDTO;
-import nic.project.onlinestore.dto.product.ProductShortResponse;
+import nic.project.onlinestore.dto.product.ImageDTO;
 import nic.project.onlinestore.dto.product.ProductFullResponse;
+import nic.project.onlinestore.dto.product.ProductShortResponse;
 import nic.project.onlinestore.dto.product.ReviewResponse;
-import nic.project.onlinestore.exception.*;
+import nic.project.onlinestore.exception.FormException;
 import nic.project.onlinestore.exception.exceptions.*;
 import nic.project.onlinestore.model.*;
 import nic.project.onlinestore.repository.ProductRepository;
@@ -67,9 +67,9 @@ public class ProductService {
         List<ProductShortResponse> productDTOS = new ArrayList<>();
         for (Product product : products) {
             ProductShortResponse productShortResponse = convertToProductShortResponse(product);
-            List<ProductImage> productProductImages = product.getProductImages();
-            if (productProductImages != null && !productProductImages.isEmpty())
-                productShortResponse.setImage(convertToProductImageDTO(productProductImages.get(0)));
+            List<Image> productImages = product.getImages();
+            if (productImages != null && !productImages.isEmpty())
+                productShortResponse.setImage(convertToImageDTO(productImages.get(0)));
             productShortResponse.setRatingsNumber(ratingService.findRatingsNumberByProduct(product));
             productShortResponse.setAverageRating(ratingService.findAverageRatingByProduct(product));
             productDTOS.add(productShortResponse);
@@ -138,7 +138,7 @@ public class ProductService {
         User user = authService.getCurrentAuthorizedUser();
         Review review = reviewService.findReviewByUserAndProduct(user, product);
         if (review == null) throw new ReviewNotFoundException("Отзыв не найден");
-        reviewService.deleteReview(review);
+        reviewService.deleteReview(review, productId, user.getId());
         reviewService.saveReview(comment, files, product, user);
     }
 
@@ -171,7 +171,7 @@ public class ProductService {
         User user = authService.getCurrentAuthorizedUser();
         Review review = reviewService.findReviewByUserAndProduct(user, product);
         if (review == null) throw new ReviewNotFoundException("Отзыв не найден");
-        reviewService.deleteReview(review);
+        reviewService.deleteReview(review, productId, user.getId());
     }
 
     private ReviewResponse convertToReviewResponse(Review review) {
@@ -182,8 +182,8 @@ public class ProductService {
         return modelMapper.map(product, ProductShortResponse.class);
     }
 
-    private ProductImageDTO convertToProductImageDTO(ProductImage image) {
-        return modelMapper.map(image, ProductImageDTO.class);
+    private ImageDTO convertToImageDTO(Image image) {
+        return modelMapper.map(image, ImageDTO.class);
     }
 
     private CategoryResponse convertToCategoryResponse(Category category) {
