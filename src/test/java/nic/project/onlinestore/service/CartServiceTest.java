@@ -5,6 +5,7 @@ import nic.project.onlinestore.model.Cart;
 import nic.project.onlinestore.model.Product;
 import nic.project.onlinestore.model.User;
 import nic.project.onlinestore.repository.CartRepository;
+import nic.project.onlinestore.service.catalog.CatalogService;
 import nic.project.onlinestore.service.catalog.ProductService;
 import nic.project.onlinestore.service.user.AuthService;
 import nic.project.onlinestore.service.user.CartService;
@@ -27,6 +28,9 @@ public class CartServiceTest {
 
     @Mock
     private CartRepository cartRepository;
+
+    @Mock
+    private CatalogService catalogService;
 
     @Mock
     private ProductService productService;

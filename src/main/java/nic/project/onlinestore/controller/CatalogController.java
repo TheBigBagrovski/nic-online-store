@@ -5,7 +5,7 @@ import nic.project.onlinestore.dto.product.ProductFullResponse;
 import nic.project.onlinestore.dto.product.ProductRequest;
 import nic.project.onlinestore.dto.product.RatingDTO;
 import nic.project.onlinestore.dto.product.ReviewResponse;
-import nic.project.onlinestore.service.catalog.ProductService;
+import nic.project.onlinestore.service.catalog.CatalogService;
 import nic.project.onlinestore.service.user.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,18 +21,18 @@ import java.util.List;
 @RequestMapping("catalog")
 public class CatalogController {
 
-    private final ProductService productService;
+    private final CatalogService catalogService;
     private final CartService cartService;
 
     @Autowired
-    public CatalogController(ProductService productService, CartService cartService) {
-        this.productService = productService;
+    public CatalogController(CatalogService catalogService, CartService cartService) {
+        this.catalogService = catalogService;
         this.cartService = cartService;
     }
 
     @GetMapping
     public ResponseEntity<CategoriesAndProductsResponse> getProductsAndChildCategoriesByCategory(@RequestParam(value = "category") Long categoryId) {
-        return new ResponseEntity<>(productService.getProductsAndChildCategoriesByCategory(categoryId), HttpStatus.OK);
+        return new ResponseEntity<>(catalogService.getProductsAndChildCategoriesByCategory(categoryId), HttpStatus.OK);
     }
 
     @PutMapping
@@ -49,12 +49,12 @@ public class CatalogController {
 
     @GetMapping("{productId}")
     public ResponseEntity<ProductFullResponse> getProductPage(@PathVariable Long productId) {
-        return new ResponseEntity<>(productService.getProductPage(productId), HttpStatus.OK);
+        return new ResponseEntity<>(catalogService.getProductPage(productId), HttpStatus.OK);
     }
 
     @PostMapping(value = "{productId}/post-rating", produces = "text/plain;charset=UTF-8")
     public ResponseEntity<?> postRating(@RequestBody @Valid RatingDTO ratingDTO, BindingResult bindingResult, @PathVariable Long productId) {
-        productService.rateProduct(productId, ratingDTO.getValue(), bindingResult);
+        catalogService.rateProduct(productId, ratingDTO.getValue(), bindingResult);
         return ResponseEntity.ok("Оценка поставлена!");
     }
 
@@ -62,32 +62,32 @@ public class CatalogController {
     public ResponseEntity<?> postReview(@RequestPart(name = "comment") String comment,
                                         @RequestPart(name = "files", required = false) List<MultipartFile> files,
                                         @PathVariable Long productId) {
-        productService.reviewProduct(productId, comment, files);
+        catalogService.reviewProduct(productId, comment, files);
         return ResponseEntity.ok("Ваш отзыв добавлен!");
     }
 
     @GetMapping("{productId}/edit-review") // получить содержимое отзыва для редактирования
     public ResponseEntity<ReviewResponse> getReviewDTOForEditing(@PathVariable Long productId) {
-        return new ResponseEntity<>(productService.getReviewDTOForEditing(productId), HttpStatus.OK);
+        return new ResponseEntity<>(catalogService.getReviewDTOForEditing(productId), HttpStatus.OK);
     }
 
     @PatchMapping(value = "{productId}/edit-review", produces = "text/plain;charset=UTF-8")
     public ResponseEntity<?> editReview(@RequestPart(name = "comment") String comment,
                                         @RequestPart(name = "files", required = false) List<MultipartFile> files,
                                         @PathVariable Long productId) {
-        productService.editReview(productId, comment, files);
+        catalogService.editReview(productId, comment, files);
         return ResponseEntity.ok("Ваш отзыв изменен!");
     }
 
     @DeleteMapping(value = "{productId}/delete-rating", produces = "text/plain;charset=UTF-8")
     public ResponseEntity<?> deleteRating(@PathVariable Long productId) {
-        productService.deleteRating(productId);
+        catalogService.deleteRating(productId);
         return ResponseEntity.ok("Оценка удалена");
     }
 
     @DeleteMapping(value = "{productId}/delete-review", produces = "text/plain;charset=UTF-8")
     public ResponseEntity<?> deleteReview(@PathVariable Long productId) {
-        productService.deleteReview(productId);
+        catalogService.deleteReview(productId);
         return ResponseEntity.ok("Отзыв удален");
     }
 

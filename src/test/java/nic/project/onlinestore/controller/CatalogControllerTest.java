@@ -8,7 +8,7 @@ import nic.project.onlinestore.repository.CategoryRepository;
 import nic.project.onlinestore.repository.ImageRepository;
 import nic.project.onlinestore.repository.ProductRepository;
 import nic.project.onlinestore.security.JwtFilter;
-import nic.project.onlinestore.service.catalog.ProductService;
+import nic.project.onlinestore.service.catalog.CatalogService;
 import nic.project.onlinestore.service.user.CartService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,7 +31,7 @@ import static org.mockito.Mockito.*;
 class CatalogControllerTest {
 
     @Mock
-    private ProductService productService;
+    private CatalogService catalogService;
 
     @Mock
     private CartService cartService;
@@ -68,16 +68,16 @@ class CatalogControllerTest {
                 .childCategories(null)
                 .products(Collections.singletonList(productShortResponse))
                 .build();
-        when(productService.getProductsAndChildCategoriesByCategory(existingCategoryId)).thenReturn(expectedResponse);
-        when(productService.getProductsAndChildCategoriesByCategory(nonExistingCategoryId)).thenThrow(CategoryNotFoundException.class);
+        when(catalogService.getProductsAndChildCategoriesByCategory(existingCategoryId)).thenReturn(expectedResponse);
+        when(catalogService.getProductsAndChildCategoriesByCategory(nonExistingCategoryId)).thenThrow(CategoryNotFoundException.class);
         // успешная работа
         ResponseEntity<CategoriesAndProductsResponse> response1 = catalogController.getProductsAndChildCategoriesByCategory(existingCategoryId);
-        verify(productService, times(1)).getProductsAndChildCategoriesByCategory(existingCategoryId);
+        verify(catalogService, times(1)).getProductsAndChildCategoriesByCategory(existingCategoryId);
         assertEquals(HttpStatus.OK, response1.getStatusCode());
         assertEquals(expectedResponse, response1.getBody());
         // нет такой категории
         assertThrows(CategoryNotFoundException.class, () -> catalogController.getProductsAndChildCategoriesByCategory(nonExistingCategoryId));
-        verify(productService, times(1)).getProductsAndChildCategoriesByCategory(nonExistingCategoryId);
+        verify(catalogService, times(1)).getProductsAndChildCategoriesByCategory(nonExistingCategoryId);
     }
 
     @Test
@@ -130,16 +130,16 @@ class CatalogControllerTest {
                 .reviews(null)
                 .reviewsNumber(3)
                 .build();
-        when(productService.getProductPage(existingProductId)).thenReturn(productFullResponse);
-        when(productService.getProductPage(nonExistingProductId)).thenThrow(ProductNotFoundException.class);
+        when(catalogService.getProductPage(existingProductId)).thenReturn(productFullResponse);
+        when(catalogService.getProductPage(nonExistingProductId)).thenThrow(ProductNotFoundException.class);
         // успешная работа
         ResponseEntity<ProductFullResponse> response1 = catalogController.getProductPage(existingProductId);
-        verify(productService, times(1)).getProductPage(existingProductId);
+        verify(catalogService, times(1)).getProductPage(existingProductId);
         assertEquals(HttpStatus.OK, response1.getStatusCode());
         assertEquals(productFullResponse, response1.getBody());
         // нет такого продукта
         assertThrows(ProductNotFoundException.class, () -> catalogController.getProductPage(nonExistingProductId));
-        verify(productService, times(1)).getProductPage(nonExistingProductId);
+        verify(catalogService, times(1)).getProductPage(nonExistingProductId);
     }
 
     @Test
@@ -155,17 +155,17 @@ class CatalogControllerTest {
         ResponseEntity<?> responseEntity = catalogController.postRating(ratingDTO, bindingResult, existingProductId);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals("Оценка поставлена!", responseEntity.getBody());
-        verify(productService, times(1)).rateProduct(existingProductId, validRating, bindingResult);
+        verify(catalogService, times(1)).rateProduct(existingProductId, validRating, bindingResult);
         // нет такого продукта
-        doThrow(ProductNotFoundException.class).when(productService).rateProduct(nonexistingProductId, validRating, bindingResult);
+        doThrow(ProductNotFoundException.class).when(catalogService).rateProduct(nonexistingProductId, validRating, bindingResult);
         assertThrows(ProductNotFoundException.class, () -> catalogController.postRating(ratingDTO, bindingResult, nonexistingProductId));
-        verify(productService, times(1)).rateProduct(nonexistingProductId, validRating, bindingResult);
+        verify(catalogService, times(1)).rateProduct(nonexistingProductId, validRating, bindingResult);
         // невалидная оценка
         RatingDTO invalidRatingDTO = new RatingDTO();
         invalidRatingDTO.setValue(invalidRating);
-        doThrow(FormException.class).when(productService).rateProduct(existingProductId, invalidRating, bindingResult);
+        doThrow(FormException.class).when(catalogService).rateProduct(existingProductId, invalidRating, bindingResult);
         assertThrows(FormException.class, () -> catalogController.postRating(invalidRatingDTO, bindingResult, existingProductId));
-        verify(productService, times(1)).rateProduct(existingProductId, validRating, bindingResult);
+        verify(catalogService, times(1)).rateProduct(existingProductId, validRating, bindingResult);
     }
 
     @Test
@@ -178,25 +178,25 @@ class CatalogControllerTest {
         ResponseEntity<?> responseEntity1 = catalogController.postReview(comment, files, existingProductId);
         assertEquals(HttpStatus.OK, responseEntity1.getStatusCode());
         assertEquals("Ваш отзыв добавлен!", responseEntity1.getBody());
-        verify(productService, times(1)).reviewProduct(existingProductId, comment, files);
+        verify(catalogService, times(1)).reviewProduct(existingProductId, comment, files);
         // нет такого продукта
-        doThrow(ProductNotFoundException.class).when(productService).reviewProduct(nonExistingProductId, comment, files);
+        doThrow(ProductNotFoundException.class).when(catalogService).reviewProduct(nonExistingProductId, comment, files);
         assertThrows(ProductNotFoundException.class, () -> catalogController.postReview(comment, files, nonExistingProductId));
-        verify(productService, times(1)).reviewProduct(nonExistingProductId, comment, files);
+        verify(catalogService, times(1)).reviewProduct(nonExistingProductId, comment, files);
         // отзыв уже оставлен
-        doThrow(ReviewAlreadyExistsException.class).when(productService).reviewProduct(existingProductId, comment, files);
+        doThrow(ReviewAlreadyExistsException.class).when(catalogService).reviewProduct(existingProductId, comment, files);
         assertThrows(ReviewAlreadyExistsException.class, () -> catalogController.postReview(comment, files, existingProductId));
-        verify(productService, times(2)).reviewProduct(existingProductId, comment, files);
+        verify(catalogService, times(2)).reviewProduct(existingProductId, comment, files);
         // пустой комментарий
         String emptyComment = "";
-        doThrow(FormException.class).when(productService).reviewProduct(existingProductId, emptyComment, files);
+        doThrow(FormException.class).when(catalogService).reviewProduct(existingProductId, emptyComment, files);
         assertThrows(FormException.class, () -> catalogController.postReview(emptyComment, files, existingProductId));
-        verify(productService, times(1)).reviewProduct(existingProductId, emptyComment, files);
+        verify(catalogService, times(1)).reviewProduct(existingProductId, emptyComment, files);
         // > 2000 символов в комментарии
         String longComment = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque auctor velit vel erat fringilla, at congue libero fermentum. Nulla facilisi. Sed consequat rhoncus velit, at lobortis leo mollis ac. Nulla efficitur augue vel libero pharetra, id laoreet elit venenatis. Maecenas sit amet elementum metus. Fusce bibendum metus a eleifend finibus. Proin eu dui et metus lacinia lacinia. Phasellus eleifend efficitur nisl, ac fringilla nulla tincidunt at. Pellentesque nec lacus eu nibh malesuada ultrices non vitae lectus. Morbi quis aliquam mauris, ac faucibus quam. Duis ac elit at nisl consequat placerat ac ut urna.";
-        doThrow(FormException.class).when(productService).reviewProduct(existingProductId, longComment, files);
+        doThrow(FormException.class).when(catalogService).reviewProduct(existingProductId, longComment, files);
         assertThrows(FormException.class, () -> catalogController.postReview(longComment, files, existingProductId));
-        verify(productService, times(1)).reviewProduct(existingProductId, longComment, files);
+        verify(catalogService, times(1)).reviewProduct(existingProductId, longComment, files);
     }
 
     @Test
@@ -205,19 +205,19 @@ class CatalogControllerTest {
         Long nonExistingProductId = 2L;
         ReviewResponse reviewResponse = new ReviewResponse();
         // успешная работа
-        when(productService.getReviewDTOForEditing(existingProductId)).thenReturn(reviewResponse);
+        when(catalogService.getReviewDTOForEditing(existingProductId)).thenReturn(reviewResponse);
         ResponseEntity<ReviewResponse> responseEntity1 = catalogController.getReviewDTOForEditing(existingProductId);
         assertEquals(HttpStatus.OK, responseEntity1.getStatusCode());
         assertEquals(reviewResponse, responseEntity1.getBody());
-        verify(productService, times(1)).getReviewDTOForEditing(existingProductId);
+        verify(catalogService, times(1)).getReviewDTOForEditing(existingProductId);
         // нет такого продукта
-        when(productService.getReviewDTOForEditing(nonExistingProductId)).thenThrow(ProductNotFoundException.class);
+        when(catalogService.getReviewDTOForEditing(nonExistingProductId)).thenThrow(ProductNotFoundException.class);
         assertThrows(ProductNotFoundException.class, () -> catalogController.getReviewDTOForEditing(nonExistingProductId));
-        verify(productService, times(1)).getReviewDTOForEditing(nonExistingProductId);
+        verify(catalogService, times(1)).getReviewDTOForEditing(nonExistingProductId);
         // нет такого отзыва
-        when(productService.getReviewDTOForEditing(existingProductId)).thenThrow(ReviewNotFoundException.class);
+        when(catalogService.getReviewDTOForEditing(existingProductId)).thenThrow(ReviewNotFoundException.class);
         assertThrows(ReviewNotFoundException.class, () -> catalogController.getReviewDTOForEditing(existingProductId));
-        verify(productService, times(2)).getReviewDTOForEditing(existingProductId);
+        verify(catalogService, times(2)).getReviewDTOForEditing(existingProductId);
     }
 
     @Test
@@ -232,23 +232,23 @@ class CatalogControllerTest {
         ResponseEntity<?> responseEntity1 = catalogController.editReview(validComment, files, existingProductId);
         assertEquals(HttpStatus.OK, responseEntity1.getStatusCode());
         assertEquals("Ваш отзыв изменен!", responseEntity1.getBody());
-        verify(productService, times(1)).editReview(existingProductId, validComment, files);
+        verify(catalogService, times(1)).editReview(existingProductId, validComment, files);
         // нет такого продукта
-        doThrow(ProductNotFoundException.class).when(productService).editReview(nonExistingProductId, validComment, files);
+        doThrow(ProductNotFoundException.class).when(catalogService).editReview(nonExistingProductId, validComment, files);
         assertThrows(ProductNotFoundException.class, () -> catalogController.editReview(validComment, files, nonExistingProductId));
-        verify(productService, times(1)).editReview(nonExistingProductId, validComment, files);
+        verify(catalogService, times(1)).editReview(nonExistingProductId, validComment, files);
         // нет такого отзыва
-        doThrow(ReviewNotFoundException.class).when(productService).editReview(existingProductId, validComment, files);
+        doThrow(ReviewNotFoundException.class).when(catalogService).editReview(existingProductId, validComment, files);
         assertThrows(ReviewNotFoundException.class, () -> catalogController.editReview(validComment, files, existingProductId));
-        verify(productService, times(2)).editReview(existingProductId, validComment, files);
+        verify(catalogService, times(2)).editReview(existingProductId, validComment, files);
         // пустой комментарий
-        doThrow(FormException.class).when(productService).editReview(existingProductId, emptyComment, files);
+        doThrow(FormException.class).when(catalogService).editReview(existingProductId, emptyComment, files);
         assertThrows(FormException.class, () -> catalogController.editReview(emptyComment, files, existingProductId));
-        verify(productService, times(1)).editReview(existingProductId, emptyComment, files);
+        verify(catalogService, times(1)).editReview(existingProductId, emptyComment, files);
         // > 2000 символов
-        doThrow(FormException.class).when(productService).editReview(existingProductId, longComment, files);
+        doThrow(FormException.class).when(catalogService).editReview(existingProductId, longComment, files);
         assertThrows(FormException.class, () -> catalogController.editReview(longComment, files, existingProductId));
-        verify(productService, times(1)).editReview(existingProductId, longComment, files);
+        verify(catalogService, times(1)).editReview(existingProductId, longComment, files);
     }
 
     @Test
@@ -259,15 +259,15 @@ class CatalogControllerTest {
         ResponseEntity<?> responseEntity1 = catalogController.deleteRating(existingProductId);
         assertEquals(HttpStatus.OK, responseEntity1.getStatusCode());
         assertEquals("Оценка удалена", responseEntity1.getBody());
-        verify(productService, times(1)).deleteRating(existingProductId);
+        verify(catalogService, times(1)).deleteRating(existingProductId);
         // нет такого продукта
-        doThrow(ProductNotFoundException.class).when(productService).deleteRating(nonExistingProductId);
+        doThrow(ProductNotFoundException.class).when(catalogService).deleteRating(nonExistingProductId);
         assertThrows(ProductNotFoundException.class, () -> catalogController.deleteRating(nonExistingProductId));
-        verify(productService, times(1)).deleteRating(nonExistingProductId);
+        verify(catalogService, times(1)).deleteRating(nonExistingProductId);
         // нет такой оценки
-        doThrow(RatingNotFoundException.class).when(productService).deleteRating(existingProductId);
+        doThrow(RatingNotFoundException.class).when(catalogService).deleteRating(existingProductId);
         assertThrows(RatingNotFoundException.class, () -> catalogController.deleteRating(existingProductId));
-        verify(productService, times(2)).deleteRating(existingProductId);
+        verify(catalogService, times(2)).deleteRating(existingProductId);
     }
 
 
@@ -279,15 +279,15 @@ class CatalogControllerTest {
         ResponseEntity<?> responseEntity1 = catalogController.deleteReview(existingProductId);
         assertEquals(HttpStatus.OK, responseEntity1.getStatusCode());
         assertEquals("Отзыв удален", responseEntity1.getBody());
-        verify(productService, times(1)).deleteReview(existingProductId);
+        verify(catalogService, times(1)).deleteReview(existingProductId);
         // нет такого продукта
-        doThrow(ProductNotFoundException.class).when(productService).deleteReview(nonExistingProductId);
+        doThrow(ProductNotFoundException.class).when(catalogService).deleteReview(nonExistingProductId);
         assertThrows(ProductNotFoundException.class, () -> catalogController.deleteReview(nonExistingProductId));
-        verify(productService, times(1)).deleteReview(nonExistingProductId);
+        verify(catalogService, times(1)).deleteReview(nonExistingProductId);
         // нет такого отзыва
-        doThrow(ReviewNotFoundException.class).when(productService).deleteReview(existingProductId);
+        doThrow(ReviewNotFoundException.class).when(catalogService).deleteReview(existingProductId);
         assertThrows(ReviewNotFoundException.class, () -> catalogController.deleteReview(existingProductId));
-        verify(productService, times(2)).deleteReview(existingProductId);
+        verify(catalogService, times(2)).deleteReview(existingProductId);
     }
 
 }
