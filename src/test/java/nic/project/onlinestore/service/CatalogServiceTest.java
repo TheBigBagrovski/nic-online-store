@@ -68,7 +68,7 @@ public class CatalogServiceTest {
         when(categoryService.findChildCategoriesByCategory(category)).thenReturn(childCategories);
         when(productService.findProductsByCategory(category)).thenReturn(products);
 
-        CategoriesAndProductsResponse result = catalogService.getProductsAndChildCategoriesByCategory(categoryId);
+        CategoriesAndProductsResponse result = catalogService.getProductsAndChildCategoriesByCategory(categoryId,null, null, null);
 
         assertEquals(childCategories, result.getChildCategories());
         assertEquals(products.size(), result.getProducts().size());

@@ -7,11 +7,13 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @Entity
-@Table(name = "product")
+@Table(name = "products")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -34,7 +36,7 @@ public class Product {
     private List<Image> images;
 
     @ManyToMany( cascade = CascadeType.ALL)
-    @JoinTable(name = "product_categories", joinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id"),
+    @JoinTable(name = "products_categories", joinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "category_id", referencedColumnName = "id"))
     private List<Category> categories;
 
@@ -49,5 +51,21 @@ public class Product {
     @Digits(integer = 50, fraction = 0, message = "Некорректное число")
     @Column(nullable = false)
     private Integer quantity;
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "products_filter_values",
+            inverseJoinColumns = @JoinColumn(name = "filter_value_id")
+    )
+    @MapKeyJoinColumn(name = "filter_id")
+    private final Map<Filter, FilterValue> filterProperties = new HashMap<>(); // final чтобы билдер игнорировал
+
+    public void addFilterProperty(Filter filter, FilterValue value) {
+        filterProperties.put(filter, value);
+    }
+
+    public void removeFilterProperty(Filter filter) {
+        filterProperties.remove(filter);
+    }
 
 }

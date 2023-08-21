@@ -9,7 +9,7 @@ import java.util.Map;
 
 @Data
 @Entity
-@Table(name = "cart")
+@Table(name = "carts")
 @NoArgsConstructor
 @AllArgsConstructor
 public class Cart {

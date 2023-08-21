@@ -15,7 +15,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("catalog")
@@ -31,8 +34,27 @@ public class CatalogController {
     }
 
     @GetMapping
-    public ResponseEntity<CategoriesAndProductsResponse> getProductsAndChildCategoriesByCategory(@RequestParam(value = "category") Long categoryId) {
-        return new ResponseEntity<>(catalogService.getProductsAndChildCategoriesByCategory(categoryId), HttpStatus.OK);
+    public ResponseEntity<CategoriesAndProductsResponse> getProductsAndChildCategoriesByCategory(@RequestParam(value = "category") Long categoryId,
+                                                                                                 @RequestParam(value = "minPrice", required = false) Double minPrice,
+                                                                                                 @RequestParam(value = "maxPrice", required = false) Double maxPrice,
+                                                                                                 @RequestParam(value = "filters", required = false) String filters) {
+        return new ResponseEntity<>(catalogService.getProductsAndChildCategoriesByCategory(categoryId, minPrice, maxPrice, parseFilters(filters)), HttpStatus.OK);
+    }
+
+    private Map<String, List<String>> parseFilters(String filtersParam) {
+        Map<String, List<String>> filters = new HashMap<>();
+        if (filtersParam != null) {
+            String[] filterPairs = filtersParam.split(";");
+            for (String filterPair : filterPairs) {
+                String[] keyValue = filterPair.split(":");
+                if (keyValue.length == 2) {
+                    String key = keyValue[0];
+                    String[] values = keyValue[1].split(","); // значения разделены запятой
+                    filters.put(key, Arrays.asList(values));
+                }
+            }
+        }
+        return filters;
     }
 
     @PutMapping

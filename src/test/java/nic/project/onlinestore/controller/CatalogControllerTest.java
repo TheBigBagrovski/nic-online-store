@@ -4,11 +4,15 @@ import nic.project.onlinestore.dto.catalog.CategoriesAndProductsResponse;
 import nic.project.onlinestore.dto.product.*;
 import nic.project.onlinestore.exception.FormException;
 import nic.project.onlinestore.exception.exceptions.*;
-import nic.project.onlinestore.repository.CategoryRepository;
-import nic.project.onlinestore.repository.ImageRepository;
-import nic.project.onlinestore.repository.ProductRepository;
+import nic.project.onlinestore.model.Category;
+import nic.project.onlinestore.model.Filter;
+import nic.project.onlinestore.model.FilterValue;
+import nic.project.onlinestore.model.Product;
+import nic.project.onlinestore.repository.*;
 import nic.project.onlinestore.security.JwtFilter;
 import nic.project.onlinestore.service.catalog.CatalogService;
+import nic.project.onlinestore.service.catalog.CategoryService;
+import nic.project.onlinestore.service.catalog.ProductService;
 import nic.project.onlinestore.service.user.CartService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +25,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -32,6 +38,9 @@ class CatalogControllerTest {
 
     @Mock
     private CatalogService catalogService;
+
+    @Mock
+    private ProductService productService;
 
     @Mock
     private CartService cartService;
@@ -47,6 +56,21 @@ class CatalogControllerTest {
 
     @Mock
     private ImageRepository productImageRepo;
+
+    @Mock
+    private CategoryService categoryService;
+
+    @Mock
+    private Filter filter;
+
+    @Mock
+    private FilterValue filterValue;
+
+    @Mock
+    private FilterRepository filterRepository;
+
+    @Mock
+    private FilterValueRepository filterValueRepository;
 
     @InjectMocks
     private CatalogController catalogController;
@@ -68,16 +92,16 @@ class CatalogControllerTest {
                 .childCategories(null)
                 .products(Collections.singletonList(productShortResponse))
                 .build();
-        when(catalogService.getProductsAndChildCategoriesByCategory(existingCategoryId)).thenReturn(expectedResponse);
-        when(catalogService.getProductsAndChildCategoriesByCategory(nonExistingCategoryId)).thenThrow(CategoryNotFoundException.class);
+        when(catalogService.getProductsAndChildCategoriesByCategory(existingCategoryId, null, null, Collections.emptyMap())).thenReturn(expectedResponse);
+        when(catalogService.getProductsAndChildCategoriesByCategory(nonExistingCategoryId, null, null, Collections.emptyMap())).thenThrow(CategoryNotFoundException.class);
         // успешная работа
-        ResponseEntity<CategoriesAndProductsResponse> response1 = catalogController.getProductsAndChildCategoriesByCategory(existingCategoryId);
-        verify(catalogService, times(1)).getProductsAndChildCategoriesByCategory(existingCategoryId);
+        ResponseEntity<CategoriesAndProductsResponse> response1 = catalogController.getProductsAndChildCategoriesByCategory(existingCategoryId,null, null, null);
+        verify(catalogService, times(1)).getProductsAndChildCategoriesByCategory(existingCategoryId,null, null, Collections.emptyMap());
         assertEquals(HttpStatus.OK, response1.getStatusCode());
         assertEquals(expectedResponse, response1.getBody());
         // нет такой категории
-        assertThrows(CategoryNotFoundException.class, () -> catalogController.getProductsAndChildCategoriesByCategory(nonExistingCategoryId));
-        verify(catalogService, times(1)).getProductsAndChildCategoriesByCategory(nonExistingCategoryId);
+        assertThrows(CategoryNotFoundException.class, () -> catalogController.getProductsAndChildCategoriesByCategory(nonExistingCategoryId,null, null, null));
+        verify(catalogService, times(1)).getProductsAndChildCategoriesByCategory(nonExistingCategoryId,null, null, Collections.emptyMap());
     }
 
     @Test

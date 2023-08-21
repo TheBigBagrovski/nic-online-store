@@ -1,11 +1,7 @@
 package nic.project.onlinestore;
 
-import nic.project.onlinestore.model.Category;
-import nic.project.onlinestore.model.Product;
-import nic.project.onlinestore.model.Image;
-import nic.project.onlinestore.repository.CategoryRepository;
-import nic.project.onlinestore.repository.ImageRepository;
-import nic.project.onlinestore.repository.ProductRepository;
+import nic.project.onlinestore.model.*;
+import nic.project.onlinestore.repository.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
@@ -15,8 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.*;
 
 @SpringBootApplication
 public class OnlineStoreApplication implements WebMvcConfigurer {
@@ -41,7 +36,10 @@ public class OnlineStoreApplication implements WebMvcConfigurer {
     @Bean
     public ApplicationRunner dataLoader(CategoryRepository categoryRepo,
                                         ProductRepository productRepo,
-                                        ImageRepository productImageRepo) {
+                                        ImageRepository productImageRepo,
+                                        FilterRepository filterRepo,
+                                        FilterValueRepository filterValueRepo
+    ) {
         return args -> {
             Category[] categories = new Category[]{
                     new Category(1L, "Смартфоны", null),
@@ -221,6 +219,40 @@ public class OnlineStoreApplication implements WebMvcConfigurer {
                     Product.builder().id(78L).name("Холодильник ZUGEL ZRSS630W").categories(Collections.singletonList(kitchen[0])).price(79999.0).quantity(4).build(),
                     Product.builder().id(79L).name("Холодильник Liebherr CNsfd 5223").categories(Collections.singletonList(kitchen[0])).price(70999.0).quantity(10).build()
             };
+            Filter smartphonesBrand = Filter.builder()
+                    .id(1L)
+                    .name("brand")
+                    .category(categories[0])
+                    .build();
+            List<FilterValue> filterValues = new ArrayList<>();
+            filterValues.add(FilterValue.builder().id(1L).value("Apple").filter(smartphonesBrand).build());
+            filterValues.add(FilterValue.builder().id(2L).value("Samsung").filter(smartphonesBrand).build());
+            filterValues.add(FilterValue.builder().id(3L).value("OnePlus").filter(smartphonesBrand).build());
+            filterValues.add(FilterValue.builder().id(4L).value("Huawei").filter(smartphonesBrand).build());
+            filterValues.add(FilterValue.builder().id(5L).value("Google").filter(smartphonesBrand).build());
+            filterValues.add(FilterValue.builder().id(6L).value("Honor").filter(smartphonesBrand).build());
+            filterValues.add(FilterValue.builder().id(7L).value("OPPO").filter(smartphonesBrand).build());
+            products[0].addFilterProperty(smartphonesBrand, filterValues.get(0));
+            products[1].addFilterProperty(smartphonesBrand,  filterValues.get(0));
+            products[2].addFilterProperty(smartphonesBrand,  filterValues.get(0));
+            products[3].addFilterProperty(smartphonesBrand,  filterValues.get(0));
+            products[4].addFilterProperty(smartphonesBrand,  filterValues.get(0));
+            products[5].addFilterProperty(smartphonesBrand,  filterValues.get(0));
+            products[6].addFilterProperty(smartphonesBrand,  filterValues.get(0));
+            products[7].addFilterProperty(smartphonesBrand,  filterValues.get(0));
+            products[8].addFilterProperty(smartphonesBrand,  filterValues.get(0));
+            products[9].addFilterProperty(smartphonesBrand,  filterValues.get(0));
+            products[10].addFilterProperty(smartphonesBrand,  filterValues.get(1));
+            products[11].addFilterProperty(smartphonesBrand, filterValues.get(1));
+            products[12].addFilterProperty(smartphonesBrand, filterValues.get(1));
+            products[13].addFilterProperty(smartphonesBrand, filterValues.get(1));
+            products[14].addFilterProperty(smartphonesBrand, filterValues.get(1));
+            products[15].addFilterProperty(smartphonesBrand, filterValues.get(2));
+            products[16].addFilterProperty(smartphonesBrand, filterValues.get(3));
+            products[17].addFilterProperty(smartphonesBrand, filterValues.get(3));
+            products[18].addFilterProperty(smartphonesBrand, filterValues.get(4));
+            products[19].addFilterProperty(smartphonesBrand, filterValues.get(5));
+            products[20].addFilterProperty(smartphonesBrand, filterValues.get(6));
             productImageRepo.saveAll(Arrays.asList(images));
             categoryRepo.saveAll(Arrays.asList(categories));
             categoryRepo.saveAll(Arrays.asList(smartphones));
@@ -231,6 +263,8 @@ public class OnlineStoreApplication implements WebMvcConfigurer {
             categoryRepo.saveAll(Arrays.asList(domestic));
             categoryRepo.saveAll(Arrays.asList(house));
             categoryRepo.saveAll(Arrays.asList(kitchen));
+            filterRepo.save(smartphonesBrand);
+            filterValueRepo.saveAll(filterValues);
             productRepo.saveAll(Arrays.asList(products));
         };
     }

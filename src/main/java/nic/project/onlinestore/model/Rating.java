@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 
 @Data
 @Entity
-@Table(name = "rating")
+@Table(name = "ratings")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -31,12 +31,12 @@ public class Rating {
     private Integer value; // todo - ограничение на значение?
 
     @ManyToOne
-    @JoinTable(name = "user_ratings", joinColumns = @JoinColumn(name = "rating_id", referencedColumnName = "id"),
+    @JoinTable(name = "users_ratings", joinColumns = @JoinColumn(name = "rating_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
     private User user;
 
     @ManyToOne
-    @JoinTable(name = "product_ratings", joinColumns = @JoinColumn(name = "rating_id", referencedColumnName = "id"),
+    @JoinTable(name = "products_ratings", joinColumns = @JoinColumn(name = "rating_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id"))
     private Product product;
 

@@ -10,7 +10,7 @@ import javax.validation.constraints.Size;
 
 @Data
 @Entity
-@Table(name = "category")
+@Table(name = "categories")
 @NoArgsConstructor
 @AllArgsConstructor
 public class Category {

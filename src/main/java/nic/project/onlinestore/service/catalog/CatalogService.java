@@ -9,6 +9,8 @@ import nic.project.onlinestore.dto.product.ReviewResponse;
 import nic.project.onlinestore.exception.FormException;
 import nic.project.onlinestore.exception.exceptions.*;
 import nic.project.onlinestore.model.*;
+import nic.project.onlinestore.repository.FilterRepository;
+import nic.project.onlinestore.repository.FilterValueRepository;
 import nic.project.onlinestore.service.user.AuthService;
 import nic.project.onlinestore.util.FormValidator;
 import org.modelmapper.ModelMapper;
@@ -37,9 +39,11 @@ public class CatalogService {
     private final RatingService ratingService;
     private final ReviewService reviewService;
     private final FormValidator formValidator;
+    private final FilterRepository filterRepository;
+    private final FilterValueRepository filterValueRepository;
 
     @Autowired
-    public CatalogService(CategoryService categoryService, AuthService authService, ProductService productService, ModelMapper modelMapper, RatingService ratingService, ReviewService reviewService, FormValidator formValidator) {
+    public CatalogService(CategoryService categoryService, AuthService authService, ProductService productService, ModelMapper modelMapper, RatingService ratingService, ReviewService reviewService, FormValidator formValidator, FilterRepository filterRepository, FilterValueRepository filterValueRepository) {
         this.categoryService = categoryService;
         this.authService = authService;
         this.productService = productService;
@@ -47,26 +51,66 @@ public class CatalogService {
         this.ratingService = ratingService;
         this.reviewService = reviewService;
         this.formValidator = formValidator;
+        this.filterRepository = filterRepository;
+        this.filterValueRepository = filterValueRepository;
     }
 
-    public CategoriesAndProductsResponse getProductsAndChildCategoriesByCategory(Long categoryId) {
+    public CategoriesAndProductsResponse getProductsAndChildCategoriesByCategory(Long categoryId, Double minPrice, Double maxPrice, Map<String, List<String>> filters) {
         Category category = categoryService.findCategoryById(categoryId);
         List<CategoryResponse> childCategories = categoryService.findChildCategoriesByCategory(category).stream().map(this::convertToCategoryResponse).collect(Collectors.toList());
         List<Product> products = productService.findProductsByCategory(category);
-        List<ProductShortResponse> productDTOS = new ArrayList<>();
+        List<Filter> possibleFiltersForCategory = filterRepository.findFiltersByCategory(category);
+        Map<Filter, List<FilterValue>> applicableFilters = new HashMap<>();
+        // подготовка фильтров
+        filters.forEach((filterName, filterValues) -> possibleFiltersForCategory.stream()
+                .filter(possibleFilter -> Objects.equals(possibleFilter.getName(), filterName))
+                .findFirst()
+                .ifPresent(possibleFilter -> {
+                    List<FilterValue> applicableValues = filterValues.stream()
+                            .flatMap(filterValue -> filterValueRepository.findFilterValuesByFilter(possibleFilter).stream())
+                            .filter(applicableFilterValue -> filterValues.contains(applicableFilterValue.getValue()))
+                            .collect(Collectors.toList());
+
+                    applicableFilters.put(possibleFilter, applicableValues);
+                }));
+        List<Product> passedPriceFilter = new ArrayList<>();
+        // ценовой фильтр
         for (Product product : products) {
-            ProductShortResponse productShortResponse = convertToProductShortResponse(product);
-            List<Image> productImages = product.getImages();
-            if (productImages != null && !productImages.isEmpty())
-                productShortResponse.setImage(convertToImageDTO(productImages.get(0)));
-            productShortResponse.setRatingsNumber(ratingService.findRatingsNumberByProduct(product));
-            productShortResponse.setAverageRating(ratingService.findAverageRatingByProduct(product));
+            Double price = product.getPrice();
+            if ((minPrice == null || price >= minPrice) &&
+                    (maxPrice == null || price <= maxPrice)) {
+                passedPriceFilter.add(product);
+            }
+        }
+        // фильтрация
+        List<Product> passedFilters = passedPriceFilter.stream()
+                .filter(product -> applicableFilters.entrySet().stream().allMatch(entry -> {
+                    Filter filter = entry.getKey();
+                    List<FilterValue> filterValues = entry.getValue();
+                    FilterValue productFilterValue = product.getFilterProperties().get(filter);
+                    return filterValues.stream().anyMatch(filterValue -> filterValue.equals(productFilterValue));
+                }))
+                .collect(Collectors.toList());
+        // формирование списка DTO
+        List<ProductShortResponse> productDTOS = new ArrayList<>();
+        for (Product product : passedFilters) {
+            ProductShortResponse productShortResponse = prepareProductResponse(product);
             productDTOS.add(productShortResponse);
         }
         return CategoriesAndProductsResponse.builder()
                 .childCategories(childCategories)
                 .products(productDTOS)
                 .build();
+    }
+
+    private ProductShortResponse prepareProductResponse(Product product) {
+        ProductShortResponse productShortResponse = convertToProductShortResponse(product);
+        List<Image> productImages = product.getImages();
+        if (productImages != null && !productImages.isEmpty())
+            productShortResponse.setImage(convertToImageDTO(productImages.get(0)));
+        productShortResponse.setRatingsNumber(ratingService.findRatingsNumberByProduct(product));
+        productShortResponse.setAverageRating(ratingService.findAverageRatingByProduct(product));
+        return productShortResponse;
     }
 
     public ProductFullResponse getProductPage(Long productId) {

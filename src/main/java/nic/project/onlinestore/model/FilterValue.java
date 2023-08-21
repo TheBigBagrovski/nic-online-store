@@ -6,23 +6,24 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @Entity
-@Table(name = "images")
+@Table(name = "filter_values")
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class Image {
+@AllArgsConstructor
+public class FilterValue {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String path;
+    private String value;
 
-    private String name; // todo - ограничения на имя?
-
-    private String type;
+    @ManyToOne
+    @JoinColumn(name = "filter_id")
+    private Filter filter; // Фильтр, к которому относится это значение
 
 }

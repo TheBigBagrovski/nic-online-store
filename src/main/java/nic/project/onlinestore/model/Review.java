@@ -13,7 +13,7 @@ import java.util.List;
 
 @Data
 @Entity
-@Table(name = "review")
+@Table(name = "reviews")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -35,12 +35,12 @@ public class Review {
     private List<Image> images;
 
     @ManyToOne
-    @JoinTable(name = "user_reviews", joinColumns = @JoinColumn(name = "review_id", referencedColumnName = "id"),
+    @JoinTable(name = "users_reviews", joinColumns = @JoinColumn(name = "review_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
     private User user;
 
     @ManyToOne
-    @JoinTable(name = "product_reviews", joinColumns = @JoinColumn(name = "review_id", referencedColumnName = "id"),
+    @JoinTable(name = "products_reviews", joinColumns = @JoinColumn(name = "review_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id"))
     private Product product;
 
