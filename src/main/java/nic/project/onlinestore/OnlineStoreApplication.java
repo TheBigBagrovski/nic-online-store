@@ -49,43 +49,38 @@ public class OnlineStoreApplication implements WebMvcConfigurer {
                     new Category(3L, "Бытовая техника", null)
             };
             Category[] smartphones = new Category[]{
-                    new Category(4L, "Apple", categories[0]),
-                    new Category(5L, "Samsung", categories[0]),
-                    new Category(6L, "Google", categories[0]),
-                    new Category(7L, "OnePlus", categories[0]),
-                    new Category(8L, "Huawei", categories[0]),
-                    new Category(9L, "Сопутствующие товары", categories[0])
+                    new Category(4L, "Сопутствующие товары", categories[0])
             };
             Category[] addgoods = new Category[]{
-                    new Category(10L, "Наушники", smartphones[5]),
-                    new Category(11L, "Чехлы", smartphones[5]),
-                    new Category(12L, "Накладки", smartphones[5])
+                    new Category(5L, "Наушники", smartphones[0]),
+                    new Category(6L, "Чехлы", smartphones[0]),
+                    new Category(7L, "Накладки", smartphones[0])
             };
             Category[] audio = new Category[]{
-                    new Category(13L, "Портативные колонки", categories[1]),
-                    new Category(14L, "Колонки", categories[1]),
-                    new Category(15L, "Наушники", categories[1])
+                    new Category(8L, "Портативные колонки", categories[1]),
+                    new Category(9L, "Колонки", categories[1]),
+                    new Category(10L, "Наушники", categories[1])
             };
             Category[] au_headphones = new Category[]{
-                    new Category(16L, "TWS-наушники", audio[2]),
-                    new Category(16L, "Bluetooth-гарнитура", audio[2]),
-                    new Category(17L, "Проводная гарнитура", audio[2]),
+                    new Category(11L, "TWS-наушники", audio[2]),
+                    new Category(12L, "Bluetooth-гарнитура", audio[2]),
+                    new Category(13L, "Проводная гарнитура", audio[2]),
             };
             Category[] ag_headphones = new Category[]{
-                    new Category(18L, "TWS-наушники", addgoods[0]),
-                    new Category(19L, "Bluetooth-гарнитура", addgoods[0]),
-                    new Category(20L, "Проводная гарнитура", addgoods[0]),
+                    new Category(14L, "TWS-наушники", addgoods[0]),
+                    new Category(15L, "Bluetooth-гарнитура", addgoods[0]),
+                    new Category(16L, "Проводная гарнитура", addgoods[0]),
             };
             Category[] domestic = new Category[]{
-                    new Category(21L, "Техника для кухни", categories[2]),
-                    new Category(22L, "Техника для дома", categories[2])
+                    new Category(17L, "Техника для кухни", categories[2]),
+                    new Category(18L, "Техника для дома", categories[2])
             };
             Category[] house = new Category[]{
-                    new Category(23L, "Стиральные машины", domestic[1]),
-                    new Category(24L, "Пылесосы", domestic[1])
+                    new Category(19L, "Стиральные машины", domestic[1]),
+                    new Category(20L, "Пылесосы", domestic[1])
             };
             Category[] kitchen = new Category[]{
-                    new Category(25L, "Холодильники", domestic[0])
+                    new Category(21L, "Холодильники", domestic[0])
             };
             Image[] images = {
                     Image.builder().id(1L).path(productImagesPath + "iphone13.jpg").build(),
@@ -146,25 +141,25 @@ public class OnlineStoreApplication implements WebMvcConfigurer {
                     Image.builder().id(56L).path(productImagesPath + "Холодильник Tesler RCD-545I.jpg").build()
             };
             Product[] products = new Product[]{
-                    Product.builder().id(1L).name("Смартфон Apple iPhone 13").images(Arrays.asList(images[0], images[1])).categories(Collections.singletonList(smartphones[0])).price(80999.0).quantity(5).build(),
-                    Product.builder().id(2L).name("Смартфон Apple iPhone 13 PRO").categories(Collections.singletonList(smartphones[0])).price(80999.0).quantity(5).build(),
-                    Product.builder().id(3L).name("Смартфон Apple iPhone 14").images(Collections.singletonList(images[2])).categories(Collections.singletonList(smartphones[0])).price(80999.0).quantity(10).build(),
-                    Product.builder().id(4L).name("Смартфон Apple iPhone 14 PRO").images(Collections.singletonList(images[3])).categories(Collections.singletonList(smartphones[0])).price(89999.0).quantity(3).build(),
-                    Product.builder().id(5L).name("Смартфон Apple iPhone 14 PRO MAX").images(Arrays.asList(images[4], images[5])).categories(Collections.singletonList(smartphones[0])).price(115999.0).quantity(2).build(),
-                    Product.builder().id(6L).name("Смартфон Apple iPhone 11").images(Arrays.asList(images[6], images[7])).categories(Collections.singletonList(smartphones[0])).price(45999.0).quantity(15).build(),
-                    Product.builder().id(7L).name("Смартфон Apple iPhone 11 PRO").images(Arrays.asList(images[8], images[9])).categories(Collections.singletonList(smartphones[0])).price(70999.0).quantity(10).build(),
-                    Product.builder().id(8L).name("Смартфон Apple iPhone 12").images(Arrays.asList(images[10], images[11])).categories(Collections.singletonList(smartphones[0])).price(55999.0).quantity(10).build(),
-                    Product.builder().id(9L).name("Смартфон Apple iPhone 12 PRO").images(Arrays.asList(images[12], images[13])).categories(Collections.singletonList(smartphones[0])).price(80999.0).quantity(10).build(),
-                    Product.builder().id(10L).name("Смартфон Apple iPhone SE 2020").categories(Collections.singletonList(smartphones[0])).price(55999.0).quantity(20).build(),
-                    Product.builder().id(11L).name("Смартфон Samsung Galaxy S8").images(Arrays.asList(images[14], images[15])).categories(Collections.singletonList(smartphones[1])).price(45999.0).quantity(8).build(),
-                    Product.builder().id(12L).name("Смартфон Samsung Galaxy A54").images(Arrays.asList(images[16], images[17])).categories(Collections.singletonList(smartphones[1])).price(55999.0).quantity(8).build(),
-                    Product.builder().id(13L).name("Смартфон Samsung Galaxy Z Flip4").images(Collections.singletonList(images[18])).categories(Collections.singletonList(smartphones[1])).price(89999.0).quantity(3).build(),
-                    Product.builder().id(14L).name("Смартфон Samsung Galaxy S23 Ultra").images(Collections.singletonList(images[19])).categories(Collections.singletonList(smartphones[1])).price(45999.0).quantity(4).build(),
-                    Product.builder().id(15L).name("Смартфон Samsung Galaxy S22 Ultra").images(Collections.singletonList(images[20])).categories(Collections.singletonList(smartphones[1])).price(55999.0).quantity(5).build(),
-                    Product.builder().id(16L).name("Смартфон OnePlus Nord CE2").images(Arrays.asList(images[21], images[22])).categories(Collections.singletonList(smartphones[3])).price(55999.0).quantity(8).build(),
-                    Product.builder().id(17L).name("Смартфон HUAWEI Nova 9").images(Collections.singletonList(images[23])).categories(Collections.singletonList(smartphones[4])).price(34999.0).quantity(8).build(),
-                    Product.builder().id(18L).name("Смартфон HUAWEI P50").images(Collections.singletonList(images[24])).categories(Collections.singletonList(smartphones[4])).price(34999.0).quantity(15).build(),
-                    Product.builder().id(19L).name("Смартфон Google Pixel 6").categories(Collections.singletonList(smartphones[2])).price(55999.0).quantity(5).build(),
+                    Product.builder().id(1L).name("Смартфон Apple iPhone 13").images(Arrays.asList(images[0], images[1])).categories(Collections.singletonList(categories[0])).price(80999.0).quantity(5).build(),
+                    Product.builder().id(2L).name("Смартфон Apple iPhone 13 PRO").categories(Collections.singletonList(categories[0])).price(80999.0).quantity(5).build(),
+                    Product.builder().id(3L).name("Смартфон Apple iPhone 14").images(Collections.singletonList(images[2])).categories(Collections.singletonList(categories[0])).price(80999.0).quantity(10).build(),
+                    Product.builder().id(4L).name("Смартфон Apple iPhone 14 PRO").images(Collections.singletonList(images[3])).categories(Collections.singletonList(categories[0])).price(89999.0).quantity(3).build(),
+                    Product.builder().id(5L).name("Смартфон Apple iPhone 14 PRO MAX").images(Arrays.asList(images[4], images[5])).categories(Collections.singletonList(categories[0])).price(115999.0).quantity(2).build(),
+                    Product.builder().id(6L).name("Смартфон Apple iPhone 11").images(Arrays.asList(images[6], images[7])).categories(Collections.singletonList(categories[0])).price(45999.0).quantity(15).build(),
+                    Product.builder().id(7L).name("Смартфон Apple iPhone 11 PRO").images(Arrays.asList(images[8], images[9])).categories(Collections.singletonList(categories[0])).price(70999.0).quantity(10).build(),
+                    Product.builder().id(8L).name("Смартфон Apple iPhone 12").images(Arrays.asList(images[10], images[11])).categories(Collections.singletonList(categories[0])).price(55999.0).quantity(10).build(),
+                    Product.builder().id(9L).name("Смартфон Apple iPhone 12 PRO").images(Arrays.asList(images[12], images[13])).categories(Collections.singletonList(categories[0])).price(80999.0).quantity(10).build(),
+                    Product.builder().id(10L).name("Смартфон Apple iPhone SE 2020").categories(Collections.singletonList(categories[0])).price(55999.0).quantity(20).build(),
+                    Product.builder().id(11L).name("Смартфон Samsung Galaxy S8").images(Arrays.asList(images[14], images[15])).categories(Collections.singletonList(categories[0])).price(45999.0).quantity(8).build(),
+                    Product.builder().id(12L).name("Смартфон Samsung Galaxy A54").images(Arrays.asList(images[16], images[17])).categories(Collections.singletonList(categories[0])).price(55999.0).quantity(8).build(),
+                    Product.builder().id(13L).name("Смартфон Samsung Galaxy Z Flip4").images(Collections.singletonList(images[18])).categories(Collections.singletonList(categories[0])).price(89999.0).quantity(3).build(),
+                    Product.builder().id(14L).name("Смартфон Samsung Galaxy S23 Ultra").images(Collections.singletonList(images[19])).categories(Collections.singletonList(categories[0])).price(45999.0).quantity(4).build(),
+                    Product.builder().id(15L).name("Смартфон Samsung Galaxy S22 Ultra").images(Collections.singletonList(images[20])).categories(Collections.singletonList(categories[0])).price(55999.0).quantity(5).build(),
+                    Product.builder().id(16L).name("Смартфон OnePlus Nord CE2").images(Arrays.asList(images[21], images[22])).categories(Collections.singletonList(categories[0])).price(55999.0).quantity(8).build(),
+                    Product.builder().id(17L).name("Смартфон HUAWEI Nova 9").images(Collections.singletonList(images[23])).categories(Collections.singletonList(categories[0])).price(34999.0).quantity(8).build(),
+                    Product.builder().id(18L).name("Смартфон HUAWEI P50").images(Collections.singletonList(images[24])).categories(Collections.singletonList(categories[0])).price(34999.0).quantity(15).build(),
+                    Product.builder().id(19L).name("Смартфон Google Pixel 6").categories(Collections.singletonList(categories[0])).price(55999.0).quantity(5).build(),
                     Product.builder().id(20L).name("Смартфон Honor 70").images(Collections.singletonList(images[25])).categories(Collections.singletonList(categories[0])).price(55999.0).quantity(4).build(),
                     Product.builder().id(21L).name("Смартфон OPPO Reno8 T").categories(Collections.singletonList(categories[0])).price(55999.0).quantity(4).build(),
                     Product.builder().id(22L).name("TWS-наушники Apple AirPods Pro").images(Arrays.asList(images[26], images[27])).categories(Arrays.asList(au_headphones[0], ag_headphones[0])).price(11999.0).quantity(25).build(),

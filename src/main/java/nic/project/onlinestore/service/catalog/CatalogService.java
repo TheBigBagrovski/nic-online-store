@@ -49,8 +49,6 @@ public class CatalogService {
         this.formValidator = formValidator;
     }
 
-
-
     public CategoriesAndProductsResponse getProductsAndChildCategoriesByCategory(Long categoryId) {
         Category category = categoryService.findCategoryById(categoryId);
         List<CategoryResponse> childCategories = categoryService.findChildCategoriesByCategory(category).stream().map(this::convertToCategoryResponse).collect(Collectors.toList());
