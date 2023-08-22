@@ -13,6 +13,7 @@ import nic.project.onlinestore.repository.FilterRepository;
 import nic.project.onlinestore.repository.FilterValueRepository;
 import nic.project.onlinestore.service.user.AuthService;
 import nic.project.onlinestore.util.FormValidator;
+import nic.project.onlinestore.util.ImageValidator;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,9 +30,6 @@ import java.util.stream.Collectors;
 @Transactional
 public class CatalogService {
 
-    @Value("${max_images_in_review}")
-    private int MAX_IMAGES_IN_REVIEW;
-
     @Value("${products_per_page}")
     private int PRODUCTS_PER_PAGE;
 
@@ -44,12 +42,13 @@ public class CatalogService {
     private final FormValidator formValidator;
     private final FilterRepository filterRepository;
     private final FilterValueRepository filterValueRepository;
+    private final ImageValidator imageValidator;
 
     private final Map<String, List<ProductShortResponse>> filteredProductsCache = new HashMap<>(); // кэшируем отфильтрованные товары в кжш, чтобы не производить повторную фильтрацию по одинаковым фильтрам
     private final Map<String, List<CategoryResponse>> categoriesCache = new HashMap<>(); // кэшируем выводимые подкатегории
 
     @Autowired
-    public CatalogService(CategoryService categoryService, AuthService authService, ProductService productService, ModelMapper modelMapper, RatingService ratingService, ReviewService reviewService, FormValidator formValidator, FilterRepository filterRepository, FilterValueRepository filterValueRepository) {
+    public CatalogService(CategoryService categoryService, AuthService authService, ProductService productService, ModelMapper modelMapper, RatingService ratingService, ReviewService reviewService, FormValidator formValidator, FilterRepository filterRepository, FilterValueRepository filterValueRepository, ImageValidator imageValidator) {
         this.categoryService = categoryService;
         this.authService = authService;
         this.productService = productService;
@@ -59,6 +58,7 @@ public class CatalogService {
         this.formValidator = formValidator;
         this.filterRepository = filterRepository;
         this.filterValueRepository = filterValueRepository;
+        this.imageValidator = imageValidator;
     }
 
     public CategoriesAndProductsResponse getProductsAndChildCategoriesByCategoryAndFilters(Long categoryId, Double minPrice, Double maxPrice, String filterString, Boolean cheapFirst, Integer page) {
@@ -266,15 +266,7 @@ public class CatalogService {
         Map<String, String> errors = new HashMap<>();
         if (comment.length() > 2000) errors.put("comment", "Превышено максимальное число символов (2000)");
         if (comment.matches("^[ \t\n]*$")) errors.put("comment", "Комментарий не должен быть пустым");
-        if (files != null && !files.isEmpty()) {
-            for (MultipartFile file : files) {
-                if (file.getContentType() != null) {
-                    if (!file.getContentType().startsWith("image"))
-                        errors.put("files", "Загруженный файл не является изображением");
-                }
-            }
-            if (files.size() > MAX_IMAGES_IN_REVIEW) errors.put("files", "Не более 5 изображений");
-        }
+        imageValidator.validateImages(files, errors);
         if (!errors.isEmpty()) throw new FormException(errors);
     }
 

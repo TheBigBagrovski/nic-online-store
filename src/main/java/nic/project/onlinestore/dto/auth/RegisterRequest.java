@@ -36,12 +36,4 @@ public class RegisterRequest {
     @Size(max = 255, message = "Максимум 255 символов")
     private String lastname;
 
-    //    @JsonCreator
-//    public RegisterRequest(@JsonProperty("email") String email, @JsonProperty("password") String password, @JsonProperty("matchingPassword") String matchingPassword, @JsonProperty("firstname") String firstname, @JsonProperty("lastname") String lastname) {
-//        this.email = email;
-//        this.password = password;
-//        this.matchingPassword = matchingPassword;
-//        this.firstname = firstname;
-//        this.lastname = lastname;
-//    }
 }
