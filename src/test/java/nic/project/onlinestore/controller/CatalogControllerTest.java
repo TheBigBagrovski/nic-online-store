@@ -4,10 +4,8 @@ import nic.project.onlinestore.dto.catalog.CategoriesAndProductsResponse;
 import nic.project.onlinestore.dto.product.*;
 import nic.project.onlinestore.exception.FormException;
 import nic.project.onlinestore.exception.exceptions.*;
-import nic.project.onlinestore.model.Category;
 import nic.project.onlinestore.model.Filter;
 import nic.project.onlinestore.model.FilterValue;
-import nic.project.onlinestore.model.Product;
 import nic.project.onlinestore.repository.*;
 import nic.project.onlinestore.security.JwtFilter;
 import nic.project.onlinestore.service.catalog.CatalogService;
@@ -25,9 +23,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -92,16 +88,16 @@ class CatalogControllerTest {
                 .childCategories(null)
                 .products(Collections.singletonList(productShortResponse))
                 .build();
-        when(catalogService.getProductsAndChildCategoriesByCategory(existingCategoryId, null, null, null)).thenReturn(expectedResponse);
-        when(catalogService.getProductsAndChildCategoriesByCategory(nonExistingCategoryId, null, null, null)).thenThrow(CategoryNotFoundException.class);
+        when(catalogService.getProductsAndChildCategoriesByCategoryAndFilters(existingCategoryId, null, null, null, null, 1)).thenReturn(expectedResponse);
+        when(catalogService.getProductsAndChildCategoriesByCategoryAndFilters(nonExistingCategoryId, null, null, null,null, 1)).thenThrow(CategoryNotFoundException.class);
         // успешная работа
-        ResponseEntity<CategoriesAndProductsResponse> response1 = catalogController.getProductsAndChildCategoriesByCategory(existingCategoryId,null, null, null);
-        verify(catalogService, times(1)).getProductsAndChildCategoriesByCategory(existingCategoryId,null, null, null);
+        ResponseEntity<CategoriesAndProductsResponse> response1 = catalogController.getProductsAndChildCategoriesByCategoryAndFilters(existingCategoryId,null, null, null,null, 1);
+        verify(catalogService, times(1)).getProductsAndChildCategoriesByCategoryAndFilters(existingCategoryId,null, null, null,null, 1);
         assertEquals(HttpStatus.OK, response1.getStatusCode());
         assertEquals(expectedResponse, response1.getBody());
         // нет такой категории
-        assertThrows(CategoryNotFoundException.class, () -> catalogController.getProductsAndChildCategoriesByCategory(nonExistingCategoryId,null, null, null));
-        verify(catalogService, times(1)).getProductsAndChildCategoriesByCategory(nonExistingCategoryId,null, null, null);
+        assertThrows(CategoryNotFoundException.class, () -> catalogController.getProductsAndChildCategoriesByCategoryAndFilters(nonExistingCategoryId,null, null, null,null, 1));
+        verify(catalogService, times(1)).getProductsAndChildCategoriesByCategoryAndFilters(nonExistingCategoryId,null, null, null,null, 1);
     }
 
     @Test

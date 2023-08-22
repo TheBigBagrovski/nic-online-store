@@ -30,7 +30,10 @@ import java.util.stream.Collectors;
 public class CatalogService {
 
     @Value("${max_images_in_review}")
-    private Integer MAX_IMAGES_IN_REVIEW;
+    private int MAX_IMAGES_IN_REVIEW;
+
+    @Value("${products_per_page}")
+    private int PRODUCTS_PER_PAGE;
 
     private final CategoryService categoryService;
     private final AuthService authService;
@@ -41,6 +44,9 @@ public class CatalogService {
     private final FormValidator formValidator;
     private final FilterRepository filterRepository;
     private final FilterValueRepository filterValueRepository;
+
+    private final Map<String, List<ProductShortResponse>> filteredProductsCache = new HashMap<>(); // кэшируем отфильтрованные товары в кжш, чтобы не производить повторную фильтрацию по одинаковым фильтрам
+    private final Map<String, List<CategoryResponse>> categoriesCache = new HashMap<>(); // кэшируем выводимые подкатегории
 
     @Autowired
     public CatalogService(CategoryService categoryService, AuthService authService, ProductService productService, ModelMapper modelMapper, RatingService ratingService, ReviewService reviewService, FormValidator formValidator, FilterRepository filterRepository, FilterValueRepository filterValueRepository) {
@@ -55,16 +61,62 @@ public class CatalogService {
         this.filterValueRepository = filterValueRepository;
     }
 
-    public CategoriesAndProductsResponse getProductsAndChildCategoriesByCategory(Long categoryId, Double minPrice, Double maxPrice, String filterString) {
+    public CategoriesAndProductsResponse getProductsAndChildCategoriesByCategoryAndFilters(Long categoryId, Double minPrice, Double maxPrice, String filterString, Boolean cheapFirst, Integer page) {
+        String categoriesCacheKey = generateCategoriesCacheKey(categoryId);
         Category category = categoryService.findCategoryById(categoryId);
+        List<CategoryResponse> childCategories = getChildCategoriesWithCache(categoriesCacheKey, category);
+
+        String productsCacheKey = generateProductsCacheKey(minPrice, maxPrice, filterString, cheapFirst);
+        List<ProductShortResponse> productDTOs = getProductsWithCache(productsCacheKey, page, category, filterString, minPrice, maxPrice, cheapFirst);
+
+        return CategoriesAndProductsResponse.builder()
+                .childCategories(childCategories)
+                .products(productDTOs)
+                .build();
+    }
+
+    private List<CategoryResponse> getChildCategoriesWithCache(String cacheKey, Category category) {
+        if (categoriesCache.containsKey(cacheKey)) {
+            return categoriesCache.get(cacheKey);
+        }
         List<CategoryResponse> childCategories = categoryService.findChildCategoriesByCategory(category).stream().map(this::convertToCategoryResponse).collect(Collectors.toList());
+        categoriesCache.put(cacheKey, childCategories);
+        return childCategories;
+    }
+
+    private List<ProductShortResponse> getProductsWithCache(String cacheKey, Integer page, Category category, String filterString, Double minPrice, Double maxPrice, Boolean cheapFirst) {
+        if (filteredProductsCache.containsKey(cacheKey)) { // если в кэше сохранены товары по этим фильтрам - вернем их с учетом нужной страницы
+            List<ProductShortResponse> cachedProducts = filteredProductsCache.get(cacheKey);
+            // пагинация
+            return getPaginatedProductDTOs(page, cachedProducts);
+        }
         List<Product> products = productService.findProductsByCategory(category);
+        // парсинг фильтров
+        Map<String, List<String>> userFilters = parseFilters(filterString);
+        // подготовка фильтров из БД
+        Map<Filter, List<FilterValue>> applicableFilters = getApplicableFilters(category, userFilters);
+        // ценовой фильтр
+        List<Product> passedPriceFilter = getProductsPassedPriceFilter(products, minPrice, maxPrice);
+        // фильтрация
+        List<Product> passedFilters = getProductsPassedUserFilters(passedPriceFilter, applicableFilters);
+        //сортировка по цене
+        passedFilters.sort((p1, p2) -> compareByPrice(p1, p2, cheapFirst));
+        // формирование списка DTO
+        List<ProductShortResponse> productDTOs = new ArrayList<>();
+        for (Product product : passedFilters) {
+            ProductShortResponse productShortResponse = prepareProductResponse(product);
+            productDTOs.add(productShortResponse);
+        }
+        filteredProductsCache.put(cacheKey, productDTOs);
+        // вывод 10 товаров на страницу
+        return getPaginatedProductDTOs(page, productDTOs);
+    }
+
+
+    private Map<Filter, List<FilterValue>> getApplicableFilters(Category category, Map<String, List<String>> userFilters) {
         List<Filter> possibleFiltersForCategory = filterRepository.findFiltersByCategory(category);
         Map<Filter, List<FilterValue>> applicableFilters = new HashMap<>();
-        // парсинг фильтров
-        Map<String, List<String>> filters = parseFilters(filterString);
-        // подготовка фильтров из БД
-        filters.forEach((filterName, filterValues) -> possibleFiltersForCategory.stream()
+        userFilters.forEach((filterName, filterValues) -> possibleFiltersForCategory.stream()
                 .filter(possibleFilter -> Objects.equals(possibleFilter.getName(), filterName))
                 .findFirst()
                 .ifPresent(possibleFilter -> {
@@ -75,17 +127,18 @@ public class CatalogService {
 
                     applicableFilters.put(possibleFilter, applicableValues);
                 }));
-        List<Product> passedPriceFilter = new ArrayList<>();
-        // ценовой фильтр
-        for (Product product : products) {
-            Double price = product.getPrice();
-            if ((minPrice == null || price >= minPrice) &&
-                    (maxPrice == null || price <= maxPrice)) {
-                passedPriceFilter.add(product);
-            }
-        }
-        // фильтрация
-        List<Product> passedFilters = passedPriceFilter.stream()
+        return applicableFilters;
+    }
+
+    private List<Product> getProductsPassedPriceFilter(List<Product> products, Double minPrice, Double maxPrice) {
+        return products.stream()
+                .filter(product -> (minPrice == null || product.getPrice() >= minPrice) &&
+                        (maxPrice == null || product.getPrice() <= maxPrice))
+                .collect(Collectors.toList());
+    }
+
+    private List<Product> getProductsPassedUserFilters(List<Product> products, Map<Filter, List<FilterValue>> applicableFilters) {
+        return products.stream()
                 .filter(product -> applicableFilters.entrySet().stream().allMatch(entry -> {
                     Filter filter = entry.getKey();
                     List<FilterValue> filterValues = entry.getValue();
@@ -93,16 +146,32 @@ public class CatalogService {
                     return filterValues.stream().anyMatch(filterValue -> filterValue.equals(productFilterValue));
                 }))
                 .collect(Collectors.toList());
-        // формирование списка DTO
-        List<ProductShortResponse> productDTOS = new ArrayList<>();
-        for (Product product : passedFilters) {
-            ProductShortResponse productShortResponse = prepareProductResponse(product);
-            productDTOS.add(productShortResponse);
+    }
+
+    private List<ProductShortResponse> getPaginatedProductDTOs(Integer page, List<ProductShortResponse> products) {
+        int startIndex = (page - 1) * PRODUCTS_PER_PAGE;
+        int endIndex = Math.min(startIndex + PRODUCTS_PER_PAGE, products.size());
+        return products.subList(startIndex, endIndex);
+    }
+
+    private String generateProductsCacheKey(Double minPrice, Double maxPrice, String filterString, Boolean cheapFirst) {
+        return minPrice + "_" + maxPrice + "_" + filterString + "_" + cheapFirst;
+    }
+
+    private String generateCategoriesCacheKey(Long categoryId) {
+        return categoryId.toString();
+    }
+
+    public static int compareByPrice(Product p1, Product p2, Boolean cheapFirst) {
+        double price1 = p1.getPrice();
+        double price2 = p2.getPrice();
+        if (price1 < price2) {
+            return cheapFirst ? -1 : 1;
+        } else if (price1 > price2) {
+            return cheapFirst ? 1 : -1;
+        } else {
+            return 0;
         }
-        return CategoriesAndProductsResponse.builder()
-                .childCategories(childCategories)
-                .products(productDTOS)
-                .build();
     }
 
     private Map<String, List<String>> parseFilters(String filtersParam) {

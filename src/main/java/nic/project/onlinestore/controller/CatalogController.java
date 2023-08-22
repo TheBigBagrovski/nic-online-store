@@ -15,10 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("catalog")
@@ -34,11 +31,15 @@ public class CatalogController {
     }
 
     @GetMapping
-    public ResponseEntity<CategoriesAndProductsResponse> getProductsAndChildCategoriesByCategory(@RequestParam(value = "category") Long categoryId,
-                                                                                                 @RequestParam(value = "minPrice", required = false) Double minPrice,
-                                                                                                 @RequestParam(value = "maxPrice", required = false) Double maxPrice,
-                                                                                                 @RequestParam(value = "filters", required = false) String filters) {
-        return new ResponseEntity<>(catalogService.getProductsAndChildCategoriesByCategory(categoryId, minPrice, maxPrice, filters), HttpStatus.OK);
+    public ResponseEntity<CategoriesAndProductsResponse> getProductsAndChildCategoriesByCategoryAndFilters(
+            @RequestParam(value = "category") Long categoryId,
+            @RequestParam(value = "minPrice", required = false) Double minPrice,
+            @RequestParam(value = "maxPrice", required = false) Double maxPrice,
+            @RequestParam(value = "filters", required = false) String filters, // filters=brand:Apple,Samsung
+            @RequestParam(value = "priceSort", required = false, defaultValue = "true") Boolean cheapFirst,
+            @RequestParam(value = "page", required = false, defaultValue = "1") Integer page
+    ) {
+        return new ResponseEntity<>(catalogService.getProductsAndChildCategoriesByCategoryAndFilters(categoryId, minPrice, maxPrice, filters, cheapFirst, page), HttpStatus.OK);
     }
 
     @PutMapping

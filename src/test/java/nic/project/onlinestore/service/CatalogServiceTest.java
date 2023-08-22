@@ -2,7 +2,6 @@ package nic.project.onlinestore.service;
 
 import nic.project.onlinestore.dto.catalog.CategoriesAndProductsResponse;
 import nic.project.onlinestore.dto.product.ProductFullResponse;
-import nic.project.onlinestore.exception.exceptions.ProductNotFoundException;
 import nic.project.onlinestore.exception.exceptions.RatingNotFoundException;
 import nic.project.onlinestore.exception.exceptions.ReviewNotFoundException;
 import nic.project.onlinestore.model.*;
@@ -60,7 +59,7 @@ public class CatalogServiceTest {
     private CatalogService catalogService;
 
     @Test
-    public void testGetProductsAndChildCategoriesByCategory() {
+    public void testGetProductsAndChildCategoriesByCategoryAndFilters() {
         Long categoryId = 1L;
         Category category = new Category();
         List<Category> childCategories = new ArrayList<>();
@@ -69,7 +68,7 @@ public class CatalogServiceTest {
         when(categoryService.findChildCategoriesByCategory(category)).thenReturn(childCategories);
         when(productService.findProductsByCategory(category)).thenReturn(products);
         when(filterRepository.findFiltersByCategory(category)).thenReturn(Collections.emptyList());
-        CategoriesAndProductsResponse result = catalogService.getProductsAndChildCategoriesByCategory(categoryId,null, null, null);
+        CategoriesAndProductsResponse result = catalogService.getProductsAndChildCategoriesByCategoryAndFilters(categoryId,null, null, null,true, 1);
         assertEquals(childCategories.size(), result.getChildCategories().size());
         assertEquals(products.size(), result.getProducts().size());
         verify(categoryService).findCategoryById(categoryId);
