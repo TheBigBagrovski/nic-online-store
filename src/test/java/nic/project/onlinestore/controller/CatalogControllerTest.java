@@ -92,16 +92,16 @@ class CatalogControllerTest {
                 .childCategories(null)
                 .products(Collections.singletonList(productShortResponse))
                 .build();
-        when(catalogService.getProductsAndChildCategoriesByCategory(existingCategoryId, null, null, Collections.emptyMap())).thenReturn(expectedResponse);
-        when(catalogService.getProductsAndChildCategoriesByCategory(nonExistingCategoryId, null, null, Collections.emptyMap())).thenThrow(CategoryNotFoundException.class);
+        when(catalogService.getProductsAndChildCategoriesByCategory(existingCategoryId, null, null, null)).thenReturn(expectedResponse);
+        when(catalogService.getProductsAndChildCategoriesByCategory(nonExistingCategoryId, null, null, null)).thenThrow(CategoryNotFoundException.class);
         // успешная работа
         ResponseEntity<CategoriesAndProductsResponse> response1 = catalogController.getProductsAndChildCategoriesByCategory(existingCategoryId,null, null, null);
-        verify(catalogService, times(1)).getProductsAndChildCategoriesByCategory(existingCategoryId,null, null, Collections.emptyMap());
+        verify(catalogService, times(1)).getProductsAndChildCategoriesByCategory(existingCategoryId,null, null, null);
         assertEquals(HttpStatus.OK, response1.getStatusCode());
         assertEquals(expectedResponse, response1.getBody());
         // нет такой категории
         assertThrows(CategoryNotFoundException.class, () -> catalogController.getProductsAndChildCategoriesByCategory(nonExistingCategoryId,null, null, null));
-        verify(catalogService, times(1)).getProductsAndChildCategoriesByCategory(nonExistingCategoryId,null, null, Collections.emptyMap());
+        verify(catalogService, times(1)).getProductsAndChildCategoriesByCategory(nonExistingCategoryId,null, null, null);
     }
 
     @Test

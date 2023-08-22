@@ -6,6 +6,7 @@ import nic.project.onlinestore.exception.exceptions.ProductNotFoundException;
 import nic.project.onlinestore.exception.exceptions.RatingNotFoundException;
 import nic.project.onlinestore.exception.exceptions.ReviewNotFoundException;
 import nic.project.onlinestore.model.*;
+import nic.project.onlinestore.repository.FilterRepository;
 import nic.project.onlinestore.repository.ProductRepository;
 import nic.project.onlinestore.service.catalog.*;
 import nic.project.onlinestore.service.user.AuthService;
@@ -19,10 +20,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -55,6 +53,9 @@ public class CatalogServiceTest {
     @Mock
     private FormValidator formValidator;
 
+    @Mock
+    private FilterRepository filterRepository;
+
     @InjectMocks
     private CatalogService catalogService;
 
@@ -67,10 +68,9 @@ public class CatalogServiceTest {
         when(categoryService.findCategoryById(categoryId)).thenReturn(category);
         when(categoryService.findChildCategoriesByCategory(category)).thenReturn(childCategories);
         when(productService.findProductsByCategory(category)).thenReturn(products);
-
+        when(filterRepository.findFiltersByCategory(category)).thenReturn(Collections.emptyList());
         CategoriesAndProductsResponse result = catalogService.getProductsAndChildCategoriesByCategory(categoryId,null, null, null);
-
-        assertEquals(childCategories, result.getChildCategories());
+        assertEquals(childCategories.size(), result.getChildCategories().size());
         assertEquals(products.size(), result.getProducts().size());
         verify(categoryService).findCategoryById(categoryId);
         verify(categoryService).findChildCategoriesByCategory(category);

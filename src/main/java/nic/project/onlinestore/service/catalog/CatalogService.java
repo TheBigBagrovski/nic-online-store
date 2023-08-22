@@ -55,13 +55,15 @@ public class CatalogService {
         this.filterValueRepository = filterValueRepository;
     }
 
-    public CategoriesAndProductsResponse getProductsAndChildCategoriesByCategory(Long categoryId, Double minPrice, Double maxPrice, Map<String, List<String>> filters) {
+    public CategoriesAndProductsResponse getProductsAndChildCategoriesByCategory(Long categoryId, Double minPrice, Double maxPrice, String filterString) {
         Category category = categoryService.findCategoryById(categoryId);
         List<CategoryResponse> childCategories = categoryService.findChildCategoriesByCategory(category).stream().map(this::convertToCategoryResponse).collect(Collectors.toList());
         List<Product> products = productService.findProductsByCategory(category);
         List<Filter> possibleFiltersForCategory = filterRepository.findFiltersByCategory(category);
         Map<Filter, List<FilterValue>> applicableFilters = new HashMap<>();
-        // подготовка фильтров
+        // парсинг фильтров
+        Map<String, List<String>> filters = parseFilters(filterString);
+        // подготовка фильтров из БД
         filters.forEach((filterName, filterValues) -> possibleFiltersForCategory.stream()
                 .filter(possibleFilter -> Objects.equals(possibleFilter.getName(), filterName))
                 .findFirst()
@@ -101,6 +103,22 @@ public class CatalogService {
                 .childCategories(childCategories)
                 .products(productDTOS)
                 .build();
+    }
+
+    private Map<String, List<String>> parseFilters(String filtersParam) {
+        Map<String, List<String>> filters = new HashMap<>();
+        if (filtersParam != null) {
+            String[] filterPairs = filtersParam.split(";");
+            for (String filterPair : filterPairs) {
+                String[] keyValue = filterPair.split(":");
+                if (keyValue.length == 2) {
+                    String key = keyValue[0];
+                    String[] values = keyValue[1].split(","); // значения разделены запятой
+                    filters.put(key, Arrays.asList(values));
+                }
+            }
+        }
+        return filters;
     }
 
     private ProductShortResponse prepareProductResponse(Product product) {
