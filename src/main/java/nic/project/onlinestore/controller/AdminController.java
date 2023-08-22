@@ -1,6 +1,7 @@
 package nic.project.onlinestore.controller;
 
 import nic.project.onlinestore.dto.admin.AddProductRequest;
+import nic.project.onlinestore.dto.product.ProductRequest;
 import nic.project.onlinestore.service.admin.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -34,10 +35,12 @@ public class AdminController {
         adminService.addProductImages(productId, files);
         return ResponseEntity.ok("Изображения добавлены");
     }
-//
-//    public ResponseEntity<?> deleteProductImage() {
-//
-//    }
+
+    @DeleteMapping(value = "/delete-product-images", produces = "text/plain;charset=UTF-8")
+    public ResponseEntity<?> deleteProductImage(@RequestBody @Valid ProductRequest productId, BindingResult bindingResult) {
+        adminService.deleteProductImages(productId.getId(), bindingResult);
+        return ResponseEntity.ok("Изображения удалены");
+    }
 //
 //    public ResponseEntity<?> addFilterToProduct() {
 //

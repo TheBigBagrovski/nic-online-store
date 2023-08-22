@@ -88,7 +88,15 @@ public class AdminService {
             product.getImages().add(image);
             productService.save(product);
         }
+    }
 
+    public void deleteProductImages(Long productId, BindingResult bindingResult) {
+        formValidator.checkFormBindingResult(bindingResult);
+        Product product = productService.findProductById(productId);
+        product.getImages().clear();
+        productService.save(product);
+        String targetPath = productImagesPath + "/" + productId.toString();
+        imageSaver.deleteFolder(targetPath);
     }
 
 }
