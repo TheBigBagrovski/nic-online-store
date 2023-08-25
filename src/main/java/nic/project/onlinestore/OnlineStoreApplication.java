@@ -10,13 +10,11 @@ import nic.project.onlinestore.repository.FilterRepository;
 import nic.project.onlinestore.repository.FilterValueRepository;
 import nic.project.onlinestore.repository.ImageRepository;
 import nic.project.onlinestore.repository.ProductRepository;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.ArrayList;
@@ -33,16 +31,6 @@ public class OnlineStoreApplication implements WebMvcConfigurer {
 
     public static void main(String[] args) {
         SpringApplication.run(OnlineStoreApplication.class, args);
-    }
-
-    @Override
-    public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/").setViewName("home");
-    }
-
-    @Bean
-    public ModelMapper modelMapper() {
-        return new ModelMapper();
     }
 
     @Bean

@@ -3,10 +3,18 @@ package nic.project.onlinestore.service;
 import nic.project.onlinestore.dto.catalog.CategoriesAndProductsResponse;
 import nic.project.onlinestore.dto.product.ProductFullResponse;
 import nic.project.onlinestore.exception.exceptions.ResourceNotFoundException;
-import nic.project.onlinestore.model.*;
+import nic.project.onlinestore.model.Category;
+import nic.project.onlinestore.model.Product;
+import nic.project.onlinestore.model.Rating;
+import nic.project.onlinestore.model.Review;
+import nic.project.onlinestore.model.User;
 import nic.project.onlinestore.repository.FilterRepository;
 import nic.project.onlinestore.repository.ProductRepository;
-import nic.project.onlinestore.service.catalog.*;
+import nic.project.onlinestore.service.catalog.CatalogService;
+import nic.project.onlinestore.service.catalog.CategoryService;
+import nic.project.onlinestore.service.catalog.ProductService;
+import nic.project.onlinestore.service.catalog.RatingService;
+import nic.project.onlinestore.service.catalog.ReviewService;
 import nic.project.onlinestore.service.user.AuthService;
 import nic.project.onlinestore.util.FormValidator;
 import nic.project.onlinestore.util.ImageValidator;
@@ -17,15 +25,26 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class CatalogServiceTest {
