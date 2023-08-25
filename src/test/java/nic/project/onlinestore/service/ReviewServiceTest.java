@@ -7,17 +7,21 @@ import nic.project.onlinestore.model.User;
 import nic.project.onlinestore.repository.ImageRepository;
 import nic.project.onlinestore.repository.ReviewRepository;
 import nic.project.onlinestore.service.catalog.ReviewService;
+import nic.project.onlinestore.util.ImageSaver;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -29,6 +33,9 @@ public class ReviewServiceTest {
 
     @Mock
     private ImageRepository imageRepository;
+
+    @Mock
+    private ImageSaver imageSaver;
 
     @InjectMocks
     private ReviewService reviewService;
@@ -49,8 +56,8 @@ public class ReviewServiceTest {
         User user = new User();
         Product product = new Product();
         Review expectedReview = new Review();
-        when(reviewRepository.findReviewByUserAndProduct(user, product)).thenReturn(expectedReview);
-        Review result = reviewService.findReviewByUserAndProduct(user, product);
+        when(reviewRepository.findReviewByUserAndProduct(user, product)).thenReturn(Optional.of(expectedReview));
+        Review result = reviewService.findReviewByUserAndProduct(user, product).get();
         Assertions.assertEquals(expectedReview, result);
     }
 
@@ -58,10 +65,16 @@ public class ReviewServiceTest {
     public void testDeleteReview() {
         Review review = new Review();
         List<Image> images = new ArrayList<>();
+        User user = new User();
+        Product product = new Product();
+        product.setId(1L);
+        user.setId(1L);
+        review.setUser(user);
+        review.setProduct(product);
         images.add(new Image());
         images.add(new Image());
         review.setImages(images);
-        assertDoesNotThrow(() -> reviewService.deleteReview(review, 1L, 1L));
+        assertDoesNotThrow(() -> reviewService.deleteReview(review));
         verify(imageRepository).deleteAll(images);
         verify(reviewRepository).delete(review);
     }

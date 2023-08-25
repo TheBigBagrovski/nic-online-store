@@ -17,8 +17,17 @@ import java.util.Date;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({EmailNotFoundException.class, CategoryNotFoundException.class, ProductNotFoundException.class, RatingNotFoundException.class, ReviewNotFoundException.class})
-    private ResponseEntity<ErrorResponse> handleNotFoundException(Exception e) {
+    @ExceptionHandler({UserNotFoundException.class})
+    private ResponseEntity<ErrorResponse> handleUserNotFoundException(Exception e) {
+        ErrorResponse response = new ErrorResponse(
+                e.getMessage(),
+                new Date()
+        );
+        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler({ResourceNotFoundException.class})
+    private ResponseEntity<ErrorResponse> handleResourceNotFoundException(Exception e) {
         ErrorResponse response = new ErrorResponse(
                 e.getMessage(),
                 new Date()
@@ -26,8 +35,17 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({ProductAlreadyInCartException.class, RatingAlreadyExistsException.class, ReviewAlreadyExistsException.class})
+    @ExceptionHandler({ResourceAlreadyExistsException.class})
     private ResponseEntity<ErrorResponse> handleAlreadyExistsException(Exception e) {
+        ErrorResponse response = new ErrorResponse(
+                e.getMessage(),
+                new Date()
+        );
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({ImageUploadException.class})
+    private ResponseEntity<ErrorResponse> handleImageUploadException(Exception e) {
         ErrorResponse response = new ErrorResponse(
                 e.getMessage(),
                 new Date()
@@ -78,6 +96,15 @@ public class GlobalExceptionHandler {
                 new Date()
         );
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({RuntimeException.class})
+    private ResponseEntity<ErrorResponse> handleRuntimeException(Exception e) {
+        ErrorResponse response = new ErrorResponse(
+                e.getMessage(),
+                new Date()
+        );
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
 }

@@ -2,9 +2,9 @@ package nic.project.onlinestore.exception.exceptions;
 
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-public class EmailNotFoundException extends UsernameNotFoundException {
+public class UserNotFoundException extends UsernameNotFoundException {
 
-    public EmailNotFoundException(String message) {
+    public UserNotFoundException(String message) {
         super(message);
     }
 

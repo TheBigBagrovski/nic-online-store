@@ -1,10 +1,17 @@
 package nic.project.onlinestore.dto.user;
 
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import nic.project.onlinestore.security.Role;
 
+import javax.xml.ws.soap.Addressing;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserInfoResponse {
 
     private String email;

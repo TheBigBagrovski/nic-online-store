@@ -2,17 +2,23 @@ package nic.project.onlinestore.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
-@Data
 @Entity
 @Table(name = "images")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 public class Image {
 
     @Id
@@ -21,7 +27,7 @@ public class Image {
 
     private String path;
 
-    private String name; // todo - ограничения на имя?
+    private String name;
 
     private String type;
 

@@ -1,11 +1,15 @@
 package nic.project.onlinestore.service.catalog;
 
+import nic.project.onlinestore.exception.exceptions.ResourceNotFoundException;
 import nic.project.onlinestore.model.Product;
 import nic.project.onlinestore.model.Rating;
 import nic.project.onlinestore.model.User;
 import nic.project.onlinestore.repository.RatingRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RatingService {
@@ -16,8 +20,12 @@ public class RatingService {
         this.ratingRepository = ratingRepository;
     }
 
-    public Rating findRatingByUserAndProduct(User user, Product product) {
+    public Optional<Rating> findRatingByUserAndProduct(User user, Product product) { // должен возвращать Optional для будущей проверки на наличие оценки
         return ratingRepository.findRatingByUserAndProduct(user, product);
+    }
+
+    public List<Rating> findRatingsByProduct(Product product) {
+        return ratingRepository.findRatingsByProduct(product);
     }
 
     public Integer findRatingsNumberByProduct(Product product) {
@@ -34,8 +42,8 @@ public class RatingService {
     }
 
     @Transactional
-    public void updateValueById(Rating rating, Integer ratingValue) {
-        ratingRepository.updateValueById(rating.getId(), ratingValue);
+    public void updateRatingValueById(Rating rating, Integer ratingValue) {
+        ratingRepository.updateRatingValueById(rating.getId(), ratingValue);
     }
 
     @Transactional

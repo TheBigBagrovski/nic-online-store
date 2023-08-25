@@ -15,13 +15,14 @@ public class ImageValidator {
 
     public void validateImages(List<MultipartFile> files, Map<String, String> errors) {
         if (files != null && !files.isEmpty()) {
-            for (MultipartFile file : files) {
-                if (file.getContentType() != null) {
-                    if (!file.getContentType().startsWith("image"))
-                        errors.put("files", "Загруженный файл не является изображением");
+            files.forEach(file -> {
+                if (file.getContentType() != null && !file.getContentType().startsWith("image")) {
+                    errors.put("files", "Загруженный файл не является изображением");
                 }
+            });
+            if (files.size() > MAX_IMAGES_IN_REVIEW) {
+                errors.put("files", "Не более 5 изображений");
             }
-            if (files.size() > MAX_IMAGES_IN_REVIEW) errors.put("files", "Не более 5 изображений");
         }
     }
 

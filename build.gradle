@@ -2,8 +2,9 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '2.7.8'
 	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+//	id 'net.ltgt.apt' version '0.20'
 }
-
+//apply plugin: 'net.ltgt.apt-idea'
 group = 'nic.project'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = "1.8"
@@ -18,16 +19,18 @@ repositories {
 	mavenCentral()
 }
 
+ext {
+	mapstructVersion = "1.5.5.Final"
+}
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.jetbrains:annotations:24.0.0'
     testImplementation 'junit:junit:4.13.1'
-//	testImplementation 'junit:junit:4.13.1'
 	compileOnly 'org.projectlombok:lombok'
-//	compileOnly 'org.projectlombok:lombok:1.18.24'
-//	implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'org.postgresql:postgresql'
 	annotationProcessor 'org.projectlombok:lombok'
@@ -36,7 +39,11 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.modelmapper:modelmapper:3.1.1'
 	implementation 'com.auth0:java-jwt:4.2.1'
-//	implementation 'commons-fileupload:commons-fileupload:1.5'
+	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+	implementation 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+	implementation 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+	testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 }
 
 tasks.named('test') {

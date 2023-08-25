@@ -2,14 +2,16 @@ package nic.project.onlinestore.service;
 
 import nic.project.onlinestore.dto.catalog.CategoriesAndProductsResponse;
 import nic.project.onlinestore.dto.product.ProductFullResponse;
-import nic.project.onlinestore.exception.exceptions.RatingNotFoundException;
-import nic.project.onlinestore.exception.exceptions.ReviewNotFoundException;
+import nic.project.onlinestore.exception.exceptions.ResourceNotFoundException;
 import nic.project.onlinestore.model.*;
 import nic.project.onlinestore.repository.FilterRepository;
 import nic.project.onlinestore.repository.ProductRepository;
 import nic.project.onlinestore.service.catalog.*;
 import nic.project.onlinestore.service.user.AuthService;
 import nic.project.onlinestore.util.FormValidator;
+import nic.project.onlinestore.util.ImageValidator;
+import nic.project.onlinestore.util.ProductMapper;
+import nic.project.onlinestore.util.ReviewMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -38,7 +40,10 @@ public class CatalogServiceTest {
     private AuthService authService;
 
     @Mock
-    private ModelMapper modelMapper;
+    private ReviewMapper reviewMapper;
+
+    @Mock
+    private ProductMapper productMapper;
 
     @Mock
     private RatingService ratingService;
@@ -53,26 +58,29 @@ public class CatalogServiceTest {
     private FormValidator formValidator;
 
     @Mock
+    private ImageValidator imageValidator;
+
+    @Mock
     private FilterRepository filterRepository;
 
     @InjectMocks
     private CatalogService catalogService;
 
     @Test
-    public void testGetProductsAndChildCategoriesByCategoryAndFilters() {
+    public void testGetProductsAndSubcategoriesByCategoryAndFilters() {
         Long categoryId = 1L;
         Category category = new Category();
-        List<Category> childCategories = new ArrayList<>();
+        List<Category> subcategories = new ArrayList<>();
         List<Product> products = new ArrayList<>();
         when(categoryService.findCategoryById(categoryId)).thenReturn(category);
-        when(categoryService.findChildCategoriesByCategory(category)).thenReturn(childCategories);
+        when(categoryService.findSubcategoriesByCategory(category)).thenReturn(subcategories);
         when(productService.findProductsByCategory(category)).thenReturn(products);
         when(filterRepository.findFiltersByCategory(category)).thenReturn(Collections.emptyList());
-        CategoriesAndProductsResponse result = catalogService.getProductsAndChildCategoriesByCategoryAndFilters(categoryId,null, null, null,true, 1);
-        assertEquals(childCategories.size(), result.getChildCategories().size());
+        CategoriesAndProductsResponse result = catalogService.getProductsAndSubcategoriesByCategoryAndFilters(categoryId,null, null, null,true, 1);
+        assertEquals(subcategories.size(), result.getSubcategories().size());
         assertEquals(products.size(), result.getProducts().size());
         verify(categoryService).findCategoryById(categoryId);
-        verify(categoryService).findChildCategoriesByCategory(category);
+        verify(categoryService).findSubcategoriesByCategory(category);
     }
 
     @Test
@@ -92,7 +100,6 @@ public class CatalogServiceTest {
                 .name("Name")
                 .description("Description")
                 .images(null)
-                .categories(null)
                 .price(null)
                 .quantity(null)
                 .ratingsNumber(5)
@@ -100,7 +107,7 @@ public class CatalogServiceTest {
                 .reviews(null)
                 .reviewsNumber(null)
                 .build();
-        when(modelMapper.map(product, ProductFullResponse.class)).thenReturn(productFullResponse);
+        when(productMapper.mapToProductFullResponse(product)).thenReturn(productFullResponse);
         int ratingsNumber = 5;
         when(ratingService.findRatingsNumberByProduct(product)).thenReturn(ratingsNumber);
         double averageRating = 4.2;
@@ -123,19 +130,15 @@ public class CatalogServiceTest {
         User user = new User();
         when(authService.getCurrentAuthorizedUser()).thenReturn(user);
         Rating existingRating = new Rating();
-        when(ratingService.findRatingByUserAndProduct(user, product)).thenReturn(existingRating);
+        when(ratingService.findRatingByUserAndProduct(user, product)).thenReturn(Optional.of(existingRating));
         catalogService.rateProduct(productId, ratingValue, bindingResult);
         verify(formValidator).checkFormBindingResult(bindingResult);
         verify(authService).getCurrentAuthorizedUser();
         verify(ratingService).findRatingByUserAndProduct(user, product);
-        if (existingRating != null) {
-            if (Objects.equals(existingRating.getValue(), ratingValue))
-                verify(ratingService, never()).updateValueById(existingRating, ratingValue);
-            else
-                verify(ratingService).updateValueById(existingRating, ratingValue);
-        } else {
-            verify(ratingService).saveRating(user, product, ratingValue);
-        }
+        if (Objects.equals(existingRating.getValue(), ratingValue))
+            verify(ratingService, never()).updateRatingValueById(existingRating, ratingValue);
+        else
+            verify(ratingService).updateRatingValueById(existingRating, ratingValue);
     }
 
     @Test
@@ -146,7 +149,7 @@ public class CatalogServiceTest {
         User user = new User();
         when(authService.getCurrentAuthorizedUser()).thenReturn(user);
         Review review = new Review();
-        when(reviewService.findReviewByUserAndProduct(user, product)).thenReturn(review);
+        when(reviewService.findReviewByUserAndProduct(user, product)).thenReturn(Optional.of(review));
         catalogService.getReviewDTOForEditing(productId);
         verify(authService).getCurrentAuthorizedUser();
         verify(reviewService).findReviewByUserAndProduct(user, product);
@@ -161,7 +164,8 @@ public class CatalogServiceTest {
         when(productService.findProductById(productId)).thenReturn(product);
         User user = new User();
         when(authService.getCurrentAuthorizedUser()).thenReturn(user);
-        when(reviewService.findReviewByUserAndProduct(user, product)).thenReturn(null);
+        when(reviewService.findReviewByUserAndProduct(user, product)).thenReturn(Optional.empty());
+        doNothing().when(imageValidator).validateImages(files, new HashMap<>());
         catalogService.reviewProduct(productId, comment, files);
         verify(authService).getCurrentAuthorizedUser();
         verify(reviewService).findReviewByUserAndProduct(user, product);
@@ -178,16 +182,16 @@ public class CatalogServiceTest {
         Review review = new Review();
         when(authService.getCurrentAuthorizedUser()).thenReturn(user);
         when(productService.findProductById(productId)).thenReturn(product);
-        when(reviewService.findReviewByUserAndProduct(user, product)).thenReturn(review);
+        when(reviewService.findReviewByUserAndProduct(user, product)).thenReturn(Optional.of(review));
         assertDoesNotThrow(() -> catalogService.editReview(productId, comment, files));
-        verify(reviewService).deleteReview(review, productId, user.getId());
+        verify(reviewService).deleteReview(review);
         verify(reviewService).saveReview(comment, files, product, user);
         // ReviewNotFound
         when(authService.getCurrentAuthorizedUser()).thenReturn(user);
         when(productService.findProductById(productId)).thenReturn(product);
-        when(reviewService.findReviewByUserAndProduct(user, product)).thenReturn(null);
-        assertThrows(ReviewNotFoundException.class, () -> catalogService.editReview(productId, comment, files));
-        verify(reviewService, times(1)).deleteReview(any(), any(), any());
+        when(reviewService.findReviewByUserAndProduct(user, product)).thenReturn(Optional.empty());
+        assertThrows(ResourceNotFoundException.class, () -> catalogService.editReview(productId, comment, files));
+        verify(reviewService, times(1)).deleteReview(any());
         verify(reviewService, times(1)).saveReview(any(), any(), any(), any());
     }
 
@@ -199,14 +203,14 @@ public class CatalogServiceTest {
         Rating rating = new Rating();
         when(authService.getCurrentAuthorizedUser()).thenReturn(user);
         when(productService.findProductById(productId)).thenReturn(product);
-        when(ratingService.findRatingByUserAndProduct(user, product)).thenReturn(rating);
+        when(ratingService.findRatingByUserAndProduct(user, product)).thenReturn(Optional.of(rating));
         assertDoesNotThrow(() -> catalogService.deleteRating(productId));
         verify(ratingService).deleteRating(rating);
         //RatingNotFoundException
         when(authService.getCurrentAuthorizedUser()).thenReturn(user);
         when(productService.findProductById(productId)).thenReturn(product);
-        when(ratingService.findRatingByUserAndProduct(user, product)).thenReturn(null);
-        assertThrows(RatingNotFoundException.class, () -> catalogService.deleteRating(productId));
+        when(ratingService.findRatingByUserAndProduct(user, product)).thenReturn(Optional.empty());
+        assertThrows(ResourceNotFoundException.class, () -> catalogService.deleteRating(productId));
         verify(ratingService, times(1)).deleteRating(any());
     }
 
@@ -218,15 +222,15 @@ public class CatalogServiceTest {
         Review review = new Review();
         when(authService.getCurrentAuthorizedUser()).thenReturn(user);
         when(productService.findProductById(productId)).thenReturn(product);
-        when(reviewService.findReviewByUserAndProduct(user, product)).thenReturn(review);
+        when(reviewService.findReviewByUserAndProduct(user, product)).thenReturn(Optional.of(review));
         assertDoesNotThrow(() -> catalogService.deleteReview(productId));
-        verify(reviewService).deleteReview(review, productId, user.getId());
-        // ReviewNotFoundException
+        verify(reviewService).deleteReview(review);
+        // ResourceNotFoundException
         when(authService.getCurrentAuthorizedUser()).thenReturn(user);
         when(productService.findProductById(productId)).thenReturn(product);
-        when(reviewService.findReviewByUserAndProduct(user, product)).thenReturn(null);
-        assertThrows(ReviewNotFoundException.class, () -> catalogService.deleteReview(productId));
-        verify(reviewService, times(1)).deleteReview(any(), any(), any());
+        when(reviewService.findReviewByUserAndProduct(user, product)).thenReturn(Optional.empty());
+        assertThrows(ResourceNotFoundException.class, () -> catalogService.deleteReview(productId));
+        verify(reviewService, times(1)).deleteReview(any());
     }
 
 }

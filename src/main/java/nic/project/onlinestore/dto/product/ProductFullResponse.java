@@ -3,12 +3,15 @@ package nic.project.onlinestore.dto.product;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
-@Data
 @Builder
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductFullResponse {
@@ -18,8 +21,6 @@ public class ProductFullResponse {
     private String description;
 
     private List<ImageDTO> images;
-
-    private List<String> categories;
 
     private Double price;
 

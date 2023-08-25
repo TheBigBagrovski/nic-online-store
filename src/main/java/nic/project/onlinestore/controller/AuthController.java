@@ -27,17 +27,17 @@ public class AuthController {
 
     @GetMapping("/show-user")
     public ResponseEntity<UserInfoResponse> showUserInfo() {
-        return new ResponseEntity<>(authService.getCurrentAuthorizedUserDTO(), HttpStatus.OK);
+        return ResponseEntity.ok(authService.getCurrentAuthorizedUserDTO());
     }
 
     @PostMapping("/register")
     public ResponseEntity<Map<String, String>> performRegistration(@RequestBody @Valid RegisterRequest registerRequest, BindingResult bindingResult) {
-        return new ResponseEntity<>(Collections.singletonMap("jwt-token", authService.register(registerRequest, bindingResult)), HttpStatus.OK);
+        return ResponseEntity.ok(Collections.singletonMap("jwt-token", authService.register(registerRequest, bindingResult)));
     }
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> performLogin(@RequestBody @Valid LoginRequest loginRequest, BindingResult bindingResult) {
-        return new ResponseEntity<>(Collections.singletonMap("jwt-token", authService.login(loginRequest, bindingResult)), HttpStatus.OK);
+        return ResponseEntity.ok(Collections.singletonMap("jwt-token", authService.login(loginRequest, bindingResult)));
     }
 
 }

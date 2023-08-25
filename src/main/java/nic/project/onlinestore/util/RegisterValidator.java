@@ -30,8 +30,7 @@ public class RegisterValidator implements Validator {
         if(!Objects.equals(registerRequest.getPassword(), registerRequest.getMatchingPassword())) {
             errors.rejectValue("matchingPassword", "", "Пароли не совпадают");
         }
-        if (userRepository.findUserByEmail(registerRequest.getEmail()).isPresent()) {
-            errors.rejectValue("email", "", "Этот почтовый адрес занят");
-        }
+        userRepository.findUserByEmail(registerRequest.getEmail())
+                .ifPresent(user -> errors.rejectValue("email", "", "Этот почтовый адрес занят"));
     }
 }

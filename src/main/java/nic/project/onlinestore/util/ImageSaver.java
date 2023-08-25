@@ -44,17 +44,20 @@ public class ImageSaver {
     public void deleteFolder(String path) {
         try {
             Path pth = Paths.get(path);
-            Files.walk(pth)
-                    .sorted((p1, p2) -> -p1.compareTo(p2))
-                    .forEach(p -> {
-                        try {
-                            Files.delete(p);
-                        } catch (IOException e) {
-                            logger.info("Ошибка при удалении папки: " + p);
-                        }
-                    });
+            if(Files.exists(pth)) {
+                Files.walk(pth)
+                        .sorted((p1, p2) -> -p1.compareTo(p2))
+                        .forEach(p -> {
+                            try {
+                                Files.delete(p);
+                            } catch (IOException e) {
+                                logger.info("Ошибка при удалении папки: " + p);
+                                throw new RuntimeException("Ошибка при удалении папки");
+                            }
+                        });
+            }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Ошибка при удалении папки");
         }
     }
 

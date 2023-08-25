@@ -1,6 +1,7 @@
 package nic.project.onlinestore.service.catalog;
 
 import lombok.extern.slf4j.Slf4j;
+import nic.project.onlinestore.exception.exceptions.ResourceNotFoundException;
 import nic.project.onlinestore.model.Image;
 import nic.project.onlinestore.model.Product;
 import nic.project.onlinestore.model.Review;
@@ -18,13 +19,14 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @Slf4j
 public class ReviewService {
 
     @Value("${review_images_path}")
-    private String reviewImagesPath;
+    private String REVIEWS_IMAGES_PATH;
 
     private final ReviewRepository reviewRepository;
     private final ImageRepository imageRepository;
@@ -41,8 +43,12 @@ public class ReviewService {
         return reviewRepository.findReviewsByProduct(product);
     }
 
-    public Review findReviewByUserAndProduct(User user, Product product) {
-        return reviewRepository.findReviewByUserAndProduct(user, product);
+    public Optional<Review> findReviewByUserAndProduct(User user, Product product) {
+        return reviewRepository.findReviewByUserAndProduct(user, product); // для будущей проверки на наличие
+    }
+
+    public Optional<Review> findReviewById(Long reviewId) {
+        return reviewRepository.findById(reviewId);
     }
 
     @Transactional
@@ -62,7 +68,7 @@ public class ReviewService {
         int i = 0;
         List<Image> savedImages = new ArrayList<>();
         if (fileList != null && !fileList.isEmpty()) {
-            String upperFolderPath = reviewImagesPath;
+            String upperFolderPath = REVIEWS_IMAGES_PATH;
             String upperFolderName = "/product" + productId;
             imageSaver.createFolder(upperFolderPath, upperFolderName);
             String userFolderPath = upperFolderPath + upperFolderName;
@@ -86,10 +92,9 @@ public class ReviewService {
     }
 
     @Transactional
-    public void deleteReview(Review review, Long productId, Long userId) {
+    public void deleteReview(Review review) {
         imageRepository.deleteAll(review.getImages());
-        String targetImagesPath = reviewImagesPath + "/product" + productId + "/user" + userId;
-        imageSaver.deleteFolder(targetImagesPath);
+        imageSaver.deleteFolder(REVIEWS_IMAGES_PATH + "/product" + review.getProduct().getId() + "/user" + review.getUser().getId());
         reviewRepository.delete(review);
     }
 

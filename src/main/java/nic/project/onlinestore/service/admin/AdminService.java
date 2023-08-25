@@ -1,20 +1,39 @@
 package nic.project.onlinestore.service.admin;
 
-import nic.project.onlinestore.dto.admin.AddProductRequest;
-import nic.project.onlinestore.exception.FormException;
+import nic.project.onlinestore.dto.admin.CategoryCreateRequest;
+import nic.project.onlinestore.dto.admin.CategoryUpdateRequest;
+import nic.project.onlinestore.dto.admin.FilterCreateRequest;
+import nic.project.onlinestore.dto.admin.FilterValueCreateRequest;
+import nic.project.onlinestore.dto.admin.ProductCreateRequest;
+import nic.project.onlinestore.dto.admin.ProductUpdateRequest;
+import nic.project.onlinestore.exception.exceptions.FormException;
+import nic.project.onlinestore.exception.exceptions.ResourceAlreadyExistsException;
+import nic.project.onlinestore.exception.exceptions.ResourceNotFoundException;
 import nic.project.onlinestore.model.Category;
+import nic.project.onlinestore.model.Filter;
+import nic.project.onlinestore.model.FilterValue;
 import nic.project.onlinestore.model.Image;
 import nic.project.onlinestore.model.Product;
+import nic.project.onlinestore.model.Review;
+import nic.project.onlinestore.repository.FilterValueRepository;
 import nic.project.onlinestore.repository.ImageRepository;
+import nic.project.onlinestore.repository.ProductRepository;
 import nic.project.onlinestore.service.catalog.CategoryService;
 import nic.project.onlinestore.service.catalog.ProductService;
+import nic.project.onlinestore.service.catalog.ReviewService;
+import nic.project.onlinestore.util.CategoryMapper;
+import nic.project.onlinestore.util.FilterMapper;
+import nic.project.onlinestore.util.FilterValueMapper;
 import nic.project.onlinestore.util.FormValidator;
 import nic.project.onlinestore.util.ImageSaver;
 import nic.project.onlinestore.util.ImageValidator;
+import nic.project.onlinestore.util.ProductMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,6 +41,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,50 +49,94 @@ import java.util.stream.Collectors;
 public class AdminService {
 
     @Value("${product_images_path}")
-    private String productImagesPath;
+    private String PRODUCTS_IMAGES_PATH;
 
     private final ProductService productService;
-
     private final FormValidator formValidator;
-
     private final ImageValidator imageValidator;
     private final ImageSaver imageSaver;
-
     private final ImageRepository imageRepository;
-
+    private final FilterValueRepository filterValueRepository;
+    private final ProductRepository productRepository;
     private final CategoryService categoryService;
+    private final FilterService filterService;
+    private final ReviewService reviewService;
+    private final ProductMapper productMapper;
+    private final CategoryMapper categoryMapper;
+    private final FilterMapper filterMapper;
+    private final FilterValueMapper filterValueMapper;
 
     @Autowired
-    public AdminService(ProductService productService, FormValidator formValidator, ImageValidator imageValidator, ImageSaver imageSaver, ImageRepository imageRepository, CategoryService categoryService) {
+    public AdminService(ProductService productService, FormValidator formValidator, ImageValidator imageValidator, ImageSaver imageSaver, ImageRepository imageRepository, FilterValueRepository filterValueRepository, ProductRepository productRepository, CategoryService categoryService, FilterService filterService, ReviewService reviewService, ProductMapper productMapper, CategoryMapper categoryMapper, FilterMapper filterMapper, FilterValueMapper filterValueMapper) {
         this.productService = productService;
         this.formValidator = formValidator;
         this.imageValidator = imageValidator;
         this.imageSaver = imageSaver;
         this.imageRepository = imageRepository;
+        this.filterValueRepository = filterValueRepository;
+        this.productRepository = productRepository;
         this.categoryService = categoryService;
+        this.filterService = filterService;
+        this.reviewService = reviewService;
+        this.productMapper = productMapper;
+        this.categoryMapper = categoryMapper;
+        this.filterMapper = filterMapper;
+        this.filterValueMapper = filterValueMapper;
     }
 
-    public void addProduct(AddProductRequest addProductRequest, BindingResult bindingResult) {
+    public void createProduct(ProductCreateRequest productCreateRequest, BindingResult bindingResult) {
         formValidator.checkFormBindingResult(bindingResult);
-        List<Category> categories = addProductRequest.getCategoriesIds().stream()
-                .map(categoryService::findCategoryById).collect(Collectors.toList());
-        Product newProduct = Product.builder()
-                .name(addProductRequest.getName())
-                .description(addProductRequest.getDescription())
-                .price(addProductRequest.getPrice())
-                .categories(categories)
-                .quantity(addProductRequest.getQuantity())
-                .build();
-        productService.save(newProduct);
+        Set<Category> categories = productCreateRequest.getCategoriesIds().stream()
+                .map(categoryService::findCategoryById).collect(Collectors.toSet());
+        Product newProduct = productMapper.mapFromCreateRequest(productCreateRequest);
+        newProduct.setCategories(categories);
+        productService.saveProduct(newProduct);
+    }
+
+    public void deleteProduct(Long productId, BindingResult bindingResult) {
+        formValidator.checkFormBindingResult(bindingResult);
+        Product product = productService.findProductById(productId);
+        productService.deleteProduct(product);
+    }
+
+    public void updateProduct(ProductUpdateRequest dto, BindingResult bindingResult) {
+        formValidator.checkFormBindingResult(bindingResult);
+        Product product = productService.findProductById(dto.getId());
+        productMapper.updateProductFromDto(dto, product);
+        productService.saveProduct(product);
+    }
+
+    public void addCategoryToProduct(Long productId, Long categoryId, BindingResult bindingResult) {
+        formValidator.checkFormBindingResult(bindingResult);
+        Product product = productService.findProductById(productId);
+        Category category = categoryService.findCategoryById(categoryId);
+        if (product.containsCategory(category)) {
+            throw new ResourceAlreadyExistsException("Товар уже относится к этой категории");
+        }
+        product.addCategory(category);
+    }
+
+    public void deleteCategoryFromProduct(Long productId, Long categoryId, BindingResult bindingResult) {
+        formValidator.checkFormBindingResult(bindingResult);
+        Product product = productService.findProductById(productId);
+        Category category = categoryService.findCategoryById(categoryId);
+        if (!product.containsCategory(category)) {
+            throw new ResourceNotFoundException("Товар не относится к этой категории");
+        }
+        product.removeCategory(category);
     }
 
     public void addProductImages(Long productId, List<MultipartFile> files) {
         Product product = productService.findProductById(productId);
         Map<String, String> errors = new HashMap<>();
-        if (files.isEmpty()) errors.put("files", "Добавьте хотя бы 1 изображение");
+        if (files.isEmpty()) {
+            errors.put("files", "Добавьте хотя бы 1 изображение");
+        }
         imageValidator.validateImages(files, errors);
-        if (!errors.isEmpty()) throw new FormException(errors);
-        String path = productImagesPath;
+        if (!errors.isEmpty()) {
+            throw new FormException(errors);
+        }
+        String path = PRODUCTS_IMAGES_PATH;
         String idstr = "/" + productId.toString();
         imageSaver.createFolder(path, idstr);
         String finalPath = path + idstr;
@@ -85,18 +149,146 @@ public class AdminService {
                     .path(finalPath)
                     .build();
             imageRepository.save(image);
-            product.getImages().add(image);
-            productService.save(product);
+            product.addImage(image);
+            productService.saveProduct(product);
         }
     }
 
-    public void deleteProductImages(Long productId, BindingResult bindingResult) {
+    public void deleteAllProductImages(Long productId, BindingResult bindingResult) {
         formValidator.checkFormBindingResult(bindingResult);
         Product product = productService.findProductById(productId);
-        product.getImages().clear();
-        productService.save(product);
-        String targetPath = productImagesPath + "/" + productId.toString();
+        imageRepository.deleteAll(product.getImages());
+        product.clearImages();
+        productService.saveProduct(product);
+        String targetPath = PRODUCTS_IMAGES_PATH + "/" + productId.toString();
         imageSaver.deleteFolder(targetPath);
+    }
+
+    public void addFilterPropertyToProduct(Long productId, Long filterId, Long propertyId, BindingResult bindingResult) {
+        formValidator.checkFormBindingResult(bindingResult);
+        Product product = productService.findProductById(productId);
+        Filter filter = filterService.findFilterById(filterId);
+        FilterValue filterValue = filterService.findFilterValueById(propertyId);
+        if (product.containsProperty(filter)) {
+            throw new ResourceAlreadyExistsException("Этот признак уже есть у товара");
+        }
+        product.addFilterProperty(filter, filterValue);
+        productService.saveProduct(product);
+    }
+
+    public void removeFilterPropertyFromProduct(Long productId, Long filterId, BindingResult bindingResult) {
+        formValidator.checkFormBindingResult(bindingResult);
+        Product product = productService.findProductById(productId);
+        Filter filter = filterService.findFilterById(filterId);
+        product.removeFilterProperty(filter);
+        productService.saveProduct(product);
+    }
+
+    public void createCategory(CategoryCreateRequest request, BindingResult bindingResult) {
+        formValidator.checkFormBindingResult(bindingResult);
+        Category newCategory = categoryMapper.mapFromCreateRequest(request);
+        Long id = request.getParentCategoryId();
+        newCategory.setParentCategory(id != null ? categoryService.findCategoryById(id) : null);
+        categoryService.saveCategory(newCategory);
+    }
+
+    public void addProductsToCategory(Long categoryId, List<Long> productList, BindingResult bindingResult) {
+        formValidator.checkFormBindingResult(bindingResult);
+        if (CollectionUtils.isEmpty(productList)) {
+            throw new IllegalArgumentException("Укажите хотя бы 1 товар");
+        }
+        for (Long productId : productList) {
+            Product product = productService.findProductById(productId);
+            Category category = categoryService.findCategoryById(categoryId);
+            if (product.containsCategory(category)) {
+                throw new ResourceAlreadyExistsException("Один из товаров уже относится к этой категории");
+            }
+            product.addCategory(category);
+            productService.saveProduct(product);
+        }
+    }
+
+    public void deleteCategory(Long categoryId, BindingResult bindingResult) {
+        formValidator.checkFormBindingResult(bindingResult);
+        Category removingCategory = categoryService.findCategoryById(categoryId);
+        List<Category> subcategories = categoryService.findSubcategoriesByCategory(removingCategory);
+        if (!subcategories.isEmpty()) {
+            throw new IllegalArgumentException("Категорию нельзя удалить, пока у нее есть дочерние категории");
+        }
+        removingCategory.setParentCategory(null);
+        categoryService.deleteCategory(removingCategory);
+    }
+
+    public void updateCategory(CategoryUpdateRequest request, BindingResult bindingResult) {
+        formValidator.checkFormBindingResult(bindingResult);
+        Category newCategory = categoryService.findCategoryById(request.getCategoryId());
+        newCategory.setName(request.getName());
+        Long parentCategoryId = request.getParentCategoryId();
+        if (parentCategoryId != null) {
+            if (parentCategoryId.equals(newCategory.getId())) {
+                throw new IllegalArgumentException("В качестве родительской категории нельзя назначить эту же категорию");
+            }
+            List<Category> subcategories = categoryService.findAllSubcategoriesByCategory(newCategory);
+            if (subcategories.stream().anyMatch(subcategory -> Objects.equals(subcategory.getId(), parentCategoryId))) {
+                throw new IllegalArgumentException("В качестве родительской категории нельзя назначить дочернюю категорию");
+            }
+        }
+        Category parentCategory = categoryService.findCategoryById(parentCategoryId);
+        newCategory.setParentCategory(parentCategory);
+        categoryService.saveCategory(newCategory);
+    }
+
+    public void createFilter(FilterCreateRequest request, BindingResult bindingResult) {
+        formValidator.checkFormBindingResult(bindingResult);
+        Filter newFilter = filterMapper.mapFromCreateRequest(request);
+        Category category = categoryService.findCategoryById(request.getCategoryId());
+        newFilter.setCategory(category);
+        filterService.saveFilter(newFilter);
+    }
+
+    public void deleteFilter(Long filterId, BindingResult bindingResult) {
+        formValidator.checkFormBindingResult(bindingResult);
+        filterService.deleteFilter(filterService.findFilterById(filterId));
+    }
+
+    public ResponseEntity<?> setCategoryForFilter(Long categoryId, Long filterId, BindingResult bindingResult) {
+        formValidator.checkFormBindingResult(bindingResult);
+        Filter filter = filterService.findFilterById(filterId);
+        if (categoryId == null) {
+            Objects.requireNonNull(filter.getCategory(), "Фильтр не относится ни к одной категории");
+            String msg = "Фильтр " + filter.getName() + " удален из категории " + filter.getCategory().getName();
+            filter.setCategory(null);
+            return ResponseEntity.ok(msg);
+        }
+        Category category = categoryService.findCategoryById(categoryId);
+        filter.setCategory(category);
+        filterService.saveFilter(filter);
+        return ResponseEntity.ok("Для категории " + category.getName() + " добавлен фильтр " + filter.getName());
+    }
+
+    public void createFilterValue(FilterValueCreateRequest request, BindingResult bindingResult) {
+        formValidator.checkFormBindingResult(bindingResult);
+        FilterValue newFilterValue = filterValueMapper.mapFromCreateRequest(request);
+        Filter filter = filterService.findFilterById(request.getFilterId());
+        newFilterValue.setFilter(filter);
+        filterValueRepository.save(newFilterValue);
+    }
+
+    public void deleteFilterValue(Long filterId, Long filterValueId, BindingResult bindingResult) {
+        formValidator.checkFormBindingResult(bindingResult);
+        List<Product> productList = productRepository.findProductsByFilterValueId(filterValueId);
+        Filter filter = filterService.findFilterById(filterId);
+        for (Product product : productList) {
+            product.removeFilterProperty(filter);
+        }
+        filterValueRepository.deleteFilterValueById(filterValueId);
+    }
+
+    public void deleteUserReview(Long reviewId, BindingResult bindingResult) {
+        formValidator.checkFormBindingResult(bindingResult);
+        Review review = reviewService.findReviewById(reviewId).orElseThrow(
+                () -> new ResourceNotFoundException("Отзыв не найден"));
+        reviewService.deleteReview(review);
     }
 
 }

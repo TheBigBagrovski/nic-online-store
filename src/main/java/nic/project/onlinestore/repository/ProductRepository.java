@@ -13,6 +13,11 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "SELECT c.id FROM categories c JOIN subcategories sc ON c.parent_category_id = sc.id) " +
             "SELECT p.* FROM products p JOIN products_categories pc ON p.id = pc.product_id JOIN subcategories s ON pc.category_id = s.id",
             nativeQuery = true)
-    List<Product> findByCategoryId(@Param("categoryId") Long category_id);
+    List<Product> findProductsByCategoryId(@Param("categoryId") Long category_id);
+
+    @Query(value = "SELECT * FROM products " +
+            "WHERE id IN (SELECT product_id FROM products_filter_values WHERE filter_value_id = ?1)",
+            nativeQuery = true)
+    List<Product> findProductsByFilterValueId(Long filterValueId);
 
 }

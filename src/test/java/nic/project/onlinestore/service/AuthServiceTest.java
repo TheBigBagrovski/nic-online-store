@@ -11,6 +11,7 @@ import nic.project.onlinestore.service.user.UserDetailsServiceImpl;
 import nic.project.onlinestore.service.user.UserService;
 import nic.project.onlinestore.util.FormValidator;
 import nic.project.onlinestore.util.RegisterValidator;
+import nic.project.onlinestore.util.UserMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,7 +46,7 @@ public class AuthServiceTest {
     private JwtUtil jwtUtil;
 
     @Mock
-    private ModelMapper modelMapper;
+    private UserMapper userMapper;
 
     @Mock
     private FormValidator formValidator;
@@ -72,7 +73,7 @@ public class AuthServiceTest {
         UserInfoResponse expectedDTO = new UserInfoResponse();
         UserDetailsImpl userDetails = new UserDetailsImpl(user);
         when(userDetailsService.loadUserByUsername(auth.getName())).thenReturn(userDetails);
-        when(modelMapper.map(user, UserInfoResponse.class)).thenReturn(expectedDTO);
+        when(userMapper.mapToInfoResponse(userDetails.getUser())).thenReturn(expectedDTO);
         UserInfoResponse result = authService.getCurrentAuthorizedUserDTO();
         Assertions.assertEquals(expectedDTO, result);
     }
@@ -89,7 +90,7 @@ public class AuthServiceTest {
         BindingResult bindingResult = mock(BindingResult.class);
         User user = new User();
         String expectedToken = "TOKEN";
-        when(modelMapper.map(registerRequest, User.class)).thenReturn(user);
+        when(userMapper.mapRegisterRequestToUser(registerRequest)).thenReturn(user);
         when(jwtUtil.generateToken(registerRequest.getEmail())).thenReturn(expectedToken);
         String result = authService.register(registerRequest, bindingResult);
         verify(registerValidator).validate(registerRequest, bindingResult);

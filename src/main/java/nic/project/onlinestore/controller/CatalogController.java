@@ -1,17 +1,26 @@
 package nic.project.onlinestore.controller;
 
+import nic.project.onlinestore.dto.ObjectByIdRequest;
 import nic.project.onlinestore.dto.catalog.CategoriesAndProductsResponse;
 import nic.project.onlinestore.dto.product.ProductFullResponse;
-import nic.project.onlinestore.dto.product.ProductRequest;
 import nic.project.onlinestore.dto.product.RatingDTO;
 import nic.project.onlinestore.dto.product.ReviewResponse;
 import nic.project.onlinestore.service.catalog.CatalogService;
 import nic.project.onlinestore.service.user.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
@@ -31,7 +40,7 @@ public class CatalogController {
     }
 
     @GetMapping
-    public ResponseEntity<CategoriesAndProductsResponse> getProductsAndChildCategoriesByCategoryAndFilters(
+    public ResponseEntity<CategoriesAndProductsResponse> getProductsAndSubcategoriesByCategoryAndFilters(
             @RequestParam(value = "category") Long categoryId,
             @RequestParam(value = "minPrice", required = false) Double minPrice,
             @RequestParam(value = "maxPrice", required = false) Double maxPrice,
@@ -39,24 +48,24 @@ public class CatalogController {
             @RequestParam(value = "priceSort", required = false, defaultValue = "true") Boolean cheapFirst,
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page
     ) {
-        return new ResponseEntity<>(catalogService.getProductsAndChildCategoriesByCategoryAndFilters(categoryId, minPrice, maxPrice, filters, cheapFirst, page), HttpStatus.OK);
+        return ResponseEntity.ok(catalogService.getProductsAndSubcategoriesByCategoryAndFilters(categoryId, minPrice, maxPrice, filters, cheapFirst, page));
     }
 
     @PutMapping
-    public ResponseEntity<Void> addProductToCart(@RequestBody @Valid ProductRequest productRequest, BindingResult bindingResult) {
+    public ResponseEntity<Void> addProductToCart(@RequestBody @Valid ObjectByIdRequest productRequest, BindingResult bindingResult) {
         cartService.addToCart(productRequest.getId(), bindingResult);
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping
-    public ResponseEntity<Void> changeProductQuantityInCart(@RequestBody @Valid ProductRequest productRequest, BindingResult bindingResult, @RequestParam(name = "op") String operation) {
+    public ResponseEntity<Void> changeProductQuantityInCart(@RequestBody @Valid ObjectByIdRequest productRequest, BindingResult bindingResult, @RequestParam(name = "op") String operation) {
         cartService.changeProductQuantityInCart(productRequest.getId(), operation, bindingResult);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("{productId}")
     public ResponseEntity<ProductFullResponse> getProductPage(@PathVariable Long productId) {
-        return new ResponseEntity<>(catalogService.getProductPage(productId), HttpStatus.OK);
+        return ResponseEntity.ok(catalogService.getProductPage(productId));
     }
 
     @PostMapping(value = "{productId}/post-rating", produces = "text/plain;charset=UTF-8")
@@ -75,7 +84,7 @@ public class CatalogController {
 
     @GetMapping("{productId}/edit-review") // получить содержимое отзыва для редактирования
     public ResponseEntity<ReviewResponse> getReviewDTOForEditing(@PathVariable Long productId) {
-        return new ResponseEntity<>(catalogService.getReviewDTOForEditing(productId), HttpStatus.OK);
+        return ResponseEntity.ok(catalogService.getReviewDTOForEditing(productId));
     }
 
     @PatchMapping(value = "{productId}/edit-review", produces = "text/plain;charset=UTF-8")

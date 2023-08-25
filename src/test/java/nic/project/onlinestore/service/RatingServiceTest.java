@@ -12,6 +12,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -30,8 +32,8 @@ public class RatingServiceTest {
         User user = new User();
         Product product = new Product();
         Rating expectedRating = new Rating();
-        when(ratingRepository.findRatingByUserAndProduct(user, product)).thenReturn(expectedRating);
-        Rating result = ratingService.findRatingByUserAndProduct(user, product);
+        when(ratingRepository.findRatingByUserAndProduct(user, product)).thenReturn(Optional.of(expectedRating));
+        Rating result = ratingService.findRatingByUserAndProduct(user, product).get();
         assertEquals(expectedRating, result);
         verify(ratingRepository).findRatingByUserAndProduct(user, product);
     }
@@ -72,8 +74,8 @@ public class RatingServiceTest {
         Rating rating = new Rating();
         int ratingValue = 5;
         ArgumentCaptor<Integer> ratingValueCaptor = ArgumentCaptor.forClass(Integer.class);
-        doNothing().when(ratingRepository).updateValueById(eq(rating.getId()), ratingValueCaptor.capture());
-        ratingService.updateValueById(rating, ratingValue);
+        doNothing().when(ratingRepository).updateRatingValueById(eq(rating.getId()), ratingValueCaptor.capture());
+        ratingService.updateRatingValueById(rating, ratingValue);
         int capturedRatingValue = ratingValueCaptor.getValue();
         assertEquals(ratingValue, capturedRatingValue);
     }

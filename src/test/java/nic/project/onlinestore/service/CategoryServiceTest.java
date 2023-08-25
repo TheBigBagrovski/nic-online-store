@@ -1,6 +1,6 @@
 package nic.project.onlinestore.service;
 
-import nic.project.onlinestore.exception.exceptions.CategoryNotFoundException;
+import nic.project.onlinestore.exception.exceptions.ResourceNotFoundException;
 import nic.project.onlinestore.model.Category;
 import nic.project.onlinestore.repository.CategoryRepository;
 import nic.project.onlinestore.service.catalog.CategoryService;
@@ -37,22 +37,22 @@ public class CategoryServiceTest {
         Category result = categoryService.findCategoryById(existingCategoryId);
         assertEquals(category, result);
         verify(categoryRepository).findById(existingCategoryId);
-        // CategoryNotFoundException
+        // ResourceNotFoundException
         when(categoryRepository.findById(nonexistingCategoryId)).thenReturn(Optional.empty());
-        Assertions.assertThrows(CategoryNotFoundException.class, () -> categoryService.findCategoryById(nonexistingCategoryId));
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> categoryService.findCategoryById(nonexistingCategoryId));
     }
 
     @Test
-    public void testFindChildCategoriesByCategory_ValidCategory_ReturnsChildCategories() {
+    public void testFindSubcategoriesByCategory_ValidCategory_ReturnsSubcategories() {
         Long categoryId = 1L;
         Category category = new Category(categoryId, "Parent Category", null);
-        List<Category> childCategories = Arrays.asList(
+        List<Category> subcategories = Arrays.asList(
                 new Category(2L, "Child Category 1", category),
                 new Category(3L, "Child Category 2", category)
         );
-        when(categoryRepository.findCategoriesByParentCategory(category)).thenReturn(childCategories);
-        List<Category> result = categoryService.findChildCategoriesByCategory(category);
-        assertEquals(childCategories, result);
+        when(categoryRepository.findCategoriesByParentCategory(category)).thenReturn(subcategories);
+        List<Category> result = categoryService.findSubcategoriesByCategory(category);
+        assertEquals(subcategories, result);
         verify(categoryRepository).findCategoriesByParentCategory(category);
     }
 

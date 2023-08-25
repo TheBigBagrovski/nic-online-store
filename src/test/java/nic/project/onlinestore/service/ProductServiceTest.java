@@ -1,6 +1,6 @@
 package nic.project.onlinestore.service;
 
-import nic.project.onlinestore.exception.exceptions.ProductNotFoundException;
+import nic.project.onlinestore.exception.exceptions.ResourceNotFoundException;
 import nic.project.onlinestore.model.Category;
 import nic.project.onlinestore.model.Product;
 import nic.project.onlinestore.repository.ProductRepository;
@@ -38,9 +38,9 @@ public class ProductServiceTest {
         Product result = productService.findProductById(existingProductId);
         assertEquals(product, result);
         verify(productRepository).findById(existingProductId);
-        // ProductNotFoundException
-        when(productRepository.findById(nonexistingProductId)).thenThrow(ProductNotFoundException.class);
-        assertThrows(ProductNotFoundException.class, () -> productService.findProductById(nonexistingProductId));
+        // ResourceNotFoundException
+        when(productRepository.findById(nonexistingProductId)).thenThrow(ResourceNotFoundException.class);
+        assertThrows(ResourceNotFoundException.class, () -> productService.findProductById(nonexistingProductId));
         verify(productRepository).findById(nonexistingProductId);
     }
 
@@ -49,10 +49,10 @@ public class ProductServiceTest {
         Category category = new Category();
         category.setId(1L);
         List<Product> products = new ArrayList<>();
-        when(productRepository.findByCategoryId(category.getId())).thenReturn(products);
+        when(productRepository.findProductsByCategoryId(category.getId())).thenReturn(products);
         List<Product> result = productService.findProductsByCategory(category);
         assertEquals(products, result);
-        verify(productRepository).findByCategoryId(category.getId());
+        verify(productRepository).findProductsByCategoryId(category.getId());
     }
 
 }

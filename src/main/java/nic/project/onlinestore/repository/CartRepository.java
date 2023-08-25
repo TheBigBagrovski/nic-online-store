@@ -4,8 +4,10 @@ import nic.project.onlinestore.model.Cart;
 import nic.project.onlinestore.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 public interface CartRepository extends JpaRepository<Cart, Long> {
 
-    Cart findByUser(User user);
+    Optional<Cart> findCartByUser(User user);
 
 }

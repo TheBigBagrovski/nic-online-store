@@ -7,15 +7,20 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+import java.util.Optional;
+
 public interface RatingRepository extends JpaRepository<Rating, Long> {
 
-    Rating findRatingByUserAndProduct(User user, Product product);
+    Optional<Rating> findRatingByUserAndProduct(User user, Product product);
 
     @Modifying
     @Query("UPDATE Rating r SET r.value = ?2 WHERE r.id = ?1")
-    void updateValueById(Long id, Integer value);
+    void updateRatingValueById(Long id, Integer value);
 
     Integer countRatingsByProduct(Product product);
+
+    List<Rating> findRatingsByProduct(Product product);
 
     @Query(value = "SELECT AVG(r.value) FROM ratings r JOIN products_ratings pr ON r.id = pr.rating_id WHERE pr.product_id = ?1",
             nativeQuery = true)

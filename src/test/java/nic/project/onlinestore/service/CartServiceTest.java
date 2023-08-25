@@ -1,6 +1,6 @@
 package nic.project.onlinestore.service;
 
-import nic.project.onlinestore.exception.exceptions.ProductAlreadyInCartException;
+import nic.project.onlinestore.exception.exceptions.ResourceAlreadyExistsException;
 import nic.project.onlinestore.model.Cart;
 import nic.project.onlinestore.model.Product;
 import nic.project.onlinestore.model.User;
@@ -19,6 +19,7 @@ import org.springframework.validation.BindingResult;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -54,7 +55,7 @@ public class CartServiceTest {
         Map<Product, Integer> items = new HashMap<>();
         cart.setItems(items);
         when(authService.getCurrentAuthorizedUser()).thenReturn(user);
-        when(cartRepository.findByUser(user)).thenReturn(cart);
+        when(cartRepository.findCartByUser(user)).thenReturn(Optional.of(cart));
         when(productService.findProductById(productId)).thenReturn(product);
         assertDoesNotThrow(() -> cartService.addToCart(productId, bindingResult));
         verify(formValidator).checkFormBindingResult(bindingResult);
@@ -65,9 +66,9 @@ public class CartServiceTest {
         items.put(product, 1);
         cart.setItems(items);
         when(authService.getCurrentAuthorizedUser()).thenReturn(user);
-        when(cartRepository.findByUser(user)).thenReturn(cart);
+        when(cartRepository.findCartByUser(user)).thenReturn(Optional.of(cart));
         when(productService.findProductById(productId)).thenReturn(product);
-        assertThrows(ProductAlreadyInCartException.class, () -> cartService.addToCart(productId, bindingResult));
+        assertThrows(ResourceAlreadyExistsException.class, () -> cartService.addToCart(productId, bindingResult));
         verify(formValidator, times(2)).checkFormBindingResult(bindingResult);
         verify(cartRepository, times(1)).save(cart);
     }
@@ -85,7 +86,7 @@ public class CartServiceTest {
         items.put(product, 1);
         cart.setItems(items);
         when(authService.getCurrentAuthorizedUser()).thenReturn(user);
-        when(cartRepository.findByUser(user)).thenReturn(cart);
+        when(cartRepository.findCartByUser(user)).thenReturn(Optional.of(cart));
         when(productService.findProductById(productId)).thenReturn(product);
         assertDoesNotThrow(() -> cartService.changeProductQuantityInCart(productId, operation, bindingResult));
         verify(formValidator).checkFormBindingResult(bindingResult);
@@ -106,7 +107,7 @@ public class CartServiceTest {
         items.put(product, 2);
         cart.setItems(items);
         when(authService.getCurrentAuthorizedUser()).thenReturn(user);
-        when(cartRepository.findByUser(user)).thenReturn(cart);
+        when(cartRepository.findCartByUser(user)).thenReturn(Optional.of(cart));
         when(productService.findProductById(productId)).thenReturn(product);
         assertDoesNotThrow(() -> cartService.changeProductQuantityInCart(productId, operation, bindingResult));
         verify(formValidator).checkFormBindingResult(bindingResult);
@@ -127,7 +128,7 @@ public class CartServiceTest {
         items.put(product, 1);
         cart.setItems(items);
         when(authService.getCurrentAuthorizedUser()).thenReturn(user);
-        when(cartRepository.findByUser(user)).thenReturn(cart);
+        when(cartRepository.findCartByUser(user)).thenReturn(Optional.of(cart));
         when(productService.findProductById(productId)).thenReturn(product);
         assertDoesNotThrow(() -> cartService.changeProductQuantityInCart(productId, operation, bindingResult));
         verify(formValidator).checkFormBindingResult(bindingResult);

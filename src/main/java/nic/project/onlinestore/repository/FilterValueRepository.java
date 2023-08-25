@@ -10,4 +10,6 @@ public interface FilterValueRepository extends JpaRepository<FilterValue, Long> 
 
     List<FilterValue> findFilterValuesByFilter(Filter filter);
 
+    void deleteFilterValueById(Long id);
+
 }

@@ -1,9 +1,11 @@
 package nic.project.onlinestore.controller;
 
+import nic.project.onlinestore.dto.ObjectByIdRequest;
 import nic.project.onlinestore.dto.catalog.CategoriesAndProductsResponse;
 import nic.project.onlinestore.dto.product.*;
-import nic.project.onlinestore.exception.FormException;
-import nic.project.onlinestore.exception.exceptions.*;
+import nic.project.onlinestore.exception.exceptions.FormException;
+import nic.project.onlinestore.exception.exceptions.ResourceAlreadyExistsException;
+import nic.project.onlinestore.exception.exceptions.ResourceNotFoundException;
 import nic.project.onlinestore.model.Filter;
 import nic.project.onlinestore.model.FilterValue;
 import nic.project.onlinestore.repository.*;
@@ -72,7 +74,7 @@ class CatalogControllerTest {
     private CatalogController catalogController;
 
     @Test
-    public void testGetProductsAndChildCategoriesByCategory() {
+    public void testGetProductsAndSubcategoriesByCategory() {
         Long existingCategoryId = 1L;
         Long nonExistingCategoryId = 2L;
         ProductShortResponse productShortResponse = ProductShortResponse.builder()
@@ -85,52 +87,52 @@ class CatalogControllerTest {
                 .averageRating(3.0)
                 .build();
         CategoriesAndProductsResponse expectedResponse = CategoriesAndProductsResponse.builder()
-                .childCategories(null)
+                .subcategories(null)
                 .products(Collections.singletonList(productShortResponse))
                 .build();
-        when(catalogService.getProductsAndChildCategoriesByCategoryAndFilters(existingCategoryId, null, null, null, null, 1)).thenReturn(expectedResponse);
-        when(catalogService.getProductsAndChildCategoriesByCategoryAndFilters(nonExistingCategoryId, null, null, null,null, 1)).thenThrow(CategoryNotFoundException.class);
+        when(catalogService.getProductsAndSubcategoriesByCategoryAndFilters(existingCategoryId, null, null, null, null, 1)).thenReturn(expectedResponse);
+        when(catalogService.getProductsAndSubcategoriesByCategoryAndFilters(nonExistingCategoryId, null, null, null,null, 1)).thenThrow(ResourceNotFoundException.class);
         // успешная работа
-        ResponseEntity<CategoriesAndProductsResponse> response1 = catalogController.getProductsAndChildCategoriesByCategoryAndFilters(existingCategoryId,null, null, null,null, 1);
-        verify(catalogService, times(1)).getProductsAndChildCategoriesByCategoryAndFilters(existingCategoryId,null, null, null,null, 1);
+        ResponseEntity<CategoriesAndProductsResponse> response1 = catalogController.getProductsAndSubcategoriesByCategoryAndFilters(existingCategoryId,null, null, null,null, 1);
+        verify(catalogService, times(1)).getProductsAndSubcategoriesByCategoryAndFilters(existingCategoryId,null, null, null,null, 1);
         assertEquals(HttpStatus.OK, response1.getStatusCode());
         assertEquals(expectedResponse, response1.getBody());
         // нет такой категории
-        assertThrows(CategoryNotFoundException.class, () -> catalogController.getProductsAndChildCategoriesByCategoryAndFilters(nonExistingCategoryId,null, null, null,null, 1));
-        verify(catalogService, times(1)).getProductsAndChildCategoriesByCategoryAndFilters(nonExistingCategoryId,null, null, null,null, 1);
+        assertThrows(ResourceNotFoundException.class, () -> catalogController.getProductsAndSubcategoriesByCategoryAndFilters(nonExistingCategoryId,null, null, null,null, 1));
+        verify(catalogService, times(1)).getProductsAndSubcategoriesByCategoryAndFilters(nonExistingCategoryId,null, null, null,null, 1);
     }
 
     @Test
     public void testAddProductToCart() {
-        ProductRequest productRequest1 = ProductRequest.builder().id(1L).build();
-        ProductRequest productRequest2 = ProductRequest.builder().id(2L).build();
+        ObjectByIdRequest productRequest1 = new ObjectByIdRequest(1L);
+        ObjectByIdRequest productRequest2 = new ObjectByIdRequest(2L);
         // успешная работа
         doNothing().when(cartService).addToCart(1L, null);
         ResponseEntity<Void> response1 = catalogController.addProductToCart(productRequest1, null);
         verify(cartService, times(1)).addToCart(1L, null);
         assertEquals(HttpStatus.OK, response1.getStatusCode());
         // нет такого продукта
-        doThrow(ProductNotFoundException.class).when(cartService).addToCart(2L, null);
-        assertThrows(ProductNotFoundException.class, () -> catalogController.addProductToCart(productRequest2, null));
+        doThrow(ResourceNotFoundException.class).when(cartService).addToCart(2L, null);
+        assertThrows(ResourceNotFoundException.class, () -> catalogController.addProductToCart(productRequest2, null));
         verify(cartService, times(1)).addToCart(2L, null);
         // продукт уже в корзине
-        doThrow(ProductAlreadyInCartException.class).when(cartService).addToCart(1L, null);
-        assertThrows(ProductAlreadyInCartException.class, () -> catalogController.addProductToCart(productRequest1, null));
+        doThrow(ResourceAlreadyExistsException.class).when(cartService).addToCart(1L, null);
+        assertThrows(ResourceAlreadyExistsException.class, () -> catalogController.addProductToCart(productRequest1, null));
         verify(cartService, times(2)).addToCart(1L, null);
     }
 
     @Test
     public void testChangeProductQuantityInCart() {
-        ProductRequest productRequest1 = ProductRequest.builder().id(1L).build();
-        ProductRequest productRequest2 = ProductRequest.builder().id(2L).build();
+        ObjectByIdRequest productRequest1 = new ObjectByIdRequest(1L);
+        ObjectByIdRequest productRequest2 = new ObjectByIdRequest(2L);
         // успешная работа (инкремент)
         doNothing().when(cartService).changeProductQuantityInCart(1L, "inc", null);
         ResponseEntity<Void> response1 = catalogController.changeProductQuantityInCart(productRequest1, null, "inc");
         verify(cartService, times(1)).changeProductQuantityInCart(1L, "inc", null);
         assertEquals(HttpStatus.OK, response1.getStatusCode());
         // нет такого продукта
-        doThrow(ProductNotFoundException.class).when(cartService).changeProductQuantityInCart(2L, "inc", null);
-        assertThrows(ProductNotFoundException.class, () -> catalogController.changeProductQuantityInCart(productRequest2, null, "inc"));
+        doThrow(ResourceNotFoundException.class).when(cartService).changeProductQuantityInCart(2L, "inc", null);
+        assertThrows(ResourceNotFoundException.class, () -> catalogController.changeProductQuantityInCart(productRequest2, null, "inc"));
         verify(cartService, times(1)).changeProductQuantityInCart(2L, "inc", null);
     }
 
@@ -142,7 +144,6 @@ class CatalogControllerTest {
                 .name("Смартфон Apple iPhone 13")
                 .description(null)
                 .images(null)
-                .categories(Collections.singletonList("Смартфоны"))
                 .price(80999.0)
                 .quantity(5)
                 .ratingsNumber(3)
@@ -151,14 +152,14 @@ class CatalogControllerTest {
                 .reviewsNumber(3)
                 .build();
         when(catalogService.getProductPage(existingProductId)).thenReturn(productFullResponse);
-        when(catalogService.getProductPage(nonExistingProductId)).thenThrow(ProductNotFoundException.class);
+        when(catalogService.getProductPage(nonExistingProductId)).thenThrow(ResourceNotFoundException.class);
         // успешная работа
         ResponseEntity<ProductFullResponse> response1 = catalogController.getProductPage(existingProductId);
         verify(catalogService, times(1)).getProductPage(existingProductId);
         assertEquals(HttpStatus.OK, response1.getStatusCode());
         assertEquals(productFullResponse, response1.getBody());
         // нет такого продукта
-        assertThrows(ProductNotFoundException.class, () -> catalogController.getProductPage(nonExistingProductId));
+        assertThrows(ResourceNotFoundException.class, () -> catalogController.getProductPage(nonExistingProductId));
         verify(catalogService, times(1)).getProductPage(nonExistingProductId);
     }
 
@@ -177,8 +178,8 @@ class CatalogControllerTest {
         assertEquals("Оценка поставлена!", responseEntity.getBody());
         verify(catalogService, times(1)).rateProduct(existingProductId, validRating, bindingResult);
         // нет такого продукта
-        doThrow(ProductNotFoundException.class).when(catalogService).rateProduct(nonexistingProductId, validRating, bindingResult);
-        assertThrows(ProductNotFoundException.class, () -> catalogController.postRating(ratingDTO, bindingResult, nonexistingProductId));
+        doThrow(ResourceNotFoundException.class).when(catalogService).rateProduct(nonexistingProductId, validRating, bindingResult);
+        assertThrows(ResourceNotFoundException.class, () -> catalogController.postRating(ratingDTO, bindingResult, nonexistingProductId));
         verify(catalogService, times(1)).rateProduct(nonexistingProductId, validRating, bindingResult);
         // невалидная оценка
         RatingDTO invalidRatingDTO = new RatingDTO();
@@ -200,12 +201,12 @@ class CatalogControllerTest {
         assertEquals("Ваш отзыв добавлен!", responseEntity1.getBody());
         verify(catalogService, times(1)).reviewProduct(existingProductId, comment, files);
         // нет такого продукта
-        doThrow(ProductNotFoundException.class).when(catalogService).reviewProduct(nonExistingProductId, comment, files);
-        assertThrows(ProductNotFoundException.class, () -> catalogController.postReview(comment, files, nonExistingProductId));
+        doThrow(ResourceNotFoundException.class).when(catalogService).reviewProduct(nonExistingProductId, comment, files);
+        assertThrows(ResourceNotFoundException.class, () -> catalogController.postReview(comment, files, nonExistingProductId));
         verify(catalogService, times(1)).reviewProduct(nonExistingProductId, comment, files);
         // отзыв уже оставлен
-        doThrow(ReviewAlreadyExistsException.class).when(catalogService).reviewProduct(existingProductId, comment, files);
-        assertThrows(ReviewAlreadyExistsException.class, () -> catalogController.postReview(comment, files, existingProductId));
+        doThrow(ResourceAlreadyExistsException.class).when(catalogService).reviewProduct(existingProductId, comment, files);
+        assertThrows(ResourceAlreadyExistsException.class, () -> catalogController.postReview(comment, files, existingProductId));
         verify(catalogService, times(2)).reviewProduct(existingProductId, comment, files);
         // пустой комментарий
         String emptyComment = "";
@@ -231,12 +232,12 @@ class CatalogControllerTest {
         assertEquals(reviewResponse, responseEntity1.getBody());
         verify(catalogService, times(1)).getReviewDTOForEditing(existingProductId);
         // нет такого продукта
-        when(catalogService.getReviewDTOForEditing(nonExistingProductId)).thenThrow(ProductNotFoundException.class);
-        assertThrows(ProductNotFoundException.class, () -> catalogController.getReviewDTOForEditing(nonExistingProductId));
+        when(catalogService.getReviewDTOForEditing(nonExistingProductId)).thenThrow(ResourceNotFoundException.class);
+        assertThrows(ResourceNotFoundException.class, () -> catalogController.getReviewDTOForEditing(nonExistingProductId));
         verify(catalogService, times(1)).getReviewDTOForEditing(nonExistingProductId);
         // нет такого отзыва
-        when(catalogService.getReviewDTOForEditing(existingProductId)).thenThrow(ReviewNotFoundException.class);
-        assertThrows(ReviewNotFoundException.class, () -> catalogController.getReviewDTOForEditing(existingProductId));
+        when(catalogService.getReviewDTOForEditing(existingProductId)).thenThrow(ResourceNotFoundException.class);
+        assertThrows(ResourceNotFoundException.class, () -> catalogController.getReviewDTOForEditing(existingProductId));
         verify(catalogService, times(2)).getReviewDTOForEditing(existingProductId);
     }
 
@@ -254,12 +255,12 @@ class CatalogControllerTest {
         assertEquals("Ваш отзыв изменен!", responseEntity1.getBody());
         verify(catalogService, times(1)).editReview(existingProductId, validComment, files);
         // нет такого продукта
-        doThrow(ProductNotFoundException.class).when(catalogService).editReview(nonExistingProductId, validComment, files);
-        assertThrows(ProductNotFoundException.class, () -> catalogController.editReview(validComment, files, nonExistingProductId));
+        doThrow(ResourceNotFoundException.class).when(catalogService).editReview(nonExistingProductId, validComment, files);
+        assertThrows(ResourceNotFoundException.class, () -> catalogController.editReview(validComment, files, nonExistingProductId));
         verify(catalogService, times(1)).editReview(nonExistingProductId, validComment, files);
         // нет такого отзыва
-        doThrow(ReviewNotFoundException.class).when(catalogService).editReview(existingProductId, validComment, files);
-        assertThrows(ReviewNotFoundException.class, () -> catalogController.editReview(validComment, files, existingProductId));
+        doThrow(ResourceNotFoundException.class).when(catalogService).editReview(existingProductId, validComment, files);
+        assertThrows(ResourceNotFoundException.class, () -> catalogController.editReview(validComment, files, existingProductId));
         verify(catalogService, times(2)).editReview(existingProductId, validComment, files);
         // пустой комментарий
         doThrow(FormException.class).when(catalogService).editReview(existingProductId, emptyComment, files);
@@ -281,12 +282,12 @@ class CatalogControllerTest {
         assertEquals("Оценка удалена", responseEntity1.getBody());
         verify(catalogService, times(1)).deleteRating(existingProductId);
         // нет такого продукта
-        doThrow(ProductNotFoundException.class).when(catalogService).deleteRating(nonExistingProductId);
-        assertThrows(ProductNotFoundException.class, () -> catalogController.deleteRating(nonExistingProductId));
+        doThrow(ResourceNotFoundException.class).when(catalogService).deleteRating(nonExistingProductId);
+        assertThrows(ResourceNotFoundException.class, () -> catalogController.deleteRating(nonExistingProductId));
         verify(catalogService, times(1)).deleteRating(nonExistingProductId);
         // нет такой оценки
-        doThrow(RatingNotFoundException.class).when(catalogService).deleteRating(existingProductId);
-        assertThrows(RatingNotFoundException.class, () -> catalogController.deleteRating(existingProductId));
+        doThrow(ResourceNotFoundException.class).when(catalogService).deleteRating(existingProductId);
+        assertThrows(ResourceNotFoundException.class, () -> catalogController.deleteRating(existingProductId));
         verify(catalogService, times(2)).deleteRating(existingProductId);
     }
 
@@ -301,12 +302,12 @@ class CatalogControllerTest {
         assertEquals("Отзыв удален", responseEntity1.getBody());
         verify(catalogService, times(1)).deleteReview(existingProductId);
         // нет такого продукта
-        doThrow(ProductNotFoundException.class).when(catalogService).deleteReview(nonExistingProductId);
-        assertThrows(ProductNotFoundException.class, () -> catalogController.deleteReview(nonExistingProductId));
+        doThrow(ResourceNotFoundException.class).when(catalogService).deleteReview(nonExistingProductId);
+        assertThrows(ResourceNotFoundException.class, () -> catalogController.deleteReview(nonExistingProductId));
         verify(catalogService, times(1)).deleteReview(nonExistingProductId);
         // нет такого отзыва
-        doThrow(ReviewNotFoundException.class).when(catalogService).deleteReview(existingProductId);
-        assertThrows(ReviewNotFoundException.class, () -> catalogController.deleteReview(existingProductId));
+        doThrow(ResourceNotFoundException.class).when(catalogService).deleteReview(existingProductId);
+        assertThrows(ResourceNotFoundException.class, () -> catalogController.deleteReview(existingProductId));
         verify(catalogService, times(2)).deleteReview(existingProductId);
     }
 

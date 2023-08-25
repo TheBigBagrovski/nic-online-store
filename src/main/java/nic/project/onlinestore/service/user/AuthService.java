@@ -7,7 +7,7 @@ import nic.project.onlinestore.model.User;
 import nic.project.onlinestore.security.JwtUtil;
 import nic.project.onlinestore.util.FormValidator;
 import nic.project.onlinestore.util.RegisterValidator;
-import org.modelmapper.ModelMapper;
+import nic.project.onlinestore.util.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -25,18 +25,18 @@ public class AuthService {
     private final UserDetailsServiceImpl userDetailsService;
     private final RegisterValidator registerValidator;
     private final JwtUtil jwtUtil;
-    private final ModelMapper modelMapper;
     private final FormValidator formValidator;
+    private final UserMapper userMapper;
 
     @Autowired
-    public AuthService(AuthenticationManager authenticationManager, UserService userService, UserDetailsServiceImpl userDetailsService, RegisterValidator registerValidator, JwtUtil jwtUtil, ModelMapper modelMapper, FormValidator formValidator) {
+    public AuthService(AuthenticationManager authenticationManager, UserService userService, UserDetailsServiceImpl userDetailsService, RegisterValidator registerValidator, JwtUtil jwtUtil, FormValidator formValidator, UserMapper userMapper) {
         this.authenticationManager = authenticationManager;
         this.userService = userService;
         this.userDetailsService = userDetailsService;
         this.registerValidator = registerValidator;
         this.jwtUtil = jwtUtil;
-        this.modelMapper = modelMapper;
         this.formValidator = formValidator;
+        this.userMapper = userMapper;
     }
 
     public User getCurrentAuthorizedUser() {
@@ -45,14 +45,13 @@ public class AuthService {
     }
 
     public UserInfoResponse getCurrentAuthorizedUserDTO() {
-        return convertToUserDTO(getCurrentAuthorizedUser());
+        return userMapper.mapToInfoResponse(getCurrentAuthorizedUser());
     }
 
     public String register(RegisterRequest registerRequest, BindingResult bindingResult) {
         registerValidator.validate(registerRequest, bindingResult);
         formValidator.checkFormBindingResult(bindingResult);
-        User user = convertRegisterRequestToUser(registerRequest);
-        userService.saveUser(user);
+        userService.saveUser(userMapper.mapRegisterRequestToUser(registerRequest));
         return jwtUtil.generateToken(registerRequest.getEmail());
     }
 
@@ -70,12 +69,6 @@ public class AuthService {
         return jwtUtil.generateToken(loginRequest.getEmail());
     }
 
-    private User convertRegisterRequestToUser(RegisterRequest registerRequest) {
-        return modelMapper.map(registerRequest, User.class);
-    }
 
-    private UserInfoResponse convertToUserDTO(User user) {
-        return modelMapper.map(user, UserInfoResponse.class);
-    }
 
 }
