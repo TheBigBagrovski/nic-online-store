@@ -25,7 +25,6 @@ import nic.project.onlinestore.service.catalog.ReviewService;
 import nic.project.onlinestore.util.CategoryMapper;
 import nic.project.onlinestore.util.FilterMapper;
 import nic.project.onlinestore.util.FilterValueMapper;
-import nic.project.onlinestore.util.FormValidator;
 import nic.project.onlinestore.util.ImageSaver;
 import nic.project.onlinestore.util.ImageValidator;
 import nic.project.onlinestore.util.ProductMapper;
@@ -34,7 +33,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
@@ -53,7 +51,6 @@ public class AdminService {
     private String PRODUCTS_IMAGES_PATH;
 
     private final ProductService productService;
-    private final FormValidator formValidator;
     private final ImageValidator imageValidator;
     private final ImageSaver imageSaver;
     private final ImageRepository imageRepository;
@@ -67,8 +64,7 @@ public class AdminService {
     private final FilterMapper filterMapper;
     private final FilterValueMapper filterValueMapper;
 
-    public void createProduct(ProductCreateRequest productCreateRequest, BindingResult bindingResult) {
-        formValidator.checkFormBindingResult(bindingResult);
+    public void createProduct(ProductCreateRequest productCreateRequest) {
         Set<Category> categories = productCreateRequest.getCategoriesIds().stream()
                 .map(categoryService::findCategoryById).collect(Collectors.toSet());
         Product newProduct = productMapper.mapFromCreateRequest(productCreateRequest);
@@ -76,21 +72,18 @@ public class AdminService {
         productService.saveProduct(newProduct);
     }
 
-    public void deleteProduct(Long productId, BindingResult bindingResult) {
-        formValidator.checkFormBindingResult(bindingResult);
+    public void deleteProduct(Long productId) {
         Product product = productService.findProductById(productId);
         productService.deleteProduct(product);
     }
 
-    public void updateProduct(ProductUpdateRequest dto, BindingResult bindingResult) {
-        formValidator.checkFormBindingResult(bindingResult);
+    public void updateProduct(ProductUpdateRequest dto) {
         Product product = productService.findProductById(dto.getId());
         productMapper.updateProductFromDto(dto, product);
         productService.saveProduct(product);
     }
 
-    public void addCategoryToProduct(Long productId, Long categoryId, BindingResult bindingResult) {
-        formValidator.checkFormBindingResult(bindingResult);
+    public void addCategoryToProduct(Long productId, Long categoryId) {
         Product product = productService.findProductById(productId);
         Category category = categoryService.findCategoryById(categoryId);
         if (product.containsCategory(category)) {
@@ -99,8 +92,7 @@ public class AdminService {
         product.addCategory(category);
     }
 
-    public void deleteCategoryFromProduct(Long productId, Long categoryId, BindingResult bindingResult) {
-        formValidator.checkFormBindingResult(bindingResult);
+    public void deleteCategoryFromProduct(Long productId, Long categoryId) {
         Product product = productService.findProductById(productId);
         Category category = categoryService.findCategoryById(categoryId);
         if (!product.containsCategory(category)) {
@@ -137,8 +129,7 @@ public class AdminService {
         }
     }
 
-    public void deleteAllProductImages(Long productId, BindingResult bindingResult) {
-        formValidator.checkFormBindingResult(bindingResult);
+    public void deleteAllProductImages(Long productId) {
         Product product = productService.findProductById(productId);
         imageRepository.deleteAll(product.getImages());
         product.clearImages();
@@ -147,8 +138,7 @@ public class AdminService {
         imageSaver.deleteFolder(targetPath);
     }
 
-    public void addFilterPropertyToProduct(Long productId, Long filterId, Long propertyId, BindingResult bindingResult) {
-        formValidator.checkFormBindingResult(bindingResult);
+    public void addFilterPropertyToProduct(Long productId, Long filterId, Long propertyId) {
         Product product = productService.findProductById(productId);
         Filter filter = filterService.findFilterById(filterId);
         FilterValue filterValue = filterService.findFilterValueById(propertyId);
@@ -159,24 +149,21 @@ public class AdminService {
         productService.saveProduct(product);
     }
 
-    public void removeFilterPropertyFromProduct(Long productId, Long filterId, BindingResult bindingResult) {
-        formValidator.checkFormBindingResult(bindingResult);
+    public void removeFilterPropertyFromProduct(Long productId, Long filterId) {
         Product product = productService.findProductById(productId);
         Filter filter = filterService.findFilterById(filterId);
         product.removeFilterProperty(filter);
         productService.saveProduct(product);
     }
 
-    public void createCategory(CategoryCreateRequest request, BindingResult bindingResult) {
-        formValidator.checkFormBindingResult(bindingResult);
+    public void createCategory(CategoryCreateRequest request) {
         Category newCategory = categoryMapper.mapFromCreateRequest(request);
         Long id = request.getParentCategoryId();
         newCategory.setParentCategory(id != null ? categoryService.findCategoryById(id) : null);
         categoryService.saveCategory(newCategory);
     }
 
-    public void addProductsToCategory(Long categoryId, List<Long> productList, BindingResult bindingResult) {
-        formValidator.checkFormBindingResult(bindingResult);
+    public void addProductsToCategory(Long categoryId, List<Long> productList) {
         if (CollectionUtils.isEmpty(productList)) {
             throw new IllegalArgumentException("Укажите хотя бы 1 товар");
         }
@@ -191,8 +178,7 @@ public class AdminService {
         }
     }
 
-    public void deleteCategory(Long categoryId, BindingResult bindingResult) {
-        formValidator.checkFormBindingResult(bindingResult);
+    public void deleteCategory(Long categoryId) {
         Category removingCategory = categoryService.findCategoryById(categoryId);
         List<Category> subcategories = categoryService.findSubcategoriesByCategory(removingCategory);
         if (!subcategories.isEmpty()) {
@@ -202,8 +188,7 @@ public class AdminService {
         categoryService.deleteCategory(removingCategory);
     }
 
-    public void updateCategory(CategoryUpdateRequest request, BindingResult bindingResult) {
-        formValidator.checkFormBindingResult(bindingResult);
+    public void updateCategory(CategoryUpdateRequest request) {
         Category newCategory = categoryService.findCategoryById(request.getCategoryId());
         newCategory.setName(request.getName());
         Long parentCategoryId = request.getParentCategoryId();
@@ -221,21 +206,18 @@ public class AdminService {
         categoryService.saveCategory(newCategory);
     }
 
-    public void createFilter(FilterCreateRequest request, BindingResult bindingResult) {
-        formValidator.checkFormBindingResult(bindingResult);
+    public void createFilter(FilterCreateRequest request) {
         Filter newFilter = filterMapper.mapFromCreateRequest(request);
         Category category = categoryService.findCategoryById(request.getCategoryId());
         newFilter.setCategory(category);
         filterService.saveFilter(newFilter);
     }
 
-    public void deleteFilter(Long filterId, BindingResult bindingResult) {
-        formValidator.checkFormBindingResult(bindingResult);
+    public void deleteFilter(Long filterId) {
         filterService.deleteFilter(filterService.findFilterById(filterId));
     }
 
-    public ResponseEntity<?> setCategoryForFilter(Long categoryId, Long filterId, BindingResult bindingResult) {
-        formValidator.checkFormBindingResult(bindingResult);
+    public ResponseEntity<?> setCategoryForFilter(Long categoryId, Long filterId) {
         Filter filter = filterService.findFilterById(filterId);
         if (categoryId == null) {
             Objects.requireNonNull(filter.getCategory(), "Фильтр не относится ни к одной категории");
@@ -249,16 +231,14 @@ public class AdminService {
         return ResponseEntity.ok("Для категории " + category.getName() + " добавлен фильтр " + filter.getName());
     }
 
-    public void createFilterValue(FilterValueCreateRequest request, BindingResult bindingResult) {
-        formValidator.checkFormBindingResult(bindingResult);
+    public void createFilterValue(FilterValueCreateRequest request) {
         FilterValue newFilterValue = filterValueMapper.mapFromCreateRequest(request);
         Filter filter = filterService.findFilterById(request.getFilterId());
         newFilterValue.setFilter(filter);
         filterValueRepository.save(newFilterValue);
     }
 
-    public void deleteFilterValue(Long filterId, Long filterValueId, BindingResult bindingResult) {
-        formValidator.checkFormBindingResult(bindingResult);
+    public void deleteFilterValue(Long filterId, Long filterValueId) {
         List<Product> productList = productRepository.findProductsByFilterValueId(filterValueId);
         Filter filter = filterService.findFilterById(filterId);
         for (Product product : productList) {
@@ -267,8 +247,7 @@ public class AdminService {
         filterValueRepository.deleteFilterValueById(filterValueId);
     }
 
-    public void deleteUserReview(Long reviewId, BindingResult bindingResult) {
-        formValidator.checkFormBindingResult(bindingResult);
+    public void deleteUserReview(Long reviewId) {
         Review review = reviewService.findReviewById(reviewId).orElseThrow(
                 () -> new ResourceNotFoundException("Отзыв не найден"));
         reviewService.deleteReview(review);

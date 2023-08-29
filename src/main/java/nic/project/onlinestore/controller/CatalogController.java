@@ -8,6 +8,7 @@ import nic.project.onlinestore.dto.product.RatingDTO;
 import nic.project.onlinestore.dto.product.ReviewResponse;
 import nic.project.onlinestore.service.catalog.CatalogService;
 import nic.project.onlinestore.service.user.CartService;
+import nic.project.onlinestore.util.FormValidator;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,6 +34,7 @@ public class CatalogController {
 
     private final CatalogService catalogService;
     private final CartService cartService;
+    private final FormValidator formValidator;
 
     @GetMapping
     public ResponseEntity<CategoriesAndProductsResponse> getProductsAndSubcategoriesByCategoryAndFilters(
@@ -48,13 +50,15 @@ public class CatalogController {
 
     @PutMapping
     public ResponseEntity<Void> addProductToCart(@RequestBody @Valid ObjectByIdRequest productRequest, BindingResult bindingResult) {
-        cartService.addToCart(productRequest.getId(), bindingResult);
+        formValidator.checkFormBindingResult(bindingResult);
+        cartService.addToCart(productRequest.getId());
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping
     public ResponseEntity<Void> changeProductQuantityInCart(@RequestBody @Valid ObjectByIdRequest productRequest, BindingResult bindingResult, @RequestParam(name = "op") String operation) {
-        cartService.changeProductQuantityInCart(productRequest.getId(), operation, bindingResult);
+        formValidator.checkFormBindingResult(bindingResult);
+        cartService.changeProductQuantityInCart(productRequest.getId(), operation);
         return ResponseEntity.ok().build();
     }
 
@@ -65,7 +69,8 @@ public class CatalogController {
 
     @PostMapping(value = "/{productId}/post-rating", produces = "text/plain;charset=UTF-8")
     public ResponseEntity<?> postRating(@RequestBody @Valid RatingDTO ratingDTO, BindingResult bindingResult, @PathVariable Long productId) {
-        catalogService.rateProduct(productId, ratingDTO.getValue(), bindingResult);
+        formValidator.checkFormBindingResult(bindingResult);
+        catalogService.rateProduct(productId, ratingDTO.getValue());
         return ResponseEntity.ok("Оценка поставлена!");
     }
 

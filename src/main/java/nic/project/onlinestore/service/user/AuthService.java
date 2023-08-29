@@ -9,13 +9,10 @@ import nic.project.onlinestore.dto.auth.RegisterRequest;
 import nic.project.onlinestore.model.User;
 import nic.project.onlinestore.security.JwtAuthentication;
 import nic.project.onlinestore.security.JwtProvider;
-import nic.project.onlinestore.util.FormValidator;
-import nic.project.onlinestore.util.RegisterValidator;
 import nic.project.onlinestore.util.UserMapper;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.BindingResult;
 
 import javax.security.auth.message.AuthException;
 import java.util.HashMap;
@@ -26,9 +23,7 @@ import java.util.Map;
 public class AuthService {
 
     private final UserService userService;
-    private final RegisterValidator registerValidator;
     private final JwtProvider jwtProvider;
-    private final FormValidator formValidator;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
@@ -42,9 +37,7 @@ public class AuthService {
         return userService.findUserByEmail(getCurrentAuthentication().getEmail());
     }
 
-    public void register(RegisterRequest registerRequest, BindingResult bindingResult) {
-        registerValidator.validate(registerRequest, bindingResult);
-        formValidator.checkFormBindingResult(bindingResult);
+    public void register(RegisterRequest registerRequest) {
         User user = userMapper.mapRegisterRequestToUser(registerRequest);
         userService.saveUser(user);
     }

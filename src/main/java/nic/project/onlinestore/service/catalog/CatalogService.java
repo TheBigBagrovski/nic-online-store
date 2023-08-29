@@ -19,14 +19,12 @@ import nic.project.onlinestore.model.User;
 import nic.project.onlinestore.repository.FilterRepository;
 import nic.project.onlinestore.repository.FilterValueRepository;
 import nic.project.onlinestore.service.user.AuthService;
-import nic.project.onlinestore.util.FormValidator;
 import nic.project.onlinestore.util.ImageValidator;
 import nic.project.onlinestore.util.ProductMapper;
 import nic.project.onlinestore.util.ReviewMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.charset.StandardCharsets;
@@ -52,7 +50,6 @@ public class CatalogService {
     private final ProductService productService;
     private final RatingService ratingService;
     private final ReviewService reviewService;
-    private final FormValidator formValidator;
     private final FilterRepository filterRepository;
     private final FilterValueRepository filterValueRepository;
     private final ImageValidator imageValidator;
@@ -217,8 +214,7 @@ public class CatalogService {
         return productFullResponse;
     }
 
-    public void rateProduct(Long productId, Integer ratingValue, BindingResult bindingResult) {
-        formValidator.checkFormBindingResult(bindingResult);
+    public void rateProduct(Long productId, Integer ratingValue) {
         Product product = productService.findProductById(productId);
         User user = authService.getCurrentAuthorizedUser();
         Optional<Rating> rating = ratingService.findRatingByUserAndProduct(user, product);

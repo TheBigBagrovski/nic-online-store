@@ -15,6 +15,7 @@ import nic.project.onlinestore.dto.admin.ProductFilterRequest;
 import nic.project.onlinestore.dto.admin.ProductPropertyRequest;
 import nic.project.onlinestore.dto.admin.ProductUpdateRequest;
 import nic.project.onlinestore.service.admin.AdminService;
+import nic.project.onlinestore.util.FormValidator;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,46 +36,54 @@ import java.util.List;
 public class AdminController {
 
     private final AdminService adminService;
+    private final FormValidator formValidator;
 
     @PostMapping(value = "/create-product", produces = "text/plain;charset=UTF-8")
     public ResponseEntity<?> addProduct(@RequestBody @Valid ProductCreateRequest productCreateRequest, BindingResult bindingResult) {
-        adminService.createProduct(productCreateRequest, bindingResult);
+        formValidator.checkFormBindingResult(bindingResult);
+        adminService.createProduct(productCreateRequest);
         return ResponseEntity.ok("Товар добавлен");
     }
 
     @DeleteMapping(value = "/delete-product", produces = "text/plain;charset=UTF-8")
     public ResponseEntity<?> deleteProduct(@RequestBody @Valid ObjectByIdRequest productRequest, BindingResult bindingResult) {
-        adminService.deleteProduct(productRequest.getId(), bindingResult);
+        formValidator.checkFormBindingResult(bindingResult);
+        adminService.deleteProduct(productRequest.getId());
         return ResponseEntity.ok("Товар удален");
     }
 
     @PatchMapping(value = "/update-product", produces = "text/plain;charset=UTF-8")
     public ResponseEntity<?> updateProduct(@RequestBody @Valid ProductUpdateRequest request, BindingResult bindingResult) {
-        adminService.updateProduct(request, bindingResult);
+        formValidator.checkFormBindingResult(bindingResult);
+        adminService.updateProduct(request);
         return ResponseEntity.ok("Товар обновлен");
     }
 
     @PatchMapping(value = "/add-category-to-product", produces = "text/plain;charset=UTF-8")
     public ResponseEntity<?> addCategoryToProduct(@RequestBody @Valid ProductAndCategoryRequest request, BindingResult bindingResult) {
-        adminService.addCategoryToProduct(request.getProductId(), request.getCategoryId(), bindingResult);
+        formValidator.checkFormBindingResult(bindingResult);
+        adminService.addCategoryToProduct(request.getProductId(), request.getCategoryId());
         return ResponseEntity.ok("Категория добавлена к товару");
     }
 
     @PatchMapping(value = "/delete-category-from-product", produces = "text/plain;charset=UTF-8")
     public ResponseEntity<?> deleteCategoryFromProduct(@RequestBody @Valid ProductAndCategoryRequest request, BindingResult bindingResult) {
-        adminService.deleteCategoryFromProduct(request.getProductId(), request.getCategoryId(), bindingResult);
+        formValidator.checkFormBindingResult(bindingResult);
+        adminService.deleteCategoryFromProduct(request.getProductId(), request.getCategoryId());
         return ResponseEntity.ok("Категория удалена из описания товара");
     }
 
     @PatchMapping(value = "/add-property-to-product", produces = "text/plain;charset=UTF-8")
     public ResponseEntity<?> addFilterPropertyToProduct(@RequestBody @Valid ProductPropertyRequest request, BindingResult bindingResult) {
-        adminService.addFilterPropertyToProduct(request.getProductId(), request.getFilterId(), request.getPropertyId(), bindingResult);
+        formValidator.checkFormBindingResult(bindingResult);
+        adminService.addFilterPropertyToProduct(request.getProductId(), request.getFilterId(), request.getPropertyId());
         return ResponseEntity.ok("Признак добавлен");
     }
 
     @PatchMapping(value = "/remove-property-from-product", produces = "text/plain;charset=UTF-8")
     public ResponseEntity<?> removeFilterPropertyFromProduct(@RequestBody @Valid ProductFilterRequest request, BindingResult bindingResult) {
-        adminService.removeFilterPropertyFromProduct(request.getProductId(), request.getFilterId(), bindingResult);
+        formValidator.checkFormBindingResult(bindingResult);
+        adminService.removeFilterPropertyFromProduct(request.getProductId(), request.getFilterId());
         return ResponseEntity.ok("Признак удален");
     }
 
@@ -87,73 +96,85 @@ public class AdminController {
 
     @DeleteMapping(value = "/delete-all-product-images", produces = "text/plain;charset=UTF-8")
     public ResponseEntity<?> deleteAllProductImages(@RequestBody @Valid ObjectByIdRequest productId, BindingResult bindingResult) {
-        adminService.deleteAllProductImages(productId.getId(), bindingResult);
+        formValidator.checkFormBindingResult(bindingResult);
+        adminService.deleteAllProductImages(productId.getId());
         return ResponseEntity.ok("Изображения удалены");
     }
 
     @PostMapping(value = "/create-category", produces = "text/plain;charset=UTF-8")
     public ResponseEntity<?> createCategory(@RequestBody @Valid CategoryCreateRequest request, BindingResult bindingResult) {
-        adminService.createCategory(request, bindingResult);
+        formValidator.checkFormBindingResult(bindingResult);
+        adminService.createCategory(request);
         return ResponseEntity.ok("Категория создана");
     }
 
     @PatchMapping(value = "/add-products-to-category", produces = "text/plain;charset=UTF-8")
     public ResponseEntity<?> addProductsToCategory(@RequestBody @Valid AddProductsToCategoryRequest request, BindingResult bindingResult) {
-        adminService.addProductsToCategory(request.getCategoryId(), request.getProductList(), bindingResult);
+        formValidator.checkFormBindingResult(bindingResult);
+        adminService.addProductsToCategory(request.getCategoryId(), request.getProductList());
         return ResponseEntity.ok("Товары добавлены к категории");
     }
 
     @DeleteMapping(value = "/delete-category", produces = "text/plain;charset=UTF-8")
     public ResponseEntity<?> deleteCategory(@RequestBody @Valid ObjectByIdRequest request, BindingResult bindingResult) {
-        adminService.deleteCategory(request.getId(), bindingResult);
+        formValidator.checkFormBindingResult(bindingResult);
+        adminService.deleteCategory(request.getId());
         return ResponseEntity.ok("Категория удалена");
     }
 
     @PatchMapping(value = "/update-category", produces = "text/plain;charset=UTF-8")
     public ResponseEntity<?> updateCategory(@RequestBody @Valid CategoryUpdateRequest request, BindingResult bindingResult) {
-        adminService.updateCategory(request, bindingResult);
+        formValidator.checkFormBindingResult(bindingResult);
+        adminService.updateCategory(request);
         return ResponseEntity.ok("Категория обновлена");
     }
 
     @PostMapping(value = "/create-filter", produces = "text/plain;charset=UTF-8")
     public ResponseEntity<?> createFilter(@RequestBody @Valid FilterCreateRequest request, BindingResult bindingResult) {
-        adminService.createFilter(request, bindingResult);
+        formValidator.checkFormBindingResult(bindingResult);
+        adminService.createFilter(request);
         return ResponseEntity.ok("Фильтр создан");
     }
 
     @DeleteMapping(value = "/delete-filter", produces = "text/plain;charset=UTF-8")
     public ResponseEntity<?> deleteFilter(@RequestBody @Valid ObjectByIdRequest request, BindingResult bindingResult) {
-        adminService.deleteFilter(request.getId(), bindingResult);
+        formValidator.checkFormBindingResult(bindingResult);
+        adminService.deleteFilter(request.getId());
         return ResponseEntity.ok("Фильтр удален");
     }
 
     @PatchMapping(value = "/set-category-for-filter", produces = "text/plain;charset=UTF-8")
     public ResponseEntity<?> setCategoryForFilter(@RequestBody @Valid CategoryAndFilterRequest request,
                                                   BindingResult bindingResult) {
-        return adminService.setCategoryForFilter(request.getCategoryId(), request.getFilterId(), bindingResult);
+        formValidator.checkFormBindingResult(bindingResult);
+        return adminService.setCategoryForFilter(request.getCategoryId(), request.getFilterId());
     }
 
     @PatchMapping(value = "/delete-category-from-filter", produces = "text/plain;charset=UTF-8")
     public ResponseEntity<?> deleteCategoryFromFilter(@RequestBody @Valid ObjectByIdRequest request,
                                                       BindingResult bindingResult) {
-        return adminService.setCategoryForFilter(null, request.getId(), bindingResult);
+        formValidator.checkFormBindingResult(bindingResult);
+        return adminService.setCategoryForFilter(null, request.getId());
     }
 
     @PostMapping(value = "/create-property", produces = "text/plain;charset=UTF-8")
     public ResponseEntity<?> createFilterValue(@RequestBody @Valid FilterValueCreateRequest request, BindingResult bindingResult) {
-        adminService.createFilterValue(request, bindingResult);
+        formValidator.checkFormBindingResult(bindingResult);
+        adminService.createFilterValue(request);
         return ResponseEntity.ok("Свойство добавлено");
     }
 
     @DeleteMapping(value = "/delete-property", produces = "text/plain;charset=UTF-8")
     public ResponseEntity<?> deleteFilterValue(@RequestBody @Valid DeleteFilterValueRequest request, BindingResult bindingResult) {
-        adminService.deleteFilterValue(request.getFilterId(), request.getFilterValueId(), bindingResult);
+        formValidator.checkFormBindingResult(bindingResult);
+        adminService.deleteFilterValue(request.getFilterId(), request.getFilterValueId());
         return ResponseEntity.ok("Свойство удалено");
     }
 
     @DeleteMapping(value = "/delete-review", produces = "text/plain;charset=UTF-8")
     public ResponseEntity<?> deleteUserReview(@RequestBody @Valid ObjectByIdRequest request, BindingResult bindingResult) {
-        adminService.deleteUserReview(request.getId(), bindingResult);
+        formValidator.checkFormBindingResult(bindingResult);
+        adminService.deleteUserReview(request.getId());
         return ResponseEntity.ok("Отзыв удален");
     }
 

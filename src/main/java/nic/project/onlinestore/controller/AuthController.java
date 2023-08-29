@@ -7,6 +7,7 @@ import nic.project.onlinestore.dto.auth.RefreshJwtRequest;
 import nic.project.onlinestore.dto.auth.RegisterRequest;
 import nic.project.onlinestore.service.user.AuthService;
 import nic.project.onlinestore.util.FormValidator;
+import nic.project.onlinestore.util.RegisterValidator;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +26,7 @@ public class AuthController {
 
     private final AuthService authService;
     private final FormValidator formValidator;
+    private final RegisterValidator registerValidator;
 
     @GetMapping("/show-user")
     public ResponseEntity<String> showUserInfo() {
@@ -33,7 +35,9 @@ public class AuthController {
 
     @PostMapping(value = "/register", produces = "text/plain;charset=UTF-8")
     public ResponseEntity<?> performRegistration(@RequestBody @Valid RegisterRequest registerRequest, BindingResult bindingResult) {
-        authService.register(registerRequest, bindingResult);
+        registerValidator.validate(registerRequest, bindingResult);
+        formValidator.checkFormBindingResult(bindingResult);
+        authService.register(registerRequest);
         return ResponseEntity.ok("Регистрация пройдена");
     }
 

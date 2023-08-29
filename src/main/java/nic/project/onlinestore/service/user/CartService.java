@@ -10,12 +10,10 @@ import nic.project.onlinestore.model.Product;
 import nic.project.onlinestore.model.User;
 import nic.project.onlinestore.repository.CartRepository;
 import nic.project.onlinestore.service.catalog.ProductService;
-import nic.project.onlinestore.util.FormValidator;
 import nic.project.onlinestore.util.ProductMapper;
 import nic.project.onlinestore.util.UserMapper;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.BindingResult;
 
 import javax.transaction.Transactional;
 import java.util.Map;
@@ -29,7 +27,6 @@ public class CartService {
     private final CartRepository cartRepository;
     private final ProductService productService;
     private final AuthService authService;
-    private final FormValidator formValidator;
     private final ProductMapper productMapper;
     private final UserMapper userMapper;
 
@@ -46,8 +43,7 @@ public class CartService {
     }
 
     @Transactional
-    public void addToCart(Long productId, BindingResult bindingResult) {
-        formValidator.checkFormBindingResult(bindingResult);
+    public void addToCart(Long productId) {
         User user = authService.getCurrentAuthorizedUser();
         Cart cart = findCartByUser(user);
         Product product = productService.findProductById(productId);
@@ -60,8 +56,7 @@ public class CartService {
     }
 
     @Transactional
-    public void changeProductQuantityInCart(Long productId, String operation, BindingResult bindingResult) {
-        formValidator.checkFormBindingResult(bindingResult);
+    public void changeProductQuantityInCart(Long productId, String operation) {
         User user = authService.getCurrentAuthorizedUser();
         Cart cart = findCartByUser(user);
         Product product = productService.findProductById(productId);
