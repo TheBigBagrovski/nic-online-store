@@ -31,6 +31,6 @@ public class RegisterValidator implements Validator {
             errors.rejectValue("matchingPassword", "", "Пароли не совпадают");
         }
         userRepository.findUserByEmail(registerRequest.getEmail())
-                .ifPresent(user -> errors.rejectValue("email", "", "Этот почтовый адрес занят"));
+                .ifPresent(user -> errors.rejectValue("email", "", "На этот email уже зарегистрирован аккаунт"));
     }
 }

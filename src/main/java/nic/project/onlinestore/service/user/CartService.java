@@ -1,5 +1,6 @@
 package nic.project.onlinestore.service.user;
 
+import lombok.RequiredArgsConstructor;
 import nic.project.onlinestore.dto.product.ProductShortResponse;
 import nic.project.onlinestore.dto.user.CartContentResponse;
 import nic.project.onlinestore.exception.exceptions.ResourceAlreadyExistsException;
@@ -12,7 +13,6 @@ import nic.project.onlinestore.service.catalog.ProductService;
 import nic.project.onlinestore.util.FormValidator;
 import nic.project.onlinestore.util.ProductMapper;
 import nic.project.onlinestore.util.UserMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
@@ -23,6 +23,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class CartService {
 
     private final CartRepository cartRepository;
@@ -31,16 +32,6 @@ public class CartService {
     private final FormValidator formValidator;
     private final ProductMapper productMapper;
     private final UserMapper userMapper;
-
-    @Autowired
-    public CartService(CartRepository cartRepository, ProductService productService, AuthService authService, FormValidator formValidator, ProductMapper productMapper, UserMapper userMapper) {
-        this.cartRepository = cartRepository;
-        this.productService = productService;
-        this.authService = authService;
-        this.formValidator = formValidator;
-        this.productMapper = productMapper;
-        this.userMapper = userMapper;
-    }
 
     public Cart findCartByUser(User user) {
         return cartRepository.findCartByUser(user).orElseThrow(() -> new ResourceNotFoundException("Корзина не найдена"));

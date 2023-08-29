@@ -1,12 +1,12 @@
 package nic.project.onlinestore.service.catalog;
 
+import lombok.RequiredArgsConstructor;
 import nic.project.onlinestore.exception.exceptions.ResourceNotFoundException;
 import nic.project.onlinestore.model.Category;
 import nic.project.onlinestore.model.Product;
 import nic.project.onlinestore.repository.ImageRepository;
 import nic.project.onlinestore.repository.ProductRepository;
 import nic.project.onlinestore.util.ImageSaver;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +14,7 @@ import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ProductService {
 
     @Value("${product_images_path}")
@@ -27,15 +28,6 @@ public class ProductService {
     private final ReviewService reviewService;
     private final RatingService ratingService;
     private final ImageSaver imageSaver;
-
-    @Autowired
-    public ProductService(ProductRepository productRepository, ImageRepository imageRepository, ReviewService reviewService, RatingService ratingService, ImageSaver imageSaver) {
-        this.productRepository = productRepository;
-        this.imageRepository = imageRepository;
-        this.reviewService = reviewService;
-        this.ratingService = ratingService;
-        this.imageSaver = imageSaver;
-    }
 
     public Product findProductById(Long id) {
         return productRepository.findById(id)

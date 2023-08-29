@@ -1,9 +1,12 @@
 package nic.project.onlinestore.controller;
 
+import nic.project.onlinestore.dto.auth.JwtResponse;
 import nic.project.onlinestore.dto.auth.LoginRequest;
 import nic.project.onlinestore.dto.auth.RegisterRequest;
 import nic.project.onlinestore.dto.user.UserInfoResponse;
+import nic.project.onlinestore.security.JwtAuthentication;
 import nic.project.onlinestore.service.user.AuthService;
+import nic.project.onlinestore.util.FormValidator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,11 +16,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 
-import java.util.Collections;
-import java.util.Map;
+import javax.security.auth.message.AuthException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class AuthControllerTest {
@@ -25,17 +30,23 @@ public class AuthControllerTest {
     @Mock
     private AuthService authService;
 
+    @Mock
+    private FormValidator formValidator;
+
     @InjectMocks
     private AuthController authController;
 
     @Test
     public void testShowUserInfo() {
         UserInfoResponse userInfoResponse = new UserInfoResponse();
-        when(authService.getCurrentAuthorizedUserDTO()).thenReturn(userInfoResponse);
-        ResponseEntity<UserInfoResponse> responseEntity = authController.showUserInfo();
+        userInfoResponse.setEmail("user");
+        JwtAuthentication jwtAuthentication = new JwtAuthentication();
+        jwtAuthentication.setEmail("user");
+        when(authService.getCurrentAuthentication()).thenReturn(jwtAuthentication);
+        ResponseEntity<String> responseEntity = authController.showUserInfo();
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals(userInfoResponse, responseEntity.getBody());
-        verify(authService).getCurrentAuthorizedUserDTO();
+        assertEquals(userInfoResponse.getEmail(), responseEntity.getBody()); // Проверяем тело ответа как строку
+        verify(authService).getCurrentAuthentication();
     }
 
     @Test
@@ -48,24 +59,23 @@ public class AuthControllerTest {
                 .lastname("user")
                 .build();
         BindingResult bindingResult = mock(BindingResult.class);
-        String jwtToken = "dummyJwtToken";
-        when(authService.register(registerRequest, bindingResult)).thenReturn(jwtToken);
-        ResponseEntity<Map<String, String>> responseEntity = authController.performRegistration(registerRequest, bindingResult);
+        doNothing().when(authService).register(registerRequest, bindingResult);
+        ResponseEntity<?> responseEntity = authController.performRegistration(registerRequest, bindingResult);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals(Collections.singletonMap("jwt-token", jwtToken), responseEntity.getBody());
+        assertEquals("Регистрация пройдена", responseEntity.getBody());
         verify(authService).register(registerRequest, bindingResult);
     }
 
     @Test
-    public void testPerformLogin() {
+    public void testPerformLogin() throws AuthException {
         LoginRequest loginRequest = new LoginRequest();
         BindingResult bindingResult = mock(BindingResult.class);
-        String jwtToken = "dummyJwtToken";
-        when(authService.login(loginRequest, bindingResult)).thenReturn(jwtToken);
-        ResponseEntity<Map<String, String>> responseEntity = authController.performLogin(loginRequest, bindingResult);
+        JwtResponse jwtResponse = new JwtResponse("accessToken", "refreshToken");
+        when(authService.login(loginRequest)).thenReturn(jwtResponse);
+        ResponseEntity<JwtResponse> responseEntity = authController.performLogin(loginRequest, bindingResult);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals(Collections.singletonMap("jwt-token", jwtToken), responseEntity.getBody());
-        verify(authService).login(loginRequest, bindingResult);
+        assertEquals(jwtResponse, responseEntity.getBody());
+        verify(authService).login(loginRequest);
     }
 
 }

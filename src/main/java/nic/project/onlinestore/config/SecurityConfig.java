@@ -1,8 +1,8 @@
 package nic.project.onlinestore.config;
 
+import lombok.RequiredArgsConstructor;
 import nic.project.onlinestore.security.JwtAuthEntryPoint;
 import nic.project.onlinestore.security.JwtFilter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,16 +17,11 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @Configuration
 @EnableWebMvc
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
     private final JwtAuthEntryPoint authEntryPoint;
-
-    @Autowired
-    public SecurityConfig(JwtFilter jwtFilter, JwtAuthEntryPoint authEntryPoint) {
-        this.jwtFilter = jwtFilter;
-        this.authEntryPoint = authEntryPoint;
-    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -36,7 +31,7 @@ public class SecurityConfig {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/admin/*").hasRole("ADMIN")
-                .antMatchers(/*"/",*/ "/auth/register", "/auth/login").permitAll()
+                .antMatchers("/auth/register", "/auth/login", "/auth/token").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin().loginPage("/login")

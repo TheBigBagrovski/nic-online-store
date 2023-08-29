@@ -1,13 +1,11 @@
 package nic.project.onlinestore.service;
 
+import nic.project.onlinestore.dto.auth.JwtResponse;
 import nic.project.onlinestore.dto.auth.LoginRequest;
 import nic.project.onlinestore.dto.auth.RegisterRequest;
-import nic.project.onlinestore.dto.user.UserInfoResponse;
 import nic.project.onlinestore.model.User;
-import nic.project.onlinestore.security.JwtUtil;
-import nic.project.onlinestore.security.UserDetailsImpl;
+import nic.project.onlinestore.security.JwtProvider;
 import nic.project.onlinestore.service.user.AuthService;
-import nic.project.onlinestore.service.user.UserDetailsServiceImpl;
 import nic.project.onlinestore.service.user.UserService;
 import nic.project.onlinestore.util.FormValidator;
 import nic.project.onlinestore.util.RegisterValidator;
@@ -19,10 +17,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
+
+import javax.security.auth.message.AuthException;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -38,13 +36,13 @@ public class AuthServiceTest {
     private UserService userService;
 
     @Mock
-    private UserDetailsServiceImpl userDetailsService;
-
-    @Mock
     private RegisterValidator registerValidator;
 
     @Mock
-    private JwtUtil jwtUtil;
+    private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private JwtProvider jwtProvider;
 
     @Mock
     private UserMapper userMapper;
@@ -54,30 +52,6 @@ public class AuthServiceTest {
 
     @InjectMocks
     private AuthService authService;
-
-    @Test
-    public void testGetCurrentAuthorizedUser() {
-        Authentication auth = mock(Authentication.class);
-        SecurityContextHolder.getContext().setAuthentication(auth);
-        User expectedUser = new User();
-        UserDetailsImpl userDetails = new UserDetailsImpl(expectedUser);
-        when(userDetailsService.loadUserByUsername(auth.getName())).thenReturn(userDetails);
-        User result = authService.getCurrentAuthorizedUser();
-        Assertions.assertEquals(expectedUser, result);
-    }
-
-    @Test
-    public void testGetCurrentAuthorizedUserDTO() {
-        User user = new User();
-        Authentication auth = mock(Authentication.class);
-        SecurityContextHolder.getContext().setAuthentication(auth);
-        UserInfoResponse expectedDTO = new UserInfoResponse();
-        UserDetailsImpl userDetails = new UserDetailsImpl(user);
-        when(userDetailsService.loadUserByUsername(auth.getName())).thenReturn(userDetails);
-        when(userMapper.mapToInfoResponse(userDetails.getUser())).thenReturn(expectedDTO);
-        UserInfoResponse result = authService.getCurrentAuthorizedUserDTO();
-        Assertions.assertEquals(expectedDTO, result);
-    }
 
     @Test
     public void testRegister() {
@@ -90,32 +64,33 @@ public class AuthServiceTest {
                 .build();
         BindingResult bindingResult = mock(BindingResult.class);
         User user = new User();
-        String expectedToken = "TOKEN";
         when(userMapper.mapRegisterRequestToUser(registerRequest)).thenReturn(user);
-        when(jwtUtil.generateToken(registerRequest.getEmail())).thenReturn(expectedToken);
-        String result = authService.register(registerRequest, bindingResult);
+        authService.register(registerRequest, bindingResult);
         verify(registerValidator).validate(registerRequest, bindingResult);
         verify(formValidator).checkFormBindingResult(bindingResult);
         verify(userService).saveUser(user);
-        Assertions.assertEquals(expectedToken, result);
     }
 
     @Test
-    public void testLogin() {
+    public void testLogin() throws AuthException {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setEmail("test@example.com");
         loginRequest.setPassword("password");
-        BindingResult bindingResult = mock(BindingResult.class);
         String email = "test@example.com";
         String password = "password";
-        UsernamePasswordAuthenticationToken authInputToken = new UsernamePasswordAuthenticationToken(email, password);
-        Authentication auth = mock(Authentication.class);
-        when(authenticationManager.authenticate(authInputToken)).thenReturn(auth);
-        when(jwtUtil.generateToken(email)).thenReturn("TOKEN");
-        String result = authService.login(loginRequest, bindingResult);
-        verify(formValidator).checkFormBindingResult(bindingResult);
-        verify(authenticationManager).authenticate(authInputToken);
-        Assertions.assertEquals("TOKEN", result);
+        String access = "access";
+        String refresh = "refresh";
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword(password);
+        JwtResponse expected = new JwtResponse(access, refresh);
+        when(userService.findUserByEmail("test@example.com")).thenReturn(user);
+        when(passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())).thenReturn(true);
+        when(jwtProvider.generateAccessToken(user)).thenReturn(access);
+        when(jwtProvider.generateRefreshToken(user)).thenReturn(refresh);
+        JwtResponse result = authService.login(loginRequest);
+        Assertions.assertEquals(expected.getAccessToken(), result.getAccessToken());
+        Assertions.assertEquals(expected.getRefreshToken(), result.getRefreshToken());
     }
 
 }

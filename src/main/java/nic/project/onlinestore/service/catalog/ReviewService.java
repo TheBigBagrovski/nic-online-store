@@ -1,7 +1,6 @@
 package nic.project.onlinestore.service.catalog;
 
-import lombok.extern.slf4j.Slf4j;
-import nic.project.onlinestore.exception.exceptions.ResourceNotFoundException;
+import lombok.RequiredArgsConstructor;
 import nic.project.onlinestore.model.Image;
 import nic.project.onlinestore.model.Product;
 import nic.project.onlinestore.model.Review;
@@ -9,7 +8,6 @@ import nic.project.onlinestore.model.User;
 import nic.project.onlinestore.repository.ImageRepository;
 import nic.project.onlinestore.repository.ReviewRepository;
 import nic.project.onlinestore.util.ImageSaver;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +20,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Service
-@Slf4j
+@RequiredArgsConstructor
 public class ReviewService {
 
     @Value("${review_images_path}")
@@ -31,13 +29,6 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final ImageRepository imageRepository;
     private final ImageSaver imageSaver;
-
-    @Autowired
-    public ReviewService(ReviewRepository reviewRepository, ImageRepository imageRepository, ImageSaver imageSaver) {
-        this.reviewRepository = reviewRepository;
-        this.imageRepository = imageRepository;
-        this.imageSaver = imageSaver;
-    }
 
     public List<Review> findReviewsByProduct(Product product) {
         return reviewRepository.findReviewsByProduct(product);

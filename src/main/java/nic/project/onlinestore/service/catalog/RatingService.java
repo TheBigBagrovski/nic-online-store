@@ -1,6 +1,6 @@
 package nic.project.onlinestore.service.catalog;
 
-import nic.project.onlinestore.exception.exceptions.ResourceNotFoundException;
+import lombok.RequiredArgsConstructor;
 import nic.project.onlinestore.model.Product;
 import nic.project.onlinestore.model.Rating;
 import nic.project.onlinestore.model.User;
@@ -12,13 +12,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class RatingService {
 
     private final RatingRepository ratingRepository;
-
-    public RatingService(RatingRepository ratingRepository) {
-        this.ratingRepository = ratingRepository;
-    }
 
     public Optional<Rating> findRatingByUserAndProduct(User user, Product product) { // должен возвращать Optional для будущей проверки на наличие оценки
         return ratingRepository.findRatingByUserAndProduct(user, product);

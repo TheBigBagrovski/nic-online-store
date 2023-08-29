@@ -1,5 +1,6 @@
 package nic.project.onlinestore.service.user;
 
+import nic.project.onlinestore.exception.exceptions.UserNotFoundException;
 import nic.project.onlinestore.model.Cart;
 import nic.project.onlinestore.security.Role;
 import nic.project.onlinestore.model.User;
@@ -23,6 +24,10 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.cartRepository = cartRepository;
+    }
+
+    public User findUserByEmail(String email) {
+        return userRepository.findUserByEmail(email).orElseThrow(() -> new UserNotFoundException("Пользователь с таким email не найден"));
     }
 
     @Transactional

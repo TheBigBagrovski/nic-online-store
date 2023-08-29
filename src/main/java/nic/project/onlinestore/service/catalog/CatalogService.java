@@ -1,5 +1,6 @@
 package nic.project.onlinestore.service.catalog;
 
+import lombok.RequiredArgsConstructor;
 import nic.project.onlinestore.dto.catalog.CategoriesAndProductsResponse;
 import nic.project.onlinestore.dto.product.ProductFullResponse;
 import nic.project.onlinestore.dto.product.ProductShortResponse;
@@ -18,12 +19,10 @@ import nic.project.onlinestore.model.User;
 import nic.project.onlinestore.repository.FilterRepository;
 import nic.project.onlinestore.repository.FilterValueRepository;
 import nic.project.onlinestore.service.user.AuthService;
-import nic.project.onlinestore.util.CategoryMapper;
 import nic.project.onlinestore.util.FormValidator;
 import nic.project.onlinestore.util.ImageValidator;
 import nic.project.onlinestore.util.ProductMapper;
 import nic.project.onlinestore.util.ReviewMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +41,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class CatalogService {
 
     @Value("${products_per_page}")
@@ -61,21 +61,6 @@ public class CatalogService {
 
     private final Map<String, List<ProductShortResponse>> filteredProductsCache = new HashMap<>(); // кэшируем отфильтрованные товары в кжш, чтобы не производить повторную фильтрацию по одинаковым фильтрам
     private final Map<String, List<String>> categoriesCache = new HashMap<>(); // кэшируем выводимые подкатегории
-
-    @Autowired
-    public CatalogService(CategoryService categoryService, AuthService authService, ProductService productService, RatingService ratingService, ReviewService reviewService, FormValidator formValidator, FilterRepository filterRepository, FilterValueRepository filterValueRepository, ImageValidator imageValidator, ProductMapper productMapper, ReviewMapper reviewMapper) {
-        this.categoryService = categoryService;
-        this.authService = authService;
-        this.productService = productService;
-        this.ratingService = ratingService;
-        this.reviewService = reviewService;
-        this.formValidator = formValidator;
-        this.filterRepository = filterRepository;
-        this.filterValueRepository = filterValueRepository;
-        this.imageValidator = imageValidator;
-        this.productMapper = productMapper;
-        this.reviewMapper = reviewMapper;
-    }
 
     public CategoriesAndProductsResponse getProductsAndSubcategoriesByCategoryAndFilters(Long categoryId, Double minPrice, Double maxPrice, String filterString, Boolean cheapFirst, Integer page) {
         // получаем список категорий

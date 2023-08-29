@@ -15,7 +15,6 @@ import java.util.Map;
 public class CartContentResponse {
 
     private UserInfoResponse userInfoResponse;
-
     private Map<ProductShortResponse, Integer> items;
 
 }

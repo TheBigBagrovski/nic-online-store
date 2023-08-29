@@ -6,8 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import nic.project.onlinestore.security.Role;
 
-import javax.xml.ws.soap.Addressing;
-
 @Getter
 @Setter
 @AllArgsConstructor
@@ -15,11 +13,8 @@ import javax.xml.ws.soap.Addressing;
 public class UserInfoResponse {
 
     private String email;
-
     private String firstname;
-
     private String lastname;
-
     private Role role;
 
 }

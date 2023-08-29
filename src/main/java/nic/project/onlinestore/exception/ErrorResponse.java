@@ -1,6 +1,5 @@
 package nic.project.onlinestore.exception;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

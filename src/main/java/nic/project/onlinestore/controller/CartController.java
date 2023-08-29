@@ -1,9 +1,9 @@
 package nic.project.onlinestore.controller;
 
+import lombok.RequiredArgsConstructor;
 import nic.project.onlinestore.dto.ObjectByIdRequest;
 import nic.project.onlinestore.dto.user.CartContentResponse;
 import nic.project.onlinestore.service.user.CartService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,14 +17,10 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/cart")
+@RequiredArgsConstructor
 public class CartController {
 
     private final CartService cartService;
-
-    @Autowired
-    public CartController(CartService cartService) {
-        this.cartService = cartService;
-    }
 
     @GetMapping
     public ResponseEntity<CartContentResponse> getCartContent() {

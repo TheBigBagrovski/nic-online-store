@@ -30,6 +30,8 @@ public class OnlineStoreApplication implements WebMvcConfigurer {
     private String PRODUCTS_IMAGES_PATH;
 
     public static void main(String[] args) {
+//        System.out.println(GenerateKeys.generateKey());
+//        System.out.println(GenerateKeys.generateKey());
         SpringApplication.run(OnlineStoreApplication.class, args);
     }
 

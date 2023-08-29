@@ -17,7 +17,6 @@ import java.util.List;
 public class CategoriesAndProductsResponse {
 
     List<String> subcategories;
-
     List<ProductShortResponse> products;
 
 }

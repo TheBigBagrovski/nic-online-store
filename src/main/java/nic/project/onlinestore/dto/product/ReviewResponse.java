@@ -15,11 +15,8 @@ import java.util.List;
 public class ReviewResponse {
 
     private String comment;
-
     private String user;
-
     private LocalDateTime createdAt;
-
     private List<ImageDTO> images;
 
 }

@@ -1,33 +1,33 @@
 package nic.project.onlinestore.security;
 
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.InsufficientAuthenticationException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class JwtAuthEntryPoint implements AuthenticationEntryPoint {
 
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException {
+    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.setContentType("application/json");
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
 
-        if (exception instanceof UsernameNotFoundException) {
-            response.getWriter().write("{\"error\":\"Unauthorized\",\"message\":\"Пользователь с таким email не найден\"}");
-        } else if (exception instanceof BadCredentialsException) {
-            response.getWriter().write("{\"error\":\"Unauthorized\",\"message\":\"Проверьте правильность написания логина и пароля\"}");
-        } else if (exception instanceof InsufficientAuthenticationException) {
-            response.getWriter().write("{\"error\":\"Unauthorized\",\"message\":\"Ошибка аутентификации: пользователь не найден\"}");
-        } else {
-            response.getWriter().write("{\"error\":\"Unauthorized\",\"message\":\"Войдите, чтобы получить доступ к странице\"}");
-        }
+        final Map<String, Object> body = new HashMap<>();
+        body.put("status", HttpServletResponse.SC_UNAUTHORIZED);
+        body.put("error", "Unauthorized");
+        body.put("message", authException.getMessage());
+        body.put("path", request.getServletPath());
+
+        final ObjectMapper mapper = new ObjectMapper();
+        mapper.writeValue(response.getOutputStream(), body);
     }
 }

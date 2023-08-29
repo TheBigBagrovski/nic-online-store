@@ -26,7 +26,7 @@ public class ImageSaver {
         try (InputStream is = file.getInputStream()) {
             Files.copy(is, targetPath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            logger.info("Ошибка при сохранении изображения: " + e.getMessage());
+            logger.error("Ошибка при сохранении изображения: " + e.getMessage());
             throw new ImageUploadException("Ошибка при загрузке изображения");
         }
     }
@@ -36,7 +36,7 @@ public class ImageSaver {
         try {
             if (!Files.exists(directoryPath)) Files.createDirectory(directoryPath);
         } catch (IOException e) {
-            logger.info("Ошибка при создании папки: " + e.getMessage());
+            logger.error("Ошибка при создании папки: " + e.getMessage());
             throw new ImageUploadException("Ошибка при загрузке изображения");
         }
     }
@@ -51,7 +51,7 @@ public class ImageSaver {
                             try {
                                 Files.delete(p);
                             } catch (IOException e) {
-                                logger.info("Ошибка при удалении папки: " + p);
+                                logger.error("Ошибка при удалении папки: " + p);
                                 throw new RuntimeException("Ошибка при удалении папки");
                             }
                         });

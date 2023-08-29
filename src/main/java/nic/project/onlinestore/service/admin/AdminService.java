@@ -1,5 +1,6 @@
 package nic.project.onlinestore.service.admin;
 
+import lombok.RequiredArgsConstructor;
 import nic.project.onlinestore.dto.admin.CategoryCreateRequest;
 import nic.project.onlinestore.dto.admin.CategoryUpdateRequest;
 import nic.project.onlinestore.dto.admin.FilterCreateRequest;
@@ -28,7 +29,6 @@ import nic.project.onlinestore.util.FormValidator;
 import nic.project.onlinestore.util.ImageSaver;
 import nic.project.onlinestore.util.ImageValidator;
 import nic.project.onlinestore.util.ProductMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -46,6 +46,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class AdminService {
 
     @Value("${product_images_path}")
@@ -65,24 +66,6 @@ public class AdminService {
     private final CategoryMapper categoryMapper;
     private final FilterMapper filterMapper;
     private final FilterValueMapper filterValueMapper;
-
-    @Autowired
-    public AdminService(ProductService productService, FormValidator formValidator, ImageValidator imageValidator, ImageSaver imageSaver, ImageRepository imageRepository, FilterValueRepository filterValueRepository, ProductRepository productRepository, CategoryService categoryService, FilterService filterService, ReviewService reviewService, ProductMapper productMapper, CategoryMapper categoryMapper, FilterMapper filterMapper, FilterValueMapper filterValueMapper) {
-        this.productService = productService;
-        this.formValidator = formValidator;
-        this.imageValidator = imageValidator;
-        this.imageSaver = imageSaver;
-        this.imageRepository = imageRepository;
-        this.filterValueRepository = filterValueRepository;
-        this.productRepository = productRepository;
-        this.categoryService = categoryService;
-        this.filterService = filterService;
-        this.reviewService = reviewService;
-        this.productMapper = productMapper;
-        this.categoryMapper = categoryMapper;
-        this.filterMapper = filterMapper;
-        this.filterValueMapper = filterValueMapper;
-    }
 
     public void createProduct(ProductCreateRequest productCreateRequest, BindingResult bindingResult) {
         formValidator.checkFormBindingResult(bindingResult);

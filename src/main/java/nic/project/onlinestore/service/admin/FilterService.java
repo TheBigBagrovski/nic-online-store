@@ -1,25 +1,20 @@
 package nic.project.onlinestore.service.admin;
 
+import lombok.RequiredArgsConstructor;
 import nic.project.onlinestore.exception.exceptions.ResourceNotFoundException;
 import nic.project.onlinestore.model.Filter;
 import nic.project.onlinestore.model.FilterValue;
 import nic.project.onlinestore.repository.FilterRepository;
 import nic.project.onlinestore.repository.FilterValueRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class FilterService {
 
     private final FilterRepository filterRepository;
     private final FilterValueRepository filterValueRepository;
-
-    @Autowired
-    public FilterService(FilterRepository filterRepository, FilterValueRepository filterValueRepository) {
-        this.filterRepository = filterRepository;
-        this.filterValueRepository = filterValueRepository;
-    }
 
     public Filter findFilterById(Long filterId) {
         return filterRepository.findById(filterId)

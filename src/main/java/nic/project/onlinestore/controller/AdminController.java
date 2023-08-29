@@ -1,5 +1,6 @@
 package nic.project.onlinestore.controller;
 
+import lombok.RequiredArgsConstructor;
 import nic.project.onlinestore.dto.ObjectByIdRequest;
 import nic.project.onlinestore.dto.admin.AddProductsToCategoryRequest;
 import nic.project.onlinestore.dto.admin.CategoryAndFilterRequest;
@@ -14,7 +15,6 @@ import nic.project.onlinestore.dto.admin.ProductFilterRequest;
 import nic.project.onlinestore.dto.admin.ProductPropertyRequest;
 import nic.project.onlinestore.dto.admin.ProductUpdateRequest;
 import nic.project.onlinestore.service.admin.AdminService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,14 +31,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/admin")
+@RequiredArgsConstructor
 public class AdminController {
 
     private final AdminService adminService;
-
-    @Autowired
-    public AdminController(AdminService adminService) {
-        this.adminService = adminService;
-    }
 
     @PostMapping(value = "/create-product", produces = "text/plain;charset=UTF-8")
     public ResponseEntity<?> addProduct(@RequestBody @Valid ProductCreateRequest productCreateRequest, BindingResult bindingResult) {
