@@ -14,7 +14,7 @@ import nic.project.onlinestore.dto.admin.ProductCreateRequest;
 import nic.project.onlinestore.dto.admin.ProductFilterRequest;
 import nic.project.onlinestore.dto.admin.ProductPropertyRequest;
 import nic.project.onlinestore.dto.admin.ProductUpdateRequest;
-import nic.project.onlinestore.service.admin.AdminService;
+import nic.project.onlinestore.service.AdminService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;

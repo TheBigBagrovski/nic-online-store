@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import nic.project.onlinestore.security.Role;
+import nic.project.onlinestore.security.utils.Role;
 
 @Getter
 @Setter

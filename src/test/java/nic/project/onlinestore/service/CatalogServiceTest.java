@@ -1,7 +1,7 @@
 package nic.project.onlinestore.service;
 
 import nic.project.onlinestore.dto.catalog.CategoriesAndProductsResponse;
-import nic.project.onlinestore.dto.product.ProductFullResponse;
+import nic.project.onlinestore.dto.productPage.ProductFullResponse;
 import nic.project.onlinestore.exception.exceptions.ResourceNotFoundException;
 import nic.project.onlinestore.model.Category;
 import nic.project.onlinestore.model.Product;
@@ -10,15 +10,9 @@ import nic.project.onlinestore.model.Review;
 import nic.project.onlinestore.model.User;
 import nic.project.onlinestore.repository.FilterRepository;
 import nic.project.onlinestore.repository.ProductRepository;
-import nic.project.onlinestore.service.catalog.CatalogService;
-import nic.project.onlinestore.service.catalog.CategoryService;
-import nic.project.onlinestore.service.catalog.ProductService;
-import nic.project.onlinestore.service.catalog.RatingService;
-import nic.project.onlinestore.service.catalog.ReviewService;
-import nic.project.onlinestore.service.user.AuthService;
 import nic.project.onlinestore.util.ImageValidator;
-import nic.project.onlinestore.util.ProductMapper;
-import nic.project.onlinestore.util.ReviewMapper;
+import nic.project.onlinestore.dto.mappers.ProductMapper;
+import nic.project.onlinestore.dto.mappers.ReviewMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

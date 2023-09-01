@@ -3,6 +3,7 @@ package nic.project.onlinestore.exception;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import nic.project.onlinestore.dto.errors.ErrorResponse;
 import nic.project.onlinestore.exception.exceptions.ImageUploadException;
 import nic.project.onlinestore.exception.exceptions.ResourceAlreadyExistsException;
 import nic.project.onlinestore.exception.exceptions.ResourceNotFoundException;

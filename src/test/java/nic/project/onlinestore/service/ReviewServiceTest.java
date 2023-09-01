@@ -6,7 +6,6 @@ import nic.project.onlinestore.model.Review;
 import nic.project.onlinestore.model.User;
 import nic.project.onlinestore.repository.ImageRepository;
 import nic.project.onlinestore.repository.ReviewRepository;
-import nic.project.onlinestore.service.catalog.ReviewService;
 import nic.project.onlinestore.util.ImageSaver;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

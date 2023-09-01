@@ -3,12 +3,12 @@ package nic.project.onlinestore.controller;
 import lombok.RequiredArgsConstructor;
 import nic.project.onlinestore.dto.ObjectByIdRequest;
 import nic.project.onlinestore.dto.catalog.CategoriesAndProductsResponse;
-import nic.project.onlinestore.dto.product.CommentDTO;
-import nic.project.onlinestore.dto.product.ProductFullResponse;
-import nic.project.onlinestore.dto.product.RatingDTO;
-import nic.project.onlinestore.dto.product.ReviewResponse;
-import nic.project.onlinestore.service.catalog.CatalogService;
-import nic.project.onlinestore.service.user.CartService;
+import nic.project.onlinestore.dto.productPage.CommentRequest;
+import nic.project.onlinestore.dto.productPage.ProductFullResponse;
+import nic.project.onlinestore.dto.productPage.RatingDTO;
+import nic.project.onlinestore.dto.productPage.ReviewResponse;
+import nic.project.onlinestore.service.CatalogService;
+import nic.project.onlinestore.service.CartService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -71,7 +71,7 @@ public class CatalogController {
     }
 
     @PostMapping(value = "/{productId}/post-review", produces = "text/plain;charset=UTF-8")
-    public ResponseEntity<?> postReview(@RequestPart(name = "comment") @Valid CommentDTO comment,
+    public ResponseEntity<?> postReview(@RequestPart(name = "comment") @Valid CommentRequest comment,
                                         @RequestPart(name = "files", required = false) List<MultipartFile> files,
                                         @PathVariable Long productId) {
         catalogService.reviewProduct(productId, comment.getComment(), files);
@@ -84,7 +84,7 @@ public class CatalogController {
     }
 
     @PatchMapping(value = "/{productId}/edit-review", produces = "text/plain;charset=UTF-8")
-    public ResponseEntity<?> editReview(@RequestPart(name = "comment") @Valid CommentDTO comment,
+    public ResponseEntity<?> editReview(@RequestPart(name = "comment") @Valid CommentRequest comment,
                                         @RequestPart(name = "files", required = false) List<MultipartFile> files,
                                         @PathVariable Long productId) {
         catalogService.editReview(productId, comment.getComment(), files);

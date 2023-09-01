@@ -4,7 +4,6 @@ import nic.project.onlinestore.exception.exceptions.ResourceNotFoundException;
 import nic.project.onlinestore.model.Category;
 import nic.project.onlinestore.model.Product;
 import nic.project.onlinestore.repository.ProductRepository;
-import nic.project.onlinestore.service.catalog.ProductService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

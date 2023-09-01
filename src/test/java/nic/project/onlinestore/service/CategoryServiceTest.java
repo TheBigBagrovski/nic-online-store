@@ -3,7 +3,6 @@ package nic.project.onlinestore.service;
 import nic.project.onlinestore.exception.exceptions.ResourceNotFoundException;
 import nic.project.onlinestore.model.Category;
 import nic.project.onlinestore.repository.CategoryRepository;
-import nic.project.onlinestore.service.catalog.CategoryService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

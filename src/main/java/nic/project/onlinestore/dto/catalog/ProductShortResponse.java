@@ -6,16 +6,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Builder
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CategoriesAndProductsResponse {
+public class ProductShortResponse {
 
-    List<String> subcategories;
-    List<ProductShortResponse> products;
+    private Long id;
+    private String name;
+    private String image;
+    private Double price;
+    private Integer quantity;
+    private Integer ratingsNumber;
+    private Double averageRating;
 
 }

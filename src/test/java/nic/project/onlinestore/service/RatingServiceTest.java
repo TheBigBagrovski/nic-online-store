@@ -4,7 +4,6 @@ import nic.project.onlinestore.model.Product;
 import nic.project.onlinestore.model.Rating;
 import nic.project.onlinestore.model.User;
 import nic.project.onlinestore.repository.RatingRepository;
-import nic.project.onlinestore.service.catalog.RatingService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;

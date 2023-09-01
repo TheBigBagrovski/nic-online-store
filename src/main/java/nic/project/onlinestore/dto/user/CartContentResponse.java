@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import nic.project.onlinestore.dto.product.ProductShortResponse;
+import nic.project.onlinestore.dto.catalog.ProductShortResponse;
 
 import java.util.Map;
 

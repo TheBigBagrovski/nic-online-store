@@ -3,7 +3,7 @@ package nic.project.onlinestore.controller;
 import lombok.RequiredArgsConstructor;
 import nic.project.onlinestore.dto.ObjectByIdRequest;
 import nic.project.onlinestore.dto.user.CartContentResponse;
-import nic.project.onlinestore.service.user.CartService;
+import nic.project.onlinestore.service.CartService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;

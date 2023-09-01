@@ -2,11 +2,11 @@ package nic.project.onlinestore.controller;
 
 import nic.project.onlinestore.dto.ObjectByIdRequest;
 import nic.project.onlinestore.dto.catalog.CategoriesAndProductsResponse;
-import nic.project.onlinestore.dto.product.CommentDTO;
-import nic.project.onlinestore.dto.product.ProductFullResponse;
-import nic.project.onlinestore.dto.product.ProductShortResponse;
-import nic.project.onlinestore.dto.product.RatingDTO;
-import nic.project.onlinestore.dto.product.ReviewResponse;
+import nic.project.onlinestore.dto.productPage.CommentRequest;
+import nic.project.onlinestore.dto.productPage.ProductFullResponse;
+import nic.project.onlinestore.dto.catalog.ProductShortResponse;
+import nic.project.onlinestore.dto.productPage.RatingDTO;
+import nic.project.onlinestore.dto.productPage.ReviewResponse;
 import nic.project.onlinestore.exception.exceptions.ResourceAlreadyExistsException;
 import nic.project.onlinestore.exception.exceptions.ResourceNotFoundException;
 import nic.project.onlinestore.model.Filter;
@@ -16,11 +16,11 @@ import nic.project.onlinestore.repository.FilterRepository;
 import nic.project.onlinestore.repository.FilterValueRepository;
 import nic.project.onlinestore.repository.ImageRepository;
 import nic.project.onlinestore.repository.ProductRepository;
-import nic.project.onlinestore.security.JwtFilter;
-import nic.project.onlinestore.service.catalog.CatalogService;
-import nic.project.onlinestore.service.catalog.CategoryService;
-import nic.project.onlinestore.service.catalog.ProductService;
-import nic.project.onlinestore.service.user.CartService;
+import nic.project.onlinestore.security.jwt.JwtFilter;
+import nic.project.onlinestore.service.CatalogService;
+import nic.project.onlinestore.service.CategoryService;
+import nic.project.onlinestore.service.ProductService;
+import nic.project.onlinestore.service.CartService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,7 +28,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collections;
@@ -200,19 +199,19 @@ class CatalogControllerTest {
         String comment = "Test Comment";
         List<MultipartFile> files = Collections.emptyList();
         // успешная работа
-        CommentDTO commentDTO = new CommentDTO();
-        commentDTO.setComment(comment);
-        ResponseEntity<?> responseEntity1 = catalogController.postReview(commentDTO, files, existingProductId);
+        CommentRequest commentRequest = new CommentRequest();
+        commentRequest.setComment(comment);
+        ResponseEntity<?> responseEntity1 = catalogController.postReview(commentRequest, files, existingProductId);
         assertEquals(HttpStatus.OK, responseEntity1.getStatusCode());
         assertEquals("Ваш отзыв добавлен!", responseEntity1.getBody());
         verify(catalogService, times(1)).reviewProduct(existingProductId, comment, files);
         // нет такого продукта
         doThrow(ResourceNotFoundException.class).when(catalogService).reviewProduct(nonExistingProductId, comment, files);
-        assertThrows(ResourceNotFoundException.class, () -> catalogController.postReview(commentDTO, files, nonExistingProductId));
+        assertThrows(ResourceNotFoundException.class, () -> catalogController.postReview(commentRequest, files, nonExistingProductId));
         verify(catalogService, times(1)).reviewProduct(nonExistingProductId, comment, files);
         // отзыв уже оставлен
         doThrow(ResourceAlreadyExistsException.class).when(catalogService).reviewProduct(existingProductId, comment, files);
-        assertThrows(ResourceAlreadyExistsException.class, () -> catalogController.postReview(commentDTO, files, existingProductId));
+        assertThrows(ResourceAlreadyExistsException.class, () -> catalogController.postReview(commentRequest, files, existingProductId));
         verify(catalogService, times(2)).reviewProduct(existingProductId, comment, files);
     }
 
@@ -244,21 +243,21 @@ class CatalogControllerTest {
         String validComment = "Updated Comment";
         String emptyComment = "";
         String longComment = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla convallis justo ac dolor porttitor commodo. Donec in mi eu mi cursus luctus at quis enim. Nulla id odio at velit vestibulum pulvinar id vitae arcu. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Nunc eu sollicitudin erat. Nam eget sem nunc. Donec id cursus risus. Sed faucibus nisl mi, vel luctus sem egestas sit amet. Aenean efficitur commodo metus, at ultrices justo tempor sed. Nullam feugiat scelerisque lorem vitae auctor. Aliquam eu enim ac ligula lobortis consequat. In non fermentum nulla, at malesuada libero. Vivamus vulputate congue justo at ultrices. Donec aliquam, sapien vel consequat fermentum, arcu est dignissim felis, at commodo nisi lectus at tortor. Quisque vestibulum sem non odio vulputate dignissim. Cras tristique ante eu felis facilisis convallis. Fusce eu dui vitae sem semper facilisis. Vestibulum imperdiet, nunc sit amet euismod finibus, ligula turpis scelerisque tellus, et lacinia nulla arcu in purus.";
-        CommentDTO commentDTO = new CommentDTO();
-        commentDTO.setComment(validComment);
+        CommentRequest commentRequest = new CommentRequest();
+        commentRequest.setComment(validComment);
         List<MultipartFile> files = Collections.emptyList();
         // успешная работа
-        ResponseEntity<?> responseEntity1 = catalogController.editReview(commentDTO, files, existingProductId);
+        ResponseEntity<?> responseEntity1 = catalogController.editReview(commentRequest, files, existingProductId);
         assertEquals(HttpStatus.OK, responseEntity1.getStatusCode());
         assertEquals("Ваш отзыв изменен!", responseEntity1.getBody());
         verify(catalogService, times(1)).editReview(existingProductId, validComment, files);
         // нет такого продукта
         doThrow(ResourceNotFoundException.class).when(catalogService).editReview(nonExistingProductId, validComment, files);
-        assertThrows(ResourceNotFoundException.class, () -> catalogController.editReview(commentDTO, files, nonExistingProductId));
+        assertThrows(ResourceNotFoundException.class, () -> catalogController.editReview(commentRequest, files, nonExistingProductId));
         verify(catalogService, times(1)).editReview(nonExistingProductId, validComment, files);
         // нет такого отзыва
         doThrow(ResourceNotFoundException.class).when(catalogService).editReview(existingProductId, validComment, files);
-        assertThrows(ResourceNotFoundException.class, () -> catalogController.editReview(commentDTO, files, existingProductId));
+        assertThrows(ResourceNotFoundException.class, () -> catalogController.editReview(commentRequest, files, existingProductId));
         verify(catalogService, times(2)).editReview(existingProductId, validComment, files);
     }
 

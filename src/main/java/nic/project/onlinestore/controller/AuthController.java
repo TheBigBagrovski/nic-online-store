@@ -5,7 +5,7 @@ import nic.project.onlinestore.dto.auth.JwtResponse;
 import nic.project.onlinestore.dto.auth.LoginRequest;
 import nic.project.onlinestore.dto.auth.RefreshJwtRequest;
 import nic.project.onlinestore.dto.auth.RegisterRequest;
-import nic.project.onlinestore.service.user.AuthService;
+import nic.project.onlinestore.service.AuthService;
 import nic.project.onlinestore.util.RegisterValidator;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
