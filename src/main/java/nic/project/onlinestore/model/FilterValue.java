@@ -14,7 +14,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "filter_values")
@@ -30,7 +29,6 @@ public class FilterValue {
     private Long id;
 
     @Column(nullable = false)
-    @Size(max = 50, message = "В значении свойства должно быть до 50 символов")
     private String value;
 
     @ManyToOne

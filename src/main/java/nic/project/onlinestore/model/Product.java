@@ -18,11 +18,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.MapKeyJoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -43,12 +39,9 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
-    @Size(max = 255, message = "В названии товара должно быть до 255 символов")
     @Column(nullable = false)
     private String name;
 
-    @Size(max = 2000, message = "В описании товара должно быть до 2000 символов")
     private String description;
 
     @Builder.Default
@@ -61,15 +54,9 @@ public class Product {
             inverseJoinColumns = @JoinColumn(name = "category_id", referencedColumnName = "id"))
     private Set<Category> categories = new HashSet<>();
 
-    @NotNull
-    @Min(value = 0, message = "Минимальная цена - 0 рублей")
-    @Digits(integer = 50, fraction = 10, message = "Некорректное число")
     @Column(nullable = false)
-    private Double price;
+    private BigDecimal price;
 
-    @NotNull
-    @Min(value = 0, message = "Минимальное количество - 0")
-    @Digits(integer = 50, fraction = 0, message = "Некорректное число")
     @Column(nullable = false)
     private Integer quantity;
 
@@ -83,10 +70,6 @@ public class Product {
 
     public void addImage(Image image) {
         images.add(image);
-    }
-
-    public void removeImage(Image image) {
-        images.remove(image);
     }
 
     public void clearImages() {

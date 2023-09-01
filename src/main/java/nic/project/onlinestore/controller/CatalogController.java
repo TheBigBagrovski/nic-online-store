@@ -3,14 +3,13 @@ package nic.project.onlinestore.controller;
 import lombok.RequiredArgsConstructor;
 import nic.project.onlinestore.dto.ObjectByIdRequest;
 import nic.project.onlinestore.dto.catalog.CategoriesAndProductsResponse;
+import nic.project.onlinestore.dto.product.CommentDTO;
 import nic.project.onlinestore.dto.product.ProductFullResponse;
 import nic.project.onlinestore.dto.product.RatingDTO;
 import nic.project.onlinestore.dto.product.ReviewResponse;
 import nic.project.onlinestore.service.catalog.CatalogService;
 import nic.project.onlinestore.service.user.CartService;
-import nic.project.onlinestore.util.FormValidator;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -25,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -34,13 +34,12 @@ public class CatalogController {
 
     private final CatalogService catalogService;
     private final CartService cartService;
-    private final FormValidator formValidator;
 
     @GetMapping
     public ResponseEntity<CategoriesAndProductsResponse> getProductsAndSubcategoriesByCategoryAndFilters(
             @RequestParam(value = "category") Long categoryId,
-            @RequestParam(value = "minPrice", required = false) Double minPrice,
-            @RequestParam(value = "maxPrice", required = false) Double maxPrice,
+            @RequestParam(value = "minPrice", required = false) BigDecimal minPrice,
+            @RequestParam(value = "maxPrice", required = false) BigDecimal maxPrice,
             @RequestParam(value = "filters", required = false) String filters, // filters=brand:Apple,Samsung
             @RequestParam(value = "priceSort", required = false, defaultValue = "true") Boolean cheapFirst,
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page
@@ -49,15 +48,13 @@ public class CatalogController {
     }
 
     @PutMapping
-    public ResponseEntity<Void> addProductToCart(@RequestBody @Valid ObjectByIdRequest productRequest, BindingResult bindingResult) {
-        formValidator.checkFormBindingResult(bindingResult);
+    public ResponseEntity<Void> addProductToCart(@RequestBody @Valid ObjectByIdRequest productRequest) {
         cartService.addToCart(productRequest.getId());
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping
-    public ResponseEntity<Void> changeProductQuantityInCart(@RequestBody @Valid ObjectByIdRequest productRequest, BindingResult bindingResult, @RequestParam(name = "op") String operation) {
-        formValidator.checkFormBindingResult(bindingResult);
+    public ResponseEntity<Void> changeProductQuantityInCart(@RequestBody @Valid ObjectByIdRequest productRequest, @RequestParam(name = "op") String operation) {
         cartService.changeProductQuantityInCart(productRequest.getId(), operation);
         return ResponseEntity.ok().build();
     }
@@ -68,17 +65,16 @@ public class CatalogController {
     }
 
     @PostMapping(value = "/{productId}/post-rating", produces = "text/plain;charset=UTF-8")
-    public ResponseEntity<?> postRating(@RequestBody @Valid RatingDTO ratingDTO, BindingResult bindingResult, @PathVariable Long productId) {
-        formValidator.checkFormBindingResult(bindingResult);
+    public ResponseEntity<?> postRating(@RequestBody @Valid RatingDTO ratingDTO, @PathVariable Long productId) {
         catalogService.rateProduct(productId, ratingDTO.getValue());
         return ResponseEntity.ok("Оценка поставлена!");
     }
 
     @PostMapping(value = "/{productId}/post-review", produces = "text/plain;charset=UTF-8")
-    public ResponseEntity<?> postReview(@RequestPart(name = "comment") String comment,
+    public ResponseEntity<?> postReview(@RequestPart(name = "comment") @Valid CommentDTO comment,
                                         @RequestPart(name = "files", required = false) List<MultipartFile> files,
                                         @PathVariable Long productId) {
-        catalogService.reviewProduct(productId, comment, files);
+        catalogService.reviewProduct(productId, comment.getComment(), files);
         return ResponseEntity.ok("Ваш отзыв добавлен!");
     }
 
@@ -88,10 +84,10 @@ public class CatalogController {
     }
 
     @PatchMapping(value = "/{productId}/edit-review", produces = "text/plain;charset=UTF-8")
-    public ResponseEntity<?> editReview(@RequestPart(name = "comment") String comment,
+    public ResponseEntity<?> editReview(@RequestPart(name = "comment") @Valid CommentDTO comment,
                                         @RequestPart(name = "files", required = false) List<MultipartFile> files,
                                         @PathVariable Long productId) {
-        catalogService.editReview(productId, comment, files);
+        catalogService.editReview(productId, comment.getComment(), files);
         return ResponseEntity.ok("Ваш отзыв изменен!");
     }
 

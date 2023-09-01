@@ -17,6 +17,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -143,257 +144,257 @@ public class OnlineStoreApplication implements WebMvcConfigurer {
             Product[] products = new Product[]{
                     Product.builder().id(1L).name("Смартфон Apple iPhone 13").images(Arrays.asList(images[0], images[1])).categories(new HashSet<Category>() {{
                         add(categories[0]);
-                    }}).price(80999.0).quantity(5).build(),
+                    }}).price(BigDecimal.valueOf(80999.0)).quantity(5).build(),
                     Product.builder().id(2L).name("Смартфон Apple iPhone 13 PRO").categories(new HashSet<Category>() {{
                         add(categories[0]);
-                    }}).price(80999.0).quantity(5).build(),
+                    }}).price(BigDecimal.valueOf(80999.0)).quantity(5).build(),
                     Product.builder().id(3L).name("Смартфон Apple iPhone 14").images(Collections.singletonList(images[2])).categories(new HashSet<Category>() {{
                         add(categories[0]);
-                    }}).price(80999.0).quantity(10).build(),
+                    }}).price(BigDecimal.valueOf(80999.0)).quantity(10).build(),
                     Product.builder().id(4L).name("Смартфон Apple iPhone 14 PRO").images(Collections.singletonList(images[3])).categories(new HashSet<Category>() {{
                         add(categories[0]);
-                    }}).price(89999.0).quantity(3).build(),
+                    }}).price(BigDecimal.valueOf(89999.0)).quantity(3).build(),
                     Product.builder().id(5L).name("Смартфон Apple iPhone 14 PRO MAX").images(Arrays.asList(images[4], images[5])).categories(new HashSet<Category>() {{
                         add(categories[0]);
-                    }}).price(115999.0).quantity(2).build(),
+                    }}).price(BigDecimal.valueOf(115999.0)).quantity(2).build(),
                     Product.builder().id(6L).name("Смартфон Apple iPhone 11").images(Arrays.asList(images[6], images[7])).categories(new HashSet<Category>() {{
                         add(categories[0]);
-                    }}).price(45999.0).quantity(15).build(),
+                    }}).price(BigDecimal.valueOf(45999.0)).quantity(15).build(),
                     Product.builder().id(7L).name("Смартфон Apple iPhone 11 PRO").images(Arrays.asList(images[8], images[9])).categories(new HashSet<Category>() {{
                         add(categories[0]);
-                    }}).price(70999.0).quantity(10).build(),
+                    }}).price(BigDecimal.valueOf(70999.0)).quantity(10).build(),
                     Product.builder().id(8L).name("Смартфон Apple iPhone 12").images(Arrays.asList(images[10], images[11])).categories(new HashSet<Category>() {{
                         add(categories[0]);
-                    }}).price(55999.0).quantity(10).build(),
+                    }}).price(BigDecimal.valueOf(55999.0)).quantity(10).build(),
                     Product.builder().id(9L).name("Смартфон Apple iPhone 12 PRO").images(Arrays.asList(images[12], images[13])).categories(new HashSet<Category>() {{
                         add(categories[0]);
-                    }}).price(80999.0).quantity(10).build(),
+                    }}).price(BigDecimal.valueOf(80999.0)).quantity(10).build(),
                     Product.builder().id(10L).name("Смартфон Apple iPhone SE 2020").categories(new HashSet<Category>() {{
                         add(categories[0]);
-                    }}).price(55999.0).quantity(20).build(),
+                    }}).price(BigDecimal.valueOf(55999.0)).quantity(20).build(),
                     Product.builder().id(11L).name("Смартфон Samsung Galaxy S8").images(Arrays.asList(images[14], images[15])).categories(new HashSet<Category>() {{
                         add(categories[0]);
-                    }}).price(45999.0).quantity(8).build(),
+                    }}).price(BigDecimal.valueOf(45999.0)).quantity(8).build(),
                     Product.builder().id(12L).name("Смартфон Samsung Galaxy A54").images(Arrays.asList(images[16], images[17])).categories(new HashSet<Category>() {{
                         add(categories[0]);
-                    }}).price(55999.0).quantity(8).build(),
+                    }}).price(BigDecimal.valueOf(55999.0)).quantity(8).build(),
                     Product.builder().id(13L).name("Смартфон Samsung Galaxy Z Flip4").images(Collections.singletonList(images[18])).categories(new HashSet<Category>() {{
                         add(categories[0]);
-                    }}).price(89999.0).quantity(3).build(),
+                    }}).price(BigDecimal.valueOf(89999.0)).quantity(3).build(),
                     Product.builder().id(14L).name("Смартфон Samsung Galaxy S23 Ultra").images(Collections.singletonList(images[19])).categories(new HashSet<Category>() {{
                         add(categories[0]);
-                    }}).price(45999.0).quantity(4).build(),
+                    }}).price(BigDecimal.valueOf(45999.0)).quantity(4).build(),
                     Product.builder().id(15L).name("Смартфон Samsung Galaxy S22 Ultra").images(Collections.singletonList(images[20])).categories(new HashSet<Category>() {{
                         add(categories[0]);
-                    }}).price(55999.0).quantity(5).build(),
+                    }}).price(BigDecimal.valueOf(55999.0)).quantity(5).build(),
                     Product.builder().id(16L).name("Смартфон OnePlus Nord CE2").images(Arrays.asList(images[21], images[22])).categories(new HashSet<Category>() {{
                         add(categories[0]);
-                    }}).price(55999.0).quantity(8).build(),
+                    }}).price(BigDecimal.valueOf(55999.0)).quantity(8).build(),
                     Product.builder().id(17L).name("Смартфон HUAWEI Nova 9").images(Collections.singletonList(images[23])).categories(new HashSet<Category>() {{
                         add(categories[0]);
-                    }}).price(34999.0).quantity(8).build(),
+                    }}).price(BigDecimal.valueOf(34999.0)).quantity(8).build(),
                     Product.builder().id(18L).name("Смартфон HUAWEI P50").images(Collections.singletonList(images[24])).categories(new HashSet<Category>() {{
                         add(categories[0]);
-                    }}).price(34999.0).quantity(15).build(),
+                    }}).price(BigDecimal.valueOf(34999.0)).quantity(15).build(),
                     Product.builder().id(19L).name("Смартфон Google Pixel 6").categories(new HashSet<Category>() {{
                         add(categories[0]);
-                    }}).price(55999.0).quantity(5).build(),
+                    }}).price(BigDecimal.valueOf(55999.0)).quantity(5).build(),
                     Product.builder().id(20L).name("Смартфон Honor 70").images(Collections.singletonList(images[25])).categories(new HashSet<Category>() {{
                         add(categories[0]);
-                    }}).price(55999.0).quantity(4).build(),
+                    }}).price(BigDecimal.valueOf(55999.0)).quantity(4).build(),
                     Product.builder().id(21L).name("Смартфон OPPO Reno8 T").categories(new HashSet<Category>() {{
                         add(categories[0]);
-                    }}).price(55999.0).quantity(4).build(),
+                    }}).price(BigDecimal.valueOf(55999.0)).quantity(4).build(),
                     Product.builder().id(22L).name("TWS-наушники Apple AirPods Pro").images(Arrays.asList(images[26], images[27])).categories(new HashSet<Category>() {{
                         add(au_headphones[0]);
                         add(ag_headphones[0]);
-                    }}).price(11999.0).quantity(25).build(),
+                    }}).price(BigDecimal.valueOf(11999.0)).quantity(25).build(),
                     Product.builder().id(23L).name("TWS-наушники Apple AirPods Pro 2").images(Arrays.asList(images[28], images[29])).categories(new HashSet<Category>() {{
                         add(au_headphones[0]);
                         add(ag_headphones[0]);
-                    }}).price(11999.0).quantity(50).build(),
+                    }}).price(BigDecimal.valueOf(11999.0)).quantity(50).build(),
                     Product.builder().id(24L).name("TWS-наушники Xiaomi Redmi Buds 3 Lite").categories(new HashSet<Category>() {{
                         add(au_headphones[0]);
                         add(ag_headphones[0]);
-                    }}).price(1399.0).quantity(50).build(),
+                    }}).price(BigDecimal.valueOf(1399.0)).quantity(50).build(),
                     Product.builder().id(25L).name("TWS-наушники Xiaomi Redmi Buds 3").images(Collections.singletonList(images[30])).categories(new HashSet<Category>() {{
                         add(au_headphones[0]);
                         add(ag_headphones[0]);
-                    }}).price(3999.0).quantity(50).build(),
+                    }}).price(BigDecimal.valueOf(3999.0)).quantity(50).build(),
                     Product.builder().id(26L).name("TWS-наушники Xiaomi Mi True Wireless Earphones 2 Pro").categories(new HashSet<Category>() {{
                         add(au_headphones[0]);
                         add(ag_headphones[0]);
-                    }}).price(3999.0).quantity(50).build(),
+                    }}).price(BigDecimal.valueOf(3999.0)).quantity(50).build(),
                     Product.builder().id(27L).name("TWS-наушники Honor Choice Earbuds X3").categories(new HashSet<Category>() {{
                         add(au_headphones[0]);
                         add(ag_headphones[0]);
-                    }}).price(2999.0).quantity(50).build(),
+                    }}).price(BigDecimal.valueOf(2999.0)).quantity(50).build(),
                     Product.builder().id(28L).name("Проводная гарнитура Creative SXFI TRIO").images(Collections.singletonList(images[31])).categories(new HashSet<Category>() {{
                         add(au_headphones[2]);
                         add(ag_headphones[2]);
-                    }}).price(5999.0).quantity(20).build(),
+                    }}).price(BigDecimal.valueOf(5999.0)).quantity(20).build(),
                     Product.builder().id(29L).name("Проводная гарнитура Sennheiser CX 300S").images(Collections.singletonList(images[32])).categories(new HashSet<Category>() {{
                         add(au_headphones[2]);
                         add(ag_headphones[2]);
-                    }}).price(1999.0).quantity(20).build(),
+                    }}).price(BigDecimal.valueOf(1999.0)).quantity(20).build(),
                     Product.builder().id(30L).name("Проводная гарнитура HyperX Cloud Earbuds HX-HSCEB-RD").categories(new HashSet<Category>() {{
                         add(au_headphones[2]);
                         add(ag_headphones[2]);
-                    }}).price(15999.0).quantity(20).build(),
+                    }}).price(BigDecimal.valueOf(15999.0)).quantity(20).build(),
                     Product.builder().id(31L).name("Bluetooth-гарнитура Sony WI-SP500").categories(new HashSet<Category>() {{
                         add(au_headphones[1]);
                         add(ag_headphones[1]);
-                    }}).price(1999.0).quantity(20).build(),
+                    }}).price(BigDecimal.valueOf(1999.0)).quantity(20).build(),
                     Product.builder().id(32L).name("Bluetooth-гарнитура Sony WI-C200").images(Collections.singletonList(images[33])).categories(new HashSet<Category>() {{
                         add(au_headphones[1]);
                         add(ag_headphones[1]);
-                    }}).price(2999.0).quantity(10).build(),
+                    }}).price(BigDecimal.valueOf(2999.0)).quantity(10).build(),
                     Product.builder().id(33L).name("Bluetooth-гарнитура Sony WH-1000XM4").images(Arrays.asList(images[34], images[35])).categories(new HashSet<Category>() {{
                         add(au_headphones[1]);
                         add(ag_headphones[1]);
-                    }}).price(31999.0).quantity(5).build(),
+                    }}).price(BigDecimal.valueOf(31999.0)).quantity(5).build(),
                     Product.builder().id(34L).name("Bluetooth-гарнитура Sony WH-1000XM5").images(Arrays.asList(images[36], images[37])).categories(new HashSet<Category>() {{
                         add(au_headphones[1]);
                         add(ag_headphones[1]);
-                    }}).price(41999.0).quantity(2).build(),
+                    }}).price(BigDecimal.valueOf(41999.0)).quantity(2).build(),
                     Product.builder().id(35L).name("Bluetooth-гарнитура Sennheiser MOMENTUM Wireless M3AEBTXL").images(Collections.singletonList(images[38])).categories(new HashSet<Category>() {{
                         add(au_headphones[1]);
                         add(ag_headphones[1]);
-                    }}).price(11999.0).quantity(2).build(),
+                    }}).price(BigDecimal.valueOf(11999.0)).quantity(2).build(),
                     Product.builder().id(36L).name("Bluetooth-гарнитура Sennheiser IE 100 PRO Wireless").categories(new HashSet<Category>() {{
                         add(au_headphones[1]);
                         add(ag_headphones[1]);
-                    }}).price(12999.0).quantity(10).build(),
+                    }}).price(BigDecimal.valueOf(12999.0)).quantity(10).build(),
                     Product.builder().id(37L).name("Bluetooth-гарнитура JBL Tune 115BT").images(Collections.singletonList(images[39])).categories(new HashSet<Category>() {{
                         add(au_headphones[1]);
                         add(ag_headphones[1]);
-                    }}).price(5999.0).quantity(20).build(),
+                    }}).price(BigDecimal.valueOf(5999.0)).quantity(20).build(),
                     Product.builder().id(38L).name("Чехол для Huawei P50").categories(new HashSet<Category>() {{
                         add(addgoods[1]);
-                    }}).price(999.0).quantity(30).build(),
+                    }}).price(BigDecimal.valueOf(999.0)).quantity(30).build(),
                     Product.builder().id(39L).name("Чехол-книжка Aceline Strap для Xiaomi Redmi 10C").categories(new HashSet<Category>() {{
                         add(addgoods[1]);
-                    }}).price(999.0).quantity(30).build(),
+                    }}).price(BigDecimal.valueOf(999.0)).quantity(30).build(),
                     Product.builder().id(40L).name("Чехол-книжка Samsung Smart S View Wallet Cover для Samsung Galaxy A53").images(null).categories(new HashSet<Category>() {{
                         add(addgoods[1]);
-                    }}).price(999.0).quantity(30).build(),
+                    }}).price(BigDecimal.valueOf(999.0)).quantity(30).build(),
                     Product.builder().id(41L).name("Чехол-книжка DF для OPPO A17").images(Collections.singletonList(images[40])).categories(new HashSet<Category>() {{
                         add(addgoods[1]);
-                    }}).price(999.0).quantity(30).build(),
+                    }}).price(BigDecimal.valueOf(999.0)).quantity(30).build(),
                     Product.builder().id(42L).name("Чехол-книжка DF для realme C35").images(Collections.singletonList(images[41])).categories(new HashSet<Category>() {{
                         add(addgoods[1]);
-                    }}).price(999.0).quantity(30).build(),
+                    }}).price(BigDecimal.valueOf(999.0)).quantity(30).build(),
                     Product.builder().id(43L).name("Накладка Apple Clear Case with MagSafe для Apple iPhone 14 Pro Max").images(null).categories(new HashSet<Category>() {{
                         add(addgoods[2]);
-                    }}).price(5999.0).quantity(30).build(),
+                    }}).price(BigDecimal.valueOf(5999.0)).quantity(30).build(),
                     Product.builder().id(44L).name("Накладка Apple Leather Case with MagSafe для Apple iPhone 14 Pro").images(null).categories(new HashSet<Category>() {{
                         add(addgoods[2]);
-                    }}).price(5999.0).quantity(30).build(),
+                    }}).price(BigDecimal.valueOf(5999.0)).quantity(30).build(),
                     Product.builder().id(45L).name("Накладка DF для Samsung Galaxy A73").images(null).categories(new HashSet<Category>() {{
                         add(addgoods[2]);
-                    }}).price(499.0).quantity(30).build(),
+                    }}).price(BigDecimal.valueOf(499.0)).quantity(30).build(),
                     Product.builder().id(46L).name("Накладка DF для Xiaomi Redmi 10C").images(null).categories(new HashSet<Category>() {{
                         add(addgoods[2]);
-                    }}).price(499.0).quantity(30).build(),
+                    }}).price(BigDecimal.valueOf(499.0)).quantity(30).build(),
                     Product.builder().id(47L).name("Умная колонка Яндекс Станция").images(null).categories(new HashSet<Category>() {{
                         add(audio[0]);
-                    }}).price(2999.0).quantity(10).build(),
+                    }}).price(BigDecimal.valueOf(2999.0)).quantity(10).build(),
                     Product.builder().id(48L).name("Умная колонка Яндекс Станция 2").images(Collections.singletonList(images[42])).categories(new HashSet<Category>() {{
                         add(audio[0]);
-                    }}).price(2999.0).quantity(5).build(),
+                    }}).price(BigDecimal.valueOf(2999.0)).quantity(5).build(),
                     Product.builder().id(49L).name("Умная колонка Яндекс Станция Макс").images(Collections.singletonList(images[43])).categories(new HashSet<Category>() {{
                         add(audio[0]);
-                    }}).price(2999.0).quantity(5).build(),
+                    }}).price(BigDecimal.valueOf(2999.0)).quantity(5).build(),
                     Product.builder().id(50L).name("Умная колонка Яндекс Станция Мини с часами").images(Collections.singletonList(images[44])).categories(new HashSet<Category>() {{
                         add(audio[0]);
-                    }}).price(3999.0).quantity(2).build(),
+                    }}).price(BigDecimal.valueOf(3999.0)).quantity(2).build(),
                     Product.builder().id(51L).name("Умная колонка Xiaomi Mi Smart Speaker").categories(new HashSet<Category>() {{
                         add(audio[0]);
-                    }}).price(3999.0).quantity(8).build(),
+                    }}).price(BigDecimal.valueOf(3999.0)).quantity(8).build(),
                     Product.builder().id(52L).name("Умная колонка VK Капсула Мини").categories(new HashSet<Category>() {{
                         add(audio[0]);
-                    }}).price(2999.0).quantity(4).build(),
+                    }}).price(BigDecimal.valueOf(2999.0)).quantity(4).build(),
                     Product.builder().id(53L).name("Умная колонка VK Капсула Нео").categories(new HashSet<Category>() {{
                         add(audio[0]);
-                    }}).price(4999.0).quantity(8).build(),
+                    }}).price(BigDecimal.valueOf(4999.0)).quantity(8).build(),
                     Product.builder().id(54L).name("Умная колонка VK Капсула").images(Collections.singletonList(images[45])).categories(new HashSet<Category>() {{
                         add(audio[0]);
-                    }}).price(3999.0).quantity(2).build(),
+                    }}).price(BigDecimal.valueOf(3999.0)).quantity(2).build(),
                     Product.builder().id(55L).name("Умная колонка SberBoom").images(Collections.singletonList(images[46])).categories(new HashSet<Category>() {{
                         add(audio[0]);
-                    }}).price(4399.0).quantity(4).build(),
+                    }}).price(BigDecimal.valueOf(4399.0)).quantity(4).build(),
                     Product.builder().id(56L).name("Умная колонка LG XBOOM AI ThinQ WK7Y").categories(new HashSet<Category>() {{
                         add(audio[0]);
-                    }}).price(3999.0).quantity(10).build(),
+                    }}).price(BigDecimal.valueOf(3999.0)).quantity(10).build(),
                     Product.builder().id(57L).name("Колонки 2.0 DEXP R610").categories(new HashSet<Category>() {{
                         add(audio[1]);
-                    }}).price(8999.0).quantity(10).build(),
+                    }}).price(BigDecimal.valueOf(8999.0)).quantity(10).build(),
                     Product.builder().id(58L).name("Колонки 2.0 Edifier S3000Pro").categories(new HashSet<Category>() {{
                         add(audio[1]);
-                    }}).price(5999.0).quantity(10).build(),
+                    }}).price(BigDecimal.valueOf(5999.0)).quantity(10).build(),
                     Product.builder().id(59L).name("Колонки 2.0 Edifier R1855DB").categories(new HashSet<Category>() {{
                         add(audio[1]);
-                    }}).price(15999.0).quantity(10).build(),
+                    }}).price(BigDecimal.valueOf(15999.0)).quantity(10).build(),
                     Product.builder().id(60L).name("Колонки 2.1 SVEN MS-2050").images(Collections.singletonList(images[47])).categories(new HashSet<Category>() {{
                         add(audio[1]);
-                    }}).price(3999.0).quantity(5).build(),
+                    }}).price(BigDecimal.valueOf(3999.0)).quantity(5).build(),
                     Product.builder().id(61L).name("Колонки 2.1 Edifier M601DB").categories(new HashSet<Category>() {{
                         add(audio[1]);
-                    }}).price(4999.0).quantity(5).build(),
+                    }}).price(BigDecimal.valueOf(4999.0)).quantity(5).build(),
                     Product.builder().id(62L).name("Колонки 2.0 F&D T-70X").images(Collections.singletonList(images[48])).categories(new HashSet<Category>() {{
                         add(audio[1]);
-                    }}).price(2999.0).quantity(10).build(),
+                    }}).price(BigDecimal.valueOf(2999.0)).quantity(10).build(),
                     Product.builder().id(63L).name("Колонки 2.0 SVEN MC-30").categories(new HashSet<Category>() {{
                         add(audio[1]);
-                    }}).price(4999.0).quantity(5).build(),
+                    }}).price(BigDecimal.valueOf(4999.0)).quantity(5).build(),
                     Product.builder().id(64L).name("Колонки 2.0 F&D T-60X").categories(new HashSet<Category>() {{
                         add(audio[1]);
-                    }}).price(7999.0).quantity(10).build(),
+                    }}).price(BigDecimal.valueOf(7999.0)).quantity(10).build(),
                     Product.builder().id(65L).name("Стиральная машина DEXP WM-F610NTMA/WW").categories(new HashSet<Category>() {{
                         add(house[0]);
-                    }}).price(14999.0).quantity(5).build(),
+                    }}).price(BigDecimal.valueOf(14999.0)).quantity(5).build(),
                     Product.builder().id(66L).name("Стиральная машина Бирюса WM-ME610/04").images(Collections.singletonList(images[49])).categories(new HashSet<Category>() {{
                         add(house[0]);
-                    }}).price(14999.0).quantity(10).build(),
+                    }}).price(BigDecimal.valueOf(14999.0)).quantity(10).build(),
                     Product.builder().id(67L).name("Стиральная машина Indesit IWSD 51051 CIS").categories(new HashSet<Category>() {{
                         add(house[0]);
-                    }}).price(9999.0).quantity(20).build(),
+                    }}).price(BigDecimal.valueOf(9999.0)).quantity(20).build(),
                     Product.builder().id(68L).name("Стиральная машина Beko WRS5512BWW").images(Collections.singletonList(images[50])).categories(new HashSet<Category>() {{
                         add(house[0]);
-                    }}).price(10999.0).quantity(18).build(),
+                    }}).price(BigDecimal.valueOf(10999.0)).quantity(18).build(),
                     Product.builder().id(69L).name("Стиральная машина TCL TWF60-G103061A03").categories(new HashSet<Category>() {{
                         add(house[0]);
-                    }}).price(15999.0).quantity(17).build(),
+                    }}).price(BigDecimal.valueOf(15999.0)).quantity(17).build(),
                     Product.builder().id(70L).name("Пылесос DEXP H-1600").images(Collections.singletonList(images[51])).categories(new HashSet<Category>() {{
                         add(house[1]);
-                    }}).price(2999.0).quantity(10).build(),
+                    }}).price(BigDecimal.valueOf(2999.0)).quantity(10).build(),
                     Product.builder().id(71L).name("Пылесос ECON ECO-1414VB").categories(new HashSet<Category>() {{
                         add(house[1]);
-                    }}).price(2999.0).quantity(2).build(),
+                    }}).price(BigDecimal.valueOf(2999.0)).quantity(2).build(),
                     Product.builder().id(72L).name("Пылесос Starwind SCB1112").categories(new HashSet<Category>() {{
                         add(house[1]);
-                    }}).price(3999.0).quantity(5).build(),
+                    }}).price(BigDecimal.valueOf(3999.0)).quantity(5).build(),
                     Product.builder().id(73L).name("Пылесос Supra VCS-1410").images(Collections.singletonList(images[52])).categories(new HashSet<Category>() {{
                         add(house[1]);
-                    }}).price(3999.0).quantity(5).build(),
+                    }}).price(BigDecimal.valueOf(3999.0)).quantity(5).build(),
                     Product.builder().id(74L).name("Пылесос BQ VC1802B").categories(new HashSet<Category>() {{
                         add(house[1]);
-                    }}).price(4999.0).quantity(5).build(),
+                    }}).price(BigDecimal.valueOf(4999.0)).quantity(5).build(),
                     Product.builder().id(75L).name("Холодильник Liebherr CBNd 5223").categories(new HashSet<Category>() {{
                         add(kitchen[0]);
-                    }}).price(75999.0).quantity(2).build(),
+                    }}).price(BigDecimal.valueOf(75999.0)).quantity(2).build(),
                     Product.builder().id(76L).name("Холодильник HIBERG RFS-480DX").images(Arrays.asList(images[53], images[54])).categories(new HashSet<Category>() {{
                         add(kitchen[0]);
-                    }}).price(75999.0).quantity(2).build(),
+                    }}).price(BigDecimal.valueOf(75999.0)).quantity(2).build(),
                     Product.builder().id(77L).name("Холодильник Tesler RCD-545I").images(Collections.singletonList(images[55])).categories(new HashSet<Category>() {{
                         add(kitchen[0]);
-                    }}).price(76999.0).quantity(3).build(),
+                    }}).price(BigDecimal.valueOf(76999.0)).quantity(3).build(),
                     Product.builder().id(78L).name("Холодильник ZUGEL ZRSS630W").categories(new HashSet<Category>() {{
                         add(kitchen[0]);
-                    }}).price(79999.0).quantity(4).build(),
+                    }}).price(BigDecimal.valueOf(79999.0)).quantity(4).build(),
                     Product.builder().id(79L).name("Холодильник Liebherr CNsfd 5223").categories(new HashSet<Category>() {{
                         add(kitchen[0]);
-                    }}).price(70999.0).quantity(10).build()
+                    }}).price(BigDecimal.valueOf(70999.0)).quantity(10).build()
             };
             Filter smartphonesBrand = Filter.builder()
                     .id(1L)

@@ -4,9 +4,7 @@ import lombok.RequiredArgsConstructor;
 import nic.project.onlinestore.dto.ObjectByIdRequest;
 import nic.project.onlinestore.dto.user.CartContentResponse;
 import nic.project.onlinestore.service.user.CartService;
-import nic.project.onlinestore.util.FormValidator;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,7 +20,6 @@ import javax.validation.Valid;
 public class CartController {
 
     private final CartService cartService;
-    private final FormValidator formValidator;
 
     @GetMapping
     public ResponseEntity<CartContentResponse> getCartContent() {
@@ -30,8 +27,7 @@ public class CartController {
     }
 
     @PatchMapping
-    public ResponseEntity<Void> changeProductQuantityInCart(@RequestBody @Valid ObjectByIdRequest productRequest, BindingResult bindingResult, @RequestParam(name = "op") String operation) {
-        formValidator.checkFormBindingResult(bindingResult);
+    public ResponseEntity<Void> changeProductQuantityInCart(@RequestBody @Valid ObjectByIdRequest productRequest, @RequestParam(name = "op") String operation) {
         cartService.changeProductQuantityInCart(productRequest.getId(), operation);
         return ResponseEntity.ok().build();
     }

@@ -5,7 +5,6 @@ import nic.project.onlinestore.dto.catalog.CategoriesAndProductsResponse;
 import nic.project.onlinestore.dto.product.ProductFullResponse;
 import nic.project.onlinestore.dto.product.ProductShortResponse;
 import nic.project.onlinestore.dto.product.ReviewResponse;
-import nic.project.onlinestore.exception.exceptions.FormException;
 import nic.project.onlinestore.exception.exceptions.ResourceAlreadyExistsException;
 import nic.project.onlinestore.exception.exceptions.ResourceNotFoundException;
 import nic.project.onlinestore.model.Category;
@@ -27,7 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.nio.charset.StandardCharsets;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -59,7 +58,7 @@ public class CatalogService {
     private final Map<String, List<ProductShortResponse>> filteredProductsCache = new HashMap<>(); // кэшируем отфильтрованные товары в кжш, чтобы не производить повторную фильтрацию по одинаковым фильтрам
     private final Map<String, List<String>> categoriesCache = new HashMap<>(); // кэшируем выводимые подкатегории
 
-    public CategoriesAndProductsResponse getProductsAndSubcategoriesByCategoryAndFilters(Long categoryId, Double minPrice, Double maxPrice, String filterString, Boolean cheapFirst, Integer page) {
+    public CategoriesAndProductsResponse getProductsAndSubcategoriesByCategoryAndFilters(Long categoryId, BigDecimal minPrice, BigDecimal maxPrice, String filterString, Boolean cheapFirst, Integer page) {
         // получаем список категорий
         String categoriesCacheKey = generateCategoriesCacheKey(categoryId);
         Category category = categoryService.findCategoryById(categoryId);
@@ -82,7 +81,7 @@ public class CatalogService {
         return subcategories;
     }
 
-    private List<ProductShortResponse> getProductsWithCache(String cacheKey, Integer page, Category category, String filterString, Double minPrice, Double maxPrice, Boolean cheapFirst) {
+    private List<ProductShortResponse> getProductsWithCache(String cacheKey, Integer page, Category category, String filterString, BigDecimal minPrice, BigDecimal maxPrice, Boolean cheapFirst) {
         if (filteredProductsCache.containsKey(cacheKey)) { // если в кэше сохранены товары по этим фильтрам - вернем их с учетом нужной страницы
             List<ProductShortResponse> cachedProducts = filteredProductsCache.get(cacheKey);
             // пагинация
@@ -125,10 +124,10 @@ public class CatalogService {
         return applicableFilters;
     }
 
-    private List<Product> getProductsPassedPriceFilter(List<Product> products, Double minPrice, Double maxPrice) {
+    private List<Product> getProductsPassedPriceFilter(List<Product> products, BigDecimal minPrice, BigDecimal maxPrice) {
         return products.stream()
-                .filter(product -> (minPrice == null || product.getPrice() >= minPrice) &&
-                        (maxPrice == null || product.getPrice() <= maxPrice))
+                .filter(product -> (minPrice == null || product.getPrice().compareTo(minPrice) >= 0) &&
+                        (maxPrice == null || product.getPrice().compareTo(maxPrice) <= 0))
                 .collect(Collectors.toList());
     }
 
@@ -149,7 +148,7 @@ public class CatalogService {
         return products.subList(startIndex, endIndex);
     }
 
-    private String generateProductsCacheKey(Double minPrice, Double maxPrice, String filterString, Boolean cheapFirst) {
+    private String generateProductsCacheKey(BigDecimal minPrice, BigDecimal maxPrice, String filterString, Boolean cheapFirst) {
         return minPrice + "_" + maxPrice + "_" + filterString + "_" + cheapFirst;
     }
 
@@ -158,11 +157,11 @@ public class CatalogService {
     }
 
     public static int compareByPrice(Product p1, Product p2, Boolean cheapFirst) {
-        double price1 = p1.getPrice();
-        double price2 = p2.getPrice();
-        if (price1 < price2) {
+        BigDecimal price1 = p1.getPrice();
+        BigDecimal price2 = p2.getPrice();
+        if (price1.compareTo(price2) < 0) {
             return cheapFirst ? -1 : 1;
-        } else if (price1 > price2) {
+        } else if (price1.compareTo(price2) > 0) {
             return cheapFirst ? 1 : -1;
         } else {
             return 0;
@@ -238,8 +237,7 @@ public class CatalogService {
     }
 
     public void reviewProduct(Long productId, String comment, List<MultipartFile> files) {
-        validateReview(comment, files);
-        comment = new String(comment.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+        imageValidator.validateImages(files);
         Product product = productService.findProductById(productId);
         User user = authService.getCurrentAuthorizedUser();
         reviewService.findReviewByUserAndProduct(user, product).ifPresent(review -> {
@@ -249,26 +247,13 @@ public class CatalogService {
     }
 
     public void editReview(Long productId, String comment, List<MultipartFile> files) {
-        validateReview(comment, files);
-        comment = new String(comment.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+        imageValidator.validateImages(files);
         Product product = productService.findProductById(productId);
         User user = authService.getCurrentAuthorizedUser();
         Review review = reviewService.findReviewByUserAndProduct(user, product).orElseThrow(
                 () -> new ResourceNotFoundException("Отзыв не найден"));
         reviewService.deleteReview(review);
         reviewService.saveReview(comment, files, product, user);
-    }
-
-    private void validateReview(String comment, List<MultipartFile> files) {
-        Map<String, String> errors = new HashMap<>();
-        if (comment.length() > 2000) {
-            errors.put("comment", "Превышено максимальное число символов (2000)");
-        }
-        if (comment.matches("^[ \t\n]*$")) {
-            errors.put("comment", "Комментарий не должен быть пустым");
-        }
-        imageValidator.validateImages(files, errors);
-        if (!errors.isEmpty()) throw new FormException(errors);
     }
 
     public void deleteRating(Long productId) {

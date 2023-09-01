@@ -7,7 +7,7 @@ import nic.project.onlinestore.dto.admin.FilterCreateRequest;
 import nic.project.onlinestore.dto.admin.FilterValueCreateRequest;
 import nic.project.onlinestore.dto.admin.ProductCreateRequest;
 import nic.project.onlinestore.dto.admin.ProductUpdateRequest;
-import nic.project.onlinestore.exception.exceptions.FormException;
+import nic.project.onlinestore.exception.exceptions.ImageUploadException;
 import nic.project.onlinestore.exception.exceptions.ResourceAlreadyExistsException;
 import nic.project.onlinestore.exception.exceptions.ResourceNotFoundException;
 import nic.project.onlinestore.model.Category;
@@ -35,9 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -103,18 +101,14 @@ public class AdminService {
 
     public void addProductImages(Long productId, List<MultipartFile> files) {
         Product product = productService.findProductById(productId);
-        Map<String, String> errors = new HashMap<>();
         if (files.isEmpty()) {
-            errors.put("files", "Добавьте хотя бы 1 изображение");
+            throw new ImageUploadException("Добавьте хотя бы 1 изображение");
         }
-        imageValidator.validateImages(files, errors);
-        if (!errors.isEmpty()) {
-            throw new FormException(errors);
-        }
+        imageValidator.validateImages(files);
         String path = PRODUCTS_IMAGES_PATH;
-        String idstr = "/" + productId.toString();
-        imageSaver.createFolder(path, idstr);
-        String finalPath = path + idstr;
+        String idStr = "/" + productId.toString();
+        imageSaver.createFolder(path, idStr);
+        String finalPath = path + idStr;
         for (MultipartFile file : files) {
             String imageName = "product_image_" + (product.getImages().size() + 1) + "." + Objects.requireNonNull(file.getContentType()).substring(6);
             imageSaver.saveImage(file, finalPath, imageName);

@@ -17,8 +17,6 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,8 +34,6 @@ public class Review {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
-    @Size(max = 2000, message = "Превышено допустимое число символов")
     @Column(nullable = false)
     private String comment;
 
@@ -57,13 +53,5 @@ public class Review {
     @JoinTable(name = "products_reviews", joinColumns = @JoinColumn(name = "review_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id"))
     private Product product;
-
-    public void addImage(Image image) {
-        images.add(image);
-    }
-
-    public void removeImage(Image image) {
-        images.remove(image);
-    }
 
 }

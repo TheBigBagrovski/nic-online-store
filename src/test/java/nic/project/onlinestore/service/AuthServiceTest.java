@@ -7,8 +7,6 @@ import nic.project.onlinestore.model.User;
 import nic.project.onlinestore.security.JwtProvider;
 import nic.project.onlinestore.service.user.AuthService;
 import nic.project.onlinestore.service.user.UserService;
-import nic.project.onlinestore.util.FormValidator;
-import nic.project.onlinestore.util.RegisterValidator;
 import nic.project.onlinestore.util.UserMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -18,11 +16,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.validation.BindingResult;
 
 import javax.security.auth.message.AuthException;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -36,9 +32,6 @@ public class AuthServiceTest {
     private UserService userService;
 
     @Mock
-    private RegisterValidator registerValidator;
-
-    @Mock
     private PasswordEncoder passwordEncoder;
 
     @Mock
@@ -46,9 +39,6 @@ public class AuthServiceTest {
 
     @Mock
     private UserMapper userMapper;
-
-    @Mock
-    private FormValidator formValidator;
 
     @InjectMocks
     private AuthService authService;
@@ -62,12 +52,9 @@ public class AuthServiceTest {
                 .firstname("firstname")
                 .lastname("lastname")
                 .build();
-        BindingResult bindingResult = mock(BindingResult.class);
         User user = new User();
         when(userMapper.mapRegisterRequestToUser(registerRequest)).thenReturn(user);
-        authService.register(registerRequest, bindingResult);
-        verify(registerValidator).validate(registerRequest, bindingResult);
-        verify(formValidator).checkFormBindingResult(bindingResult);
+        authService.register(registerRequest);
         verify(userService).saveUser(user);
     }
 

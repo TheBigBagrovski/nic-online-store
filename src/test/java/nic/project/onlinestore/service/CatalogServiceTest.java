@@ -16,7 +16,6 @@ import nic.project.onlinestore.service.catalog.ProductService;
 import nic.project.onlinestore.service.catalog.RatingService;
 import nic.project.onlinestore.service.catalog.ReviewService;
 import nic.project.onlinestore.service.user.AuthService;
-import nic.project.onlinestore.util.FormValidator;
 import nic.project.onlinestore.util.ImageValidator;
 import nic.project.onlinestore.util.ProductMapper;
 import nic.project.onlinestore.util.ReviewMapper;
@@ -25,12 +24,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -40,7 +37,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -72,9 +68,6 @@ public class CatalogServiceTest {
 
     @Mock
     private ReviewService reviewService;
-
-    @Mock
-    private FormValidator formValidator;
 
     @Mock
     private ImageValidator imageValidator;
@@ -143,15 +136,13 @@ public class CatalogServiceTest {
     public void testRateProduct() {
         Long productId = 1L;
         Integer ratingValue = 5;
-        BindingResult bindingResult = mock(BindingResult.class);
         Product product = new Product();
         when(productService.findProductById(productId)).thenReturn(product);
         User user = new User();
         when(authService.getCurrentAuthorizedUser()).thenReturn(user);
         Rating existingRating = new Rating();
         when(ratingService.findRatingByUserAndProduct(user, product)).thenReturn(Optional.of(existingRating));
-        catalogService.rateProduct(productId, ratingValue, bindingResult);
-        verify(formValidator).checkFormBindingResult(bindingResult);
+        catalogService.rateProduct(productId, ratingValue);
         verify(authService).getCurrentAuthorizedUser();
         verify(ratingService).findRatingByUserAndProduct(user, product);
         if (Objects.equals(existingRating.getValue(), ratingValue))
@@ -184,7 +175,7 @@ public class CatalogServiceTest {
         User user = new User();
         when(authService.getCurrentAuthorizedUser()).thenReturn(user);
         when(reviewService.findReviewByUserAndProduct(user, product)).thenReturn(Optional.empty());
-        doNothing().when(imageValidator).validateImages(files, new HashMap<>());
+        doNothing().when(imageValidator).validateImages(files);
         catalogService.reviewProduct(productId, comment, files);
         verify(authService).getCurrentAuthorizedUser();
         verify(reviewService).findReviewByUserAndProduct(user, product);

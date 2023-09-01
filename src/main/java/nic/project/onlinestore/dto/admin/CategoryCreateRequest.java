@@ -17,7 +17,7 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 public class CategoryCreateRequest {
 
-    @NotBlank
+    @NotBlank(message = "Имя категории не должно быть пустым")
     @Size(min = 2, message = "Минимум 2 символа в названии категории")
     private String name;
 

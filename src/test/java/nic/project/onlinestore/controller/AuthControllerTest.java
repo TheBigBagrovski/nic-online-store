@@ -6,7 +6,7 @@ import nic.project.onlinestore.dto.auth.RegisterRequest;
 import nic.project.onlinestore.dto.user.UserInfoResponse;
 import nic.project.onlinestore.security.JwtAuthentication;
 import nic.project.onlinestore.service.user.AuthService;
-import nic.project.onlinestore.util.FormValidator;
+import nic.project.onlinestore.util.RegisterValidator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,7 +31,7 @@ public class AuthControllerTest {
     private AuthService authService;
 
     @Mock
-    private FormValidator formValidator;
+    private RegisterValidator registerValidator;
 
     @InjectMocks
     private AuthController authController;
@@ -59,20 +59,20 @@ public class AuthControllerTest {
                 .lastname("user")
                 .build();
         BindingResult bindingResult = mock(BindingResult.class);
-        doNothing().when(authService).register(registerRequest, bindingResult);
+        doNothing().when(authService).register(registerRequest);
+        doNothing().when(registerValidator).validate(registerRequest, bindingResult);
         ResponseEntity<?> responseEntity = authController.performRegistration(registerRequest, bindingResult);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals("Регистрация пройдена", responseEntity.getBody());
-        verify(authService).register(registerRequest, bindingResult);
+        verify(authService).register(registerRequest);
     }
 
     @Test
     public void testPerformLogin() throws AuthException {
         LoginRequest loginRequest = new LoginRequest();
-        BindingResult bindingResult = mock(BindingResult.class);
         JwtResponse jwtResponse = new JwtResponse("accessToken", "refreshToken");
         when(authService.login(loginRequest)).thenReturn(jwtResponse);
-        ResponseEntity<JwtResponse> responseEntity = authController.performLogin(loginRequest, bindingResult);
+        ResponseEntity<JwtResponse> responseEntity = authController.performLogin(loginRequest);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(jwtResponse, responseEntity.getBody());
         verify(authService).login(loginRequest);

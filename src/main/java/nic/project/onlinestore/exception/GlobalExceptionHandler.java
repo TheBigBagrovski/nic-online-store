@@ -3,108 +3,86 @@ package nic.project.onlinestore.exception;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import nic.project.onlinestore.exception.exceptions.*;
+import nic.project.onlinestore.exception.exceptions.ImageUploadException;
+import nic.project.onlinestore.exception.exceptions.ResourceAlreadyExistsException;
+import nic.project.onlinestore.exception.exceptions.ResourceNotFoundException;
+import nic.project.onlinestore.exception.exceptions.UserNotFoundException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler({MethodArgumentNotValidException.class})
+    private Map<String, String> handleValidationException(MethodArgumentNotValidException e) {
+        Map<String, String> errors = new HashMap<>();
+        e.getBindingResult().getFieldErrors().forEach((error) -> errors.put(error.getField(), error.getDefaultMessage()));
+        return errors;
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler({ResourceNotFoundException.class, ResourceAlreadyExistsException.class, ImageUploadException.class})
+    private ErrorResponse handleResourceNotFoundException(Exception e) {
+        return new ErrorResponse(
+                e.getMessage(),
+                new Date()
+        );
+    }
+
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler({UserNotFoundException.class})
-    private ResponseEntity<ErrorResponse> handleUserNotFoundException(Exception e) {
-        ErrorResponse response = new ErrorResponse(
+    private ErrorResponse handleUserNotFoundException(Exception e) {
+        return new ErrorResponse(
                 e.getMessage(),
                 new Date()
         );
-        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler({ResourceNotFoundException.class})
-    private ResponseEntity<ErrorResponse> handleResourceNotFoundException(Exception e) {
-        ErrorResponse response = new ErrorResponse(
-                e.getMessage(),
-                new Date()
-        );
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler({ResourceAlreadyExistsException.class})
-    private ResponseEntity<ErrorResponse> handleAlreadyExistsException(Exception e) {
-        ErrorResponse response = new ErrorResponse(
-                e.getMessage(),
-                new Date()
-        );
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler({ImageUploadException.class})
-    private ResponseEntity<ErrorResponse> handleImageUploadException(Exception e) {
-        ErrorResponse response = new ErrorResponse(
-                e.getMessage(),
-                new Date()
-        );
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-    }
-
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({MethodArgumentTypeMismatchException.class, InvalidFormatException.class, JsonMappingException.class})
-    private ResponseEntity<ErrorResponse> handleWrongFormatException() { // когда в @RequestParam или @PathVariable вводится неверный формат
-        ErrorResponse response = new ErrorResponse(
+    private ErrorResponse handleWrongFormatException() { // когда в @RequestParam или @PathVariable вводится неверный формат
+        return new ErrorResponse(
                 "Произошла ошибка: неверный формат аргумента",
                 new Date()
         );
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(FormException.class)
-    private ResponseEntity<FormErrorResponse> handleFormException(FormException e) {
-        FormErrorResponse response = new FormErrorResponse(
-                e.getErrors(),
-                new Date()
-        );
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-    }
-
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MaxUploadSizeExceededException.class)
-    private ResponseEntity<ErrorResponse> handleImageSizeLimitException() {
-        ErrorResponse response = new ErrorResponse(
+    private ErrorResponse handleImageSizeLimitException() {
+        return new ErrorResponse(
                 "Размер одного из изображений превышает 10 Мб или общий объем всех файлов больше 50 Мб",
                 new Date()
         );
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MissingServletRequestPartException.class)
-    private ResponseEntity<ErrorResponse> handleEmptyJsonRequestException() {
-        ErrorResponse response = new ErrorResponse(
+    private ErrorResponse handleEmptyJsonRequestException() {
+        return new ErrorResponse(
                 "JSON-запрос не должен быть пустым",
                 new Date()
         );
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(JsonParseException.class)
-    private ResponseEntity<ErrorResponse> handleInvalidJsonException() {
-        ErrorResponse response = new ErrorResponse(
+    private ErrorResponse handleInvalidJsonException() {
+        return new ErrorResponse(
                 "Ошибка в JSON-запросе",
                 new Date()
         );
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler({RuntimeException.class})
-    private ResponseEntity<ErrorResponse> handleRuntimeException(Exception e) {
-        ErrorResponse response = new ErrorResponse(
-                e.getMessage(),
-                new Date()
-        );
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
 }

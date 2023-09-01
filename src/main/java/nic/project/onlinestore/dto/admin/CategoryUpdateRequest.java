@@ -24,7 +24,7 @@ public class CategoryUpdateRequest {
     @Digits(integer = 20, fraction = 0, message = "Некорректный id категории")
     private Long categoryId;
 
-    @NotBlank
+    @NotBlank(message = "Имя категории не должно быть пустым")
     @Size(min = 2, message = "Минимум 2 символа в названии категории")
     private String name;
 

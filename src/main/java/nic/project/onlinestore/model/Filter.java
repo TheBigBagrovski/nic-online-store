@@ -15,8 +15,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "filters")
@@ -31,8 +29,6 @@ public class Filter {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Название фильтра не должно быть пустым")
-    @Size(max = 50, message = "В названии фильтра должно быть до 50 символов")
     @Column(nullable = false)
     private String name; // Название свойства (например, "Бренд")
 
