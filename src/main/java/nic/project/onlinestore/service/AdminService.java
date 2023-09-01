@@ -175,6 +175,8 @@ public class AdminService {
         if (!subcategories.isEmpty()) {
             throw new IllegalArgumentException("Категорию нельзя удалить, пока у нее есть дочерние категории");
         }
+        List<Product> productList = productService.findProductsByCategory(removingCategory);
+        productList.forEach(product -> product.removeCategory(removingCategory));
         removingCategory.setParentCategory(null);
         categoryService.deleteCategory(removingCategory);
     }
@@ -183,6 +185,7 @@ public class AdminService {
         Category newCategory = categoryService.findCategoryById(request.getCategoryId());
         newCategory.setName(request.getName());
         Long parentCategoryId = request.getParentCategoryId();
+        Category parentCategory = null;
         if (parentCategoryId != null) {
             if (parentCategoryId.equals(newCategory.getId())) {
                 throw new IllegalArgumentException("В качестве родительской категории нельзя назначить эту же категорию");
@@ -191,8 +194,8 @@ public class AdminService {
             if (subcategories.stream().anyMatch(subcategory -> Objects.equals(subcategory.getId(), parentCategoryId))) {
                 throw new IllegalArgumentException("В качестве родительской категории нельзя назначить дочернюю категорию");
             }
+            parentCategory = categoryService.findCategoryById(parentCategoryId);
         }
-        Category parentCategory = categoryService.findCategoryById(parentCategoryId);
         newCategory.setParentCategory(parentCategory);
         categoryService.saveCategory(newCategory);
     }
@@ -205,14 +208,22 @@ public class AdminService {
     }
 
     public void deleteFilter(Long filterId) {
-        filterService.deleteFilter(filterService.findFilterById(filterId));
+        Filter filter = filterService.findFilterById(filterId);
+        List<FilterValue> filterValueList = filterValueRepository.findFilterValuesByFilter(filter);
+        for (FilterValue filterValue : filterValueList) {
+            deleteFilterValue(filterId, filterValue.getId());
+        }
+        filterService.deleteFilter(filter);
     }
 
     public ResponseEntity<?> setCategoryForFilter(Long categoryId, Long filterId) {
         Filter filter = filterService.findFilterById(filterId);
         if (categoryId == null) {
-            Objects.requireNonNull(filter.getCategory(), "Фильтр не относится ни к одной категории");
-            String msg = "Фильтр " + filter.getName() + " удален из категории " + filter.getCategory().getName();
+            Category category = filter.getCategory();
+            if (category == null) {
+                throw new ResourceNotFoundException("Фильтр не относится ни к одной категории");
+            }
+            String msg = "Фильтр " + filter.getName() + " удален из категории " + category.getName();
             filter.setCategory(null);
             return ResponseEntity.ok(msg);
         }

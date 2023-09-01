@@ -33,7 +33,7 @@ public class GlobalExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler({ResourceNotFoundException.class, ResourceAlreadyExistsException.class, ImageUploadException.class})
+    @ExceptionHandler({ResourceNotFoundException.class, ResourceAlreadyExistsException.class, ImageUploadException.class, IllegalArgumentException.class})
     private ErrorResponse handleResourceNotFoundException(Exception e) {
         return new ErrorResponse(
                 e.getMessage(),

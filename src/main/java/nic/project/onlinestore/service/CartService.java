@@ -60,7 +60,9 @@ public class CartService {
         Cart cart = findCartByUser(user);
         Product product = productService.findProductById(productId);
         Integer productInCartQuantity = cart.getQuantity(product);
-        Objects.requireNonNull(productInCartQuantity, "Данного продукта нет в корзине");
+        if (productInCartQuantity == null) {
+            throw new ResourceNotFoundException("Данного продукта нет в корзине");
+        }
         switch (operation) {
             case "inc":
                 if (product.getQuantity() > productInCartQuantity) { // товары в корзинах пользователей не влияют на остатки, но 1 юзер не может иметь в корзине больше товара чем на складе
