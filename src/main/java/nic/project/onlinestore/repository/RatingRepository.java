@@ -6,10 +6,12 @@ import nic.project.onlinestore.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public interface RatingRepository extends JpaRepository<Rating, Long> {
 
     Optional<Rating> findRatingByUserAndProduct(User user, Product product);

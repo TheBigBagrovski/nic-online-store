@@ -35,6 +35,18 @@ public class CatalogController {
     private final CatalogService catalogService;
     private final CartService cartService;
 
+    /**
+     *
+     * @param categoryId - id искомой категории
+     * @param minPrice - фильтр по минимальной цене, всегда применим ко всем товарам
+     * @param maxPrice - фильтр по максимальной цене, всегда применим ко всем товарам
+     * @param filters - строка с введенными пользователем фильтрами
+     *                     (формат: filters=<имя_фильтра>:<значение,значение>;<имя_фильтра>:<значение>
+     * @param cheapFirst - если true - сначала дешевые, иначе сначала дорогие, по умолчанию true
+     * @param page - номер страницы, если нашлось >10 товаров, по умолчанию 1
+     * Пример: пример - вывести телефоны Samsung начиная с дорогих, дороже 50000:
+     *             /catalog?category=1&filters=brand:Samsung&priceSort=false&minPrice=50000
+     */
     @GetMapping
     public ResponseEntity<CategoriesAndProductsResponse> getProductsAndSubcategoriesByCategoryAndFilters(
             @RequestParam(value = "category") Long categoryId,
@@ -59,6 +71,9 @@ public class CatalogController {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * Вывод отдельной страницы товара с наиболее полным его описанием, с картинками, отзывами и оценками
+     */
     @GetMapping("/{productId}")
     public ResponseEntity<ProductFullResponse> getProductPage(@PathVariable Long productId) {
         return ResponseEntity.ok(catalogService.getProductPage(productId));

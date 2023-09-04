@@ -2,8 +2,10 @@ package nic.project.onlinestore.service;
 
 import lombok.RequiredArgsConstructor;
 import nic.project.onlinestore.dto.catalog.CategoriesAndProductsResponse;
-import nic.project.onlinestore.dto.productPage.ProductFullResponse;
 import nic.project.onlinestore.dto.catalog.ProductShortResponse;
+import nic.project.onlinestore.dto.mappers.ProductMapper;
+import nic.project.onlinestore.dto.mappers.ReviewMapper;
+import nic.project.onlinestore.dto.productPage.ProductFullResponse;
 import nic.project.onlinestore.dto.productPage.ReviewResponse;
 import nic.project.onlinestore.exception.exceptions.ResourceAlreadyExistsException;
 import nic.project.onlinestore.exception.exceptions.ResourceNotFoundException;
@@ -18,11 +20,8 @@ import nic.project.onlinestore.model.User;
 import nic.project.onlinestore.repository.FilterRepository;
 import nic.project.onlinestore.repository.FilterValueRepository;
 import nic.project.onlinestore.util.ImageValidator;
-import nic.project.onlinestore.dto.mappers.ProductMapper;
-import nic.project.onlinestore.dto.mappers.ReviewMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
@@ -56,6 +55,10 @@ public class CatalogService {
     private final Map<String, List<ProductShortResponse>> filteredProductsCache = new HashMap<>(); // кэшируем отфильтрованные товары в кжш, чтобы не производить повторную фильтрацию по одинаковым фильтрам
     private final Map<String, List<String>> categoriesCache = new HashMap<>(); // кэшируем выводимые подкатегории
 
+    /**
+     * Для этой функции добавлен механизм кэширования для сокращения количества обращений к БД в случае, например,
+     * если пользователь получил товары по нужным фильтрам и переключается между страницами
+     */
     public CategoriesAndProductsResponse getProductsAndSubcategoriesByCategoryAndFilters(Long categoryId, BigDecimal minPrice, BigDecimal maxPrice, String filterString, Boolean cheapFirst, Integer page) {
         // получаем список категорий
         String categoriesCacheKey = generateCategoriesCacheKey(categoryId);

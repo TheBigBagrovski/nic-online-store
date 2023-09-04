@@ -4,6 +4,10 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
 
+/**
+ * Вспомогательный класс для генерации секретных ключей для access и refresh токенов
+ * при необходимости обновить/создать ключи - нужно раскоментировать строчки в функции main
+ */
 public class GenerateKeys {
 
     public static String generateKey() {

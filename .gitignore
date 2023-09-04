@@ -60,4 +60,6 @@ out/
 
 application.properties
 application.yml
+.env
 
+!build/libs/nic-online-store-0.1.jar

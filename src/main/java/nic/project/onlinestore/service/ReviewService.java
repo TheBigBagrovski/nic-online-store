@@ -55,6 +55,10 @@ public class ReviewService {
         );
     }
 
+    /**
+     * Картинки, приложенные к отзывам, сохраняются в определенной папке (в настройках сервера) и разбиваются по товарам и пользователям
+     * ../reviews/product<id>/user<id>/<изображения>
+     */
     public List<Image> saveReviewImages(List<MultipartFile> fileList, Long productId, Long userId) {
         int i = 0;
         List<Image> savedImages = new ArrayList<>();

@@ -1,0 +1,38 @@
+version: '3.9'
+services:
+  # postgres db
+  postgres:
+    image: postgres:14.8-alpine3.18
+    restart: always
+    env_file: ./.env
+    environment:
+      POSTGRES_DB: $POSTGRES_DATABASE
+      POSTGRES_USER: $POSTGRES_USER
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres:/var/lib/postgresql/data
+  # app
+  app:
+    image: openjdk:8-jdk-alpine
+    container_name: nic-online-store
+    env_file: ./.env
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - "postgres"
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_APPLICATION_JSON: $SPRING_JSON
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./src/main/resources/static/images/products:/app/data/static/images/products
+      - ./src/main/resources/static/images/reviews:/app/data/static/images/reviews
+
+volumes:
+  postgres:
