@@ -15,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 public class CategoriesAndProductsResponse {
 
+    Integer productsShown;
     List<String> subcategories;
     List<ProductShortResponse> products;
 

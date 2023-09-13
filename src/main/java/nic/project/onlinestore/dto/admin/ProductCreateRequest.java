@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.*;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Getter
@@ -27,7 +28,11 @@ public class ProductCreateRequest {
     @NotNull(message = "Укажите цену")
     @Min(value = 0, message = "Минимальная цена - 0 рублей")
     @Digits(integer = 50, fraction = 10, message = "Некорректное число")
-    private Double price;
+    private BigDecimal price;
+
+    @Min(value = 0, message = "Минимальная цена - 0 рублей")
+    @Digits(integer = 50, fraction = 10, message = "Некорректное число")
+    private BigDecimal discountPrice;
 
     @NotNull(message = "Укажите количество")
     @Min(value = 0, message = "Минимальное количество - 0")

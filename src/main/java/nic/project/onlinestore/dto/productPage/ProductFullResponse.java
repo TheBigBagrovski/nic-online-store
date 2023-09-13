@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Builder
@@ -18,7 +19,8 @@ public class ProductFullResponse {
     private String name;
     private String description;
     private List<ImageResponse> images;
-    private Double price;
+    private BigDecimal price;
+    private BigDecimal discountPrice;
     private Integer quantity;
     private Integer ratingsNumber;
     private Double averageRating;

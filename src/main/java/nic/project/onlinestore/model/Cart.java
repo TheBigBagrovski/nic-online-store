@@ -61,6 +61,10 @@ public class Cart {
         return items.containsKey(product);
     }
 
+    public void clear() {
+        items.clear();
+    }
+
     public Integer getQuantity(Product product) {
         return items.get(product);
     }

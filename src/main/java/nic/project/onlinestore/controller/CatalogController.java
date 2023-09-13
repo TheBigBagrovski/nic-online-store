@@ -42,7 +42,7 @@ public class CatalogController {
      * @param maxPrice - фильтр по максимальной цене, всегда применим ко всем товарам
      * @param filters - строка с введенными пользователем фильтрами
      *                     (формат: filters=<имя_фильтра>:<значение,значение>;<имя_фильтра>:<значение>
-     * @param cheapFirst - если true - сначала дешевые, иначе сначала дорогие, по умолчанию true
+     * @param sort - cheap - сначала дешевые, expensive - сначала дорогие, rating - по оценкам
      * @param page - номер страницы, если нашлось >10 товаров, по умолчанию 1
      * Пример: пример - вывести телефоны Samsung начиная с дорогих, дороже 50000:
      *             /catalog?category=1&filters=brand:Samsung&priceSort=false&minPrice=50000
@@ -53,20 +53,20 @@ public class CatalogController {
             @RequestParam(value = "minPrice", required = false) BigDecimal minPrice,
             @RequestParam(value = "maxPrice", required = false) BigDecimal maxPrice,
             @RequestParam(value = "filters", required = false) String filters, // filters=brand:Apple,Samsung
-            @RequestParam(value = "priceSort", required = false, defaultValue = "true") Boolean cheapFirst,
+            @RequestParam(value = "sort", required = false, defaultValue = "cheap") String sort,
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page
     ) {
-        return ResponseEntity.ok(catalogService.getProductsAndSubcategoriesByCategoryAndFilters(categoryId, minPrice, maxPrice, filters, cheapFirst, page));
+        return ResponseEntity.ok(catalogService.getProductsAndSubcategoriesByCategoryAndFilters(categoryId, minPrice, maxPrice, filters, sort, page));
     }
 
-    @PutMapping
+    @PutMapping("/add-to-cart")
     public ResponseEntity<Void> addProductToCart(@RequestBody @Valid ObjectByIdRequest productRequest) {
         cartService.addToCart(productRequest.getId());
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping
-    public ResponseEntity<Void> changeProductQuantityInCart(@RequestBody @Valid ObjectByIdRequest productRequest, @RequestParam(name = "op") String operation) {
+    @PatchMapping("/{op}")
+    public ResponseEntity<Void> changeProductQuantityInCart(@RequestBody @Valid ObjectByIdRequest productRequest, @PathVariable(name = "op") String operation) {
         cartService.changeProductQuantityInCart(productRequest.getId(), operation);
         return ResponseEntity.ok().build();
     }

@@ -30,7 +30,7 @@ public class RatingService {
     }
 
     public Double findAverageRatingByProduct(Product product) {
-        return ratingRepository.calculateAverageRatingByProductId(product.getId());
+        return ratingRepository.calculateAverageRatingByProductId(product.getId()).orElse(0.0);
     }
 
     @Transactional

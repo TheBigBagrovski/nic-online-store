@@ -144,31 +144,31 @@ public class OnlineStoreApplication implements WebMvcConfigurer {
             Product[] products = new Product[]{
                     Product.builder().id(1L).name("Смартфон Apple iPhone 13").images(Arrays.asList(images[0], images[1])).categories(new HashSet<Category>() {{
                         add(categories[0]);
-                    }}).price(BigDecimal.valueOf(80999.0)).quantity(5).build(),
+                    }}).price(BigDecimal.valueOf(80999.0)).discountPrice(BigDecimal.valueOf(59999.0)).quantity(5).build(),
                     Product.builder().id(2L).name("Смартфон Apple iPhone 13 PRO").categories(new HashSet<Category>() {{
                         add(categories[0]);
                     }}).price(BigDecimal.valueOf(80999.0)).quantity(5).build(),
                     Product.builder().id(3L).name("Смартфон Apple iPhone 14").images(Collections.singletonList(images[2])).categories(new HashSet<Category>() {{
                         add(categories[0]);
-                    }}).price(BigDecimal.valueOf(80999.0)).quantity(10).build(),
+                    }}).price(BigDecimal.valueOf(80999.0)).discountPrice(BigDecimal.valueOf(59999.0)).quantity(10).build(),
                     Product.builder().id(4L).name("Смартфон Apple iPhone 14 PRO").images(Collections.singletonList(images[3])).categories(new HashSet<Category>() {{
                         add(categories[0]);
-                    }}).price(BigDecimal.valueOf(89999.0)).quantity(3).build(),
+                    }}).price(BigDecimal.valueOf(89999.0)).discountPrice(BigDecimal.valueOf(59999.0)).quantity(3).build(),
                     Product.builder().id(5L).name("Смартфон Apple iPhone 14 PRO MAX").images(Arrays.asList(images[4], images[5])).categories(new HashSet<Category>() {{
                         add(categories[0]);
-                    }}).price(BigDecimal.valueOf(115999.0)).quantity(2).build(),
+                    }}).price(BigDecimal.valueOf(115999.0)).discountPrice(BigDecimal.valueOf(79999.0)).quantity(2).build(),
                     Product.builder().id(6L).name("Смартфон Apple iPhone 11").images(Arrays.asList(images[6], images[7])).categories(new HashSet<Category>() {{
                         add(categories[0]);
                     }}).price(BigDecimal.valueOf(45999.0)).quantity(15).build(),
                     Product.builder().id(7L).name("Смартфон Apple iPhone 11 PRO").images(Arrays.asList(images[8], images[9])).categories(new HashSet<Category>() {{
                         add(categories[0]);
-                    }}).price(BigDecimal.valueOf(70999.0)).quantity(10).build(),
+                    }}).price(BigDecimal.valueOf(70999.0)).discountPrice(BigDecimal.valueOf(59999.0)).quantity(10).build(),
                     Product.builder().id(8L).name("Смартфон Apple iPhone 12").images(Arrays.asList(images[10], images[11])).categories(new HashSet<Category>() {{
                         add(categories[0]);
                     }}).price(BigDecimal.valueOf(55999.0)).quantity(10).build(),
                     Product.builder().id(9L).name("Смартфон Apple iPhone 12 PRO").images(Arrays.asList(images[12], images[13])).categories(new HashSet<Category>() {{
                         add(categories[0]);
-                    }}).price(BigDecimal.valueOf(80999.0)).quantity(10).build(),
+                    }}).price(BigDecimal.valueOf(80999.0)).discountPrice(BigDecimal.valueOf(59999.0)).quantity(10).build(),
                     Product.builder().id(10L).name("Смартфон Apple iPhone SE 2020").categories(new HashSet<Category>() {{
                         add(categories[0]);
                     }}).price(BigDecimal.valueOf(55999.0)).quantity(20).build(),
@@ -180,16 +180,16 @@ public class OnlineStoreApplication implements WebMvcConfigurer {
                     }}).price(BigDecimal.valueOf(55999.0)).quantity(8).build(),
                     Product.builder().id(13L).name("Смартфон Samsung Galaxy Z Flip4").images(Collections.singletonList(images[18])).categories(new HashSet<Category>() {{
                         add(categories[0]);
-                    }}).price(BigDecimal.valueOf(89999.0)).quantity(3).build(),
+                    }}).price(BigDecimal.valueOf(89999.0)).discountPrice(BigDecimal.valueOf(59999.0)).quantity(3).build(),
                     Product.builder().id(14L).name("Смартфон Samsung Galaxy S23 Ultra").images(Collections.singletonList(images[19])).categories(new HashSet<Category>() {{
                         add(categories[0]);
                     }}).price(BigDecimal.valueOf(45999.0)).quantity(4).build(),
                     Product.builder().id(15L).name("Смартфон Samsung Galaxy S22 Ultra").images(Collections.singletonList(images[20])).categories(new HashSet<Category>() {{
                         add(categories[0]);
-                    }}).price(BigDecimal.valueOf(55999.0)).quantity(5).build(),
+                    }}).price(BigDecimal.valueOf(55999.0)).discountPrice(BigDecimal.valueOf(39999.0)).quantity(5).build(),
                     Product.builder().id(16L).name("Смартфон OnePlus Nord CE2").images(Arrays.asList(images[21], images[22])).categories(new HashSet<Category>() {{
                         add(categories[0]);
-                    }}).price(BigDecimal.valueOf(55999.0)).quantity(8).build(),
+                    }}).price(BigDecimal.valueOf(55999.0)).discountPrice(BigDecimal.valueOf(39999.0)).quantity(8).build(),
                     Product.builder().id(17L).name("Смартфон HUAWEI Nova 9").images(Collections.singletonList(images[23])).categories(new HashSet<Category>() {{
                         add(categories[0]);
                     }}).price(BigDecimal.valueOf(34999.0)).quantity(8).build(),
@@ -198,13 +198,13 @@ public class OnlineStoreApplication implements WebMvcConfigurer {
                     }}).price(BigDecimal.valueOf(34999.0)).quantity(15).build(),
                     Product.builder().id(19L).name("Смартфон Google Pixel 6").categories(new HashSet<Category>() {{
                         add(categories[0]);
-                    }}).price(BigDecimal.valueOf(55999.0)).quantity(5).build(),
+                    }}).price(BigDecimal.valueOf(55999.0)).discountPrice(BigDecimal.valueOf(39999.0)).quantity(5).build(),
                     Product.builder().id(20L).name("Смартфон Honor 70").images(Collections.singletonList(images[25])).categories(new HashSet<Category>() {{
                         add(categories[0]);
-                    }}).price(BigDecimal.valueOf(55999.0)).quantity(4).build(),
+                    }}).price(BigDecimal.valueOf(55999.0)).discountPrice(BigDecimal.valueOf(39999.0)).quantity(4).build(),
                     Product.builder().id(21L).name("Смартфон OPPO Reno8 T").categories(new HashSet<Category>() {{
                         add(categories[0]);
-                    }}).price(BigDecimal.valueOf(55999.0)).quantity(4).build(),
+                    }}).price(BigDecimal.valueOf(55999.0)).discountPrice(BigDecimal.valueOf(39999.0)).quantity(4).build(),
                     Product.builder().id(22L).name("TWS-наушники Apple AirPods Pro").images(Arrays.asList(images[26], images[27])).categories(new HashSet<Category>() {{
                         add(au_headphones[0]);
                         add(ag_headphones[0]);
@@ -240,7 +240,7 @@ public class OnlineStoreApplication implements WebMvcConfigurer {
                     Product.builder().id(30L).name("Проводная гарнитура HyperX Cloud Earbuds HX-HSCEB-RD").categories(new HashSet<Category>() {{
                         add(au_headphones[2]);
                         add(ag_headphones[2]);
-                    }}).price(BigDecimal.valueOf(15999.0)).quantity(20).build(),
+                    }}).price(BigDecimal.valueOf(15999.0)).discountPrice(BigDecimal.valueOf(9999.0)).quantity(20).build(),
                     Product.builder().id(31L).name("Bluetooth-гарнитура Sony WI-SP500").categories(new HashSet<Category>() {{
                         add(au_headphones[1]);
                         add(ag_headphones[1]);
@@ -256,7 +256,7 @@ public class OnlineStoreApplication implements WebMvcConfigurer {
                     Product.builder().id(34L).name("Bluetooth-гарнитура Sony WH-1000XM5").images(Arrays.asList(images[36], images[37])).categories(new HashSet<Category>() {{
                         add(au_headphones[1]);
                         add(ag_headphones[1]);
-                    }}).price(BigDecimal.valueOf(41999.0)).quantity(2).build(),
+                    }}).price(BigDecimal.valueOf(41999.0)).discountPrice(BigDecimal.valueOf(29999.0)).quantity(2).build(),
                     Product.builder().id(35L).name("Bluetooth-гарнитура Sennheiser MOMENTUM Wireless M3AEBTXL").images(Collections.singletonList(images[38])).categories(new HashSet<Category>() {{
                         add(au_headphones[1]);
                         add(ag_headphones[1]);
@@ -310,7 +310,7 @@ public class OnlineStoreApplication implements WebMvcConfigurer {
                     }}).price(BigDecimal.valueOf(3999.0)).quantity(2).build(),
                     Product.builder().id(51L).name("Умная колонка Xiaomi Mi Smart Speaker").categories(new HashSet<Category>() {{
                         add(audio[0]);
-                    }}).price(BigDecimal.valueOf(3999.0)).quantity(8).build(),
+                    }}).price(BigDecimal.valueOf(3999.0)).discountPrice(BigDecimal.valueOf(2999.0)).quantity(8).build(),
                     Product.builder().id(52L).name("Умная колонка VK Капсула Мини").categories(new HashSet<Category>() {{
                         add(audio[0]);
                     }}).price(BigDecimal.valueOf(2999.0)).quantity(4).build(),
@@ -340,7 +340,7 @@ public class OnlineStoreApplication implements WebMvcConfigurer {
                     }}).price(BigDecimal.valueOf(3999.0)).quantity(5).build(),
                     Product.builder().id(61L).name("Колонки 2.1 Edifier M601DB").categories(new HashSet<Category>() {{
                         add(audio[1]);
-                    }}).price(BigDecimal.valueOf(4999.0)).quantity(5).build(),
+                    }}).price(BigDecimal.valueOf(4999.0)).discountPrice(BigDecimal.valueOf(3999.0)).quantity(5).build(),
                     Product.builder().id(62L).name("Колонки 2.0 F&D T-70X").images(Collections.singletonList(images[48])).categories(new HashSet<Category>() {{
                         add(audio[1]);
                     }}).price(BigDecimal.valueOf(2999.0)).quantity(10).build(),
@@ -352,19 +352,19 @@ public class OnlineStoreApplication implements WebMvcConfigurer {
                     }}).price(BigDecimal.valueOf(7999.0)).quantity(10).build(),
                     Product.builder().id(65L).name("Стиральная машина DEXP WM-F610NTMA/WW").categories(new HashSet<Category>() {{
                         add(house[0]);
-                    }}).price(BigDecimal.valueOf(14999.0)).quantity(5).build(),
+                    }}).price(BigDecimal.valueOf(14999.0)).discountPrice(BigDecimal.valueOf(9999.0)).quantity(5).build(),
                     Product.builder().id(66L).name("Стиральная машина Бирюса WM-ME610/04").images(Collections.singletonList(images[49])).categories(new HashSet<Category>() {{
                         add(house[0]);
-                    }}).price(BigDecimal.valueOf(14999.0)).quantity(10).build(),
+                    }}).price(BigDecimal.valueOf(14999.0)).discountPrice(BigDecimal.valueOf(9999.0)).quantity(10).build(),
                     Product.builder().id(67L).name("Стиральная машина Indesit IWSD 51051 CIS").categories(new HashSet<Category>() {{
                         add(house[0]);
                     }}).price(BigDecimal.valueOf(9999.0)).quantity(20).build(),
                     Product.builder().id(68L).name("Стиральная машина Beko WRS5512BWW").images(Collections.singletonList(images[50])).categories(new HashSet<Category>() {{
                         add(house[0]);
-                    }}).price(BigDecimal.valueOf(10999.0)).quantity(18).build(),
+                    }}).price(BigDecimal.valueOf(10999.0)).discountPrice(BigDecimal.valueOf(9999.0)).quantity(18).build(),
                     Product.builder().id(69L).name("Стиральная машина TCL TWF60-G103061A03").categories(new HashSet<Category>() {{
                         add(house[0]);
-                    }}).price(BigDecimal.valueOf(15999.0)).quantity(17).build(),
+                    }}).price(BigDecimal.valueOf(15999.0)).discountPrice(BigDecimal.valueOf(12999.0)).quantity(17).build(),
                     Product.builder().id(70L).name("Пылесос DEXP H-1600").images(Collections.singletonList(images[51])).categories(new HashSet<Category>() {{
                         add(house[1]);
                     }}).price(BigDecimal.valueOf(2999.0)).quantity(10).build(),

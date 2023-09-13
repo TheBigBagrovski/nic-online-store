@@ -57,6 +57,8 @@ public class Product {
     @Column(nullable = false)
     private BigDecimal price;
 
+    private BigDecimal discountPrice;
+
     @Column(nullable = false)
     private Integer quantity;
 

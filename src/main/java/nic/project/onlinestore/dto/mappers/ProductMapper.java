@@ -20,7 +20,6 @@ public interface ProductMapper {
     @Mapping(target = "filterProperties", ignore = true)
     void updateProductFromDto(ProductUpdateRequest dto, @MappingTarget Product product);
 
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "categories", ignore = true)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "images", ignore = true)

@@ -59,15 +59,16 @@ public class CatalogService {
      * Для этой функции добавлен механизм кэширования для сокращения количества обращений к БД в случае, например,
      * если пользователь получил товары по нужным фильтрам и переключается между страницами
      */
-    public CategoriesAndProductsResponse getProductsAndSubcategoriesByCategoryAndFilters(Long categoryId, BigDecimal minPrice, BigDecimal maxPrice, String filterString, Boolean cheapFirst, Integer page) {
+    public CategoriesAndProductsResponse getProductsAndSubcategoriesByCategoryAndFilters(Long categoryId, BigDecimal minPrice, BigDecimal maxPrice, String filterString, String sort, Integer page) {
         // получаем список категорий
         String categoriesCacheKey = generateCategoriesCacheKey(categoryId);
         Category category = categoryService.findCategoryById(categoryId);
         List<String> subcategories = getSubcategoriesWithCache(categoriesCacheKey, category);
         // получаем список продуктов
-        String productsCacheKey = generateProductsCacheKey(minPrice, maxPrice, filterString, cheapFirst);
-        List<ProductShortResponse> productDTOs = getProductsWithCache(productsCacheKey, page, category, filterString, minPrice, maxPrice, cheapFirst);
+        String productsCacheKey = generateProductsCacheKey(minPrice, maxPrice, filterString, sort);
+        List<ProductShortResponse> productDTOs = getProductsWithCache(productsCacheKey, page, category, filterString, minPrice, maxPrice, sort);
         return CategoriesAndProductsResponse.builder()
+                .productsShown(productDTOs.size())
                 .subcategories(subcategories)
                 .products(productDTOs)
                 .build();
@@ -82,7 +83,7 @@ public class CatalogService {
         return subcategories;
     }
 
-    private List<ProductShortResponse> getProductsWithCache(String cacheKey, Integer page, Category category, String filterString, BigDecimal minPrice, BigDecimal maxPrice, Boolean cheapFirst) {
+    private List<ProductShortResponse> getProductsWithCache(String cacheKey, Integer page, Category category, String filterString, BigDecimal minPrice, BigDecimal maxPrice, String sort) {
         if (filteredProductsCache.containsKey(cacheKey)) { // если в кэше сохранены товары по этим фильтрам - вернем их с учетом нужной страницы
             List<ProductShortResponse> cachedProducts = filteredProductsCache.get(cacheKey);
             // пагинация
@@ -98,7 +99,7 @@ public class CatalogService {
         // фильтрация
         List<Product> passedFilters = getProductsPassedUserFilters(passedPriceFilter, applicableFilters);
         //сортировка по цене
-        passedFilters.sort((p1, p2) -> compareByPrice(p1, p2, cheapFirst));
+        passedFilters.sort((p1, p2) -> compareProducts(p1, p2, sort));
         // формирование списка DTO
         List<ProductShortResponse> productDTOs = passedFilters.stream()
                 .map(this::prepareProductResponse).collect(Collectors.toList());
@@ -149,23 +150,31 @@ public class CatalogService {
         return products.subList(startIndex, endIndex);
     }
 
-    private String generateProductsCacheKey(BigDecimal minPrice, BigDecimal maxPrice, String filterString, Boolean cheapFirst) {
-        return minPrice + "_" + maxPrice + "_" + filterString + "_" + cheapFirst;
+    private String generateProductsCacheKey(BigDecimal minPrice, BigDecimal maxPrice, String filterString, String sort) {
+        return minPrice + "_" + maxPrice + "_" + filterString + "_" + sort;
     }
 
     private String generateCategoriesCacheKey(Long categoryId) {
         return categoryId.toString();
     }
 
-    public static int compareByPrice(Product p1, Product p2, Boolean cheapFirst) {
-        BigDecimal price1 = p1.getPrice();
-        BigDecimal price2 = p2.getPrice();
-        if (price1.compareTo(price2) < 0) {
-            return cheapFirst ? -1 : 1;
-        } else if (price1.compareTo(price2) > 0) {
-            return cheapFirst ? 1 : -1;
-        } else {
-            return 0;
+    public int compareProducts(Product p1, Product p2, String criteria) { // компаратор по цене/рейтингу
+        BigDecimal price1, price2;
+        switch (criteria) {
+            case "cheap":
+                price1 = p1.getPrice();
+                price2 = p2.getPrice();
+                return price1.compareTo(price2) < 0 ? -1 : 1;
+            case "expensive":
+                price1 = p1.getPrice();
+                price2 = p2.getPrice();
+                return price1.compareTo(price2) < 0 ? 1 : -1;
+            case "rating":
+                Double rating1 = ratingService.findAverageRatingByProduct(p1);
+                Double rating2 = ratingService.findAverageRatingByProduct(p2);
+                return rating1.compareTo(rating2) < 0 ? 1 : -1;
+            default:
+                return 0;
         }
     }
 
