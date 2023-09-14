@@ -30,6 +30,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
@@ -91,7 +92,8 @@ class CatalogControllerTest {
                 .id(1L)
                 .name("Смартфон Apple iPhone 13")
                 .image(null)
-                .price(80999.0)
+                .price(BigDecimal.valueOf(80999.0))
+                .discountPrice(BigDecimal.valueOf(80999.0))
                 .quantity(5)
                 .ratingsNumber(3)
                 .averageRating(3.0)
@@ -154,7 +156,8 @@ class CatalogControllerTest {
                 .name("Смартфон Apple iPhone 13")
                 .description(null)
                 .images(null)
-                .price(80999.0)
+                .price(BigDecimal.valueOf(80999.0))
+                .discountPrice(BigDecimal.valueOf(80999.0))
                 .quantity(5)
                 .ratingsNumber(3)
                 .averageRating(3.0)

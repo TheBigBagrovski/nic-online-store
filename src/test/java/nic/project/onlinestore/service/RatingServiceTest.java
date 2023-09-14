@@ -51,7 +51,7 @@ public class RatingServiceTest {
     public void testFindAverageRatingByProduct() {
         Product product = new Product();
         double expectedAverageRating = 4.5;
-        when(ratingRepository.calculateAverageRatingByProductId(product.getId())).thenReturn(expectedAverageRating);
+        when(ratingRepository.calculateAverageRatingByProductId(product.getId())).thenReturn(Optional.of(expectedAverageRating));
         double result = ratingService.findAverageRatingByProduct(product);
         assertEquals(expectedAverageRating, result, 0.01);
         verify(ratingRepository).calculateAverageRatingByProductId(product.getId());

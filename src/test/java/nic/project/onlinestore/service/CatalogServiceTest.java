@@ -82,7 +82,7 @@ public class CatalogServiceTest {
         when(categoryService.findSubcategoriesByCategory(category)).thenReturn(subcategories);
         when(productService.findProductsByCategory(category)).thenReturn(products);
         when(filterRepository.findFiltersByCategory(category)).thenReturn(Collections.emptyList());
-        CategoriesAndProductsResponse result = catalogService.getProductsAndSubcategoriesByCategoryAndFilters(categoryId,null, null, null,true, 1);
+        CategoriesAndProductsResponse result = catalogService.getProductsAndSubcategoriesByCategoryAndFilters(categoryId,null, null, null,"cheap", 1);
         assertEquals(subcategories.size(), result.getSubcategories().size());
         assertEquals(products.size(), result.getProducts().size());
         verify(categoryService).findCategoryById(categoryId);
